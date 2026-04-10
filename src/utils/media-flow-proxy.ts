@@ -49,3 +49,12 @@ export const buildMediaFlowProxyExtractorStreamUrl = async (ctx: Context, fetche
 
   return streamUrl;
 };
+export const buildMediaFlowProxyHlsUrl = (ctx: Context, m3u8Url: URL, headers: Record<string, string> = {}): URL => {
+  const mediaFlowProxyUrl = new URL('/proxy/hls/manifest.m3u8', `https://${ctx.config.mediaFlowProxyUrl?.replace(/^https?:\/\//, '')}`);
+  mediaFlowProxyUrl.searchParams.append('api_password', `${ctx.config.mediaFlowProxyPassword}`);
+  mediaFlowProxyUrl.searchParams.append('d', m3u8Url.href);
+  for (const headerKey in headers) {
+    mediaFlowProxyUrl.searchParams.set('h_' + headerKey.toLowerCase(), headers[headerKey] as string);
+  }
+  return mediaFlowProxyUrl;
+};
