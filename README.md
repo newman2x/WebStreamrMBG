@@ -1,3 +1,14 @@
+---
+title: WebstreamrMBG
+emoji: 🎬
+colorFrom: blue
+colorTo: red
+sdk: docker
+app_port: 7860
+pinned: false
+---
+
+
 # WebStreamrMBG
 
 [![Tests](https://github.com/newman2x/WebStreamrMBG/actions/workflows/tests.yml/badge.svg)](https://github.com/newman2x/WebStreamrMBG/actions/workflows/tests.yml)
