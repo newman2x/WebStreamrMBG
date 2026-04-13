@@ -10,7 +10,7 @@
 
 HTTP streams have limitations.
 For a better experience, I'd advise using a Debrid service and WebStreamrMBG as fallback.
-[TorBox](https://torbox.app/subscription?referral=f22eb00d-27ce-4e20-85fc-68da3d018b99) is working very well.
+[TorBox](https://torbox.app/subscription?referral=10c5caa4-4be7-424c-a92f-ae01bad60cda) is working very well.
 
 ## Public Instance
 
