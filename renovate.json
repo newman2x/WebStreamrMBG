@@ -31,7 +31,7 @@
     },
     {
       "description": "Pin proxy agents below ESM-only versions",
-      "matchPackageNames": ["http-proxy-agent", "https-proxy-agent"],
+      "matchPackageNames": ["http-proxy-agent", "https-proxy-agent", "socks-proxy-agent"],
       "allowedVersions": "<8"
     }
   ]
