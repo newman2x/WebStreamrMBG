@@ -4,7 +4,7 @@
 [![GitHub release](https://img.shields.io/github/v/release/newman2x/WebStreamrMBG)](https://github.com/newman2x/WebStreamrMBG/releases)
 ![GitHub License](https://img.shields.io/github/license/newman2x/WebStreamrMBG)
 
-> **WebStreamrMBG** is a fork of [WebStreamr](https://github.com/webstreamr/webstreamr) with custom patches and CI/CD pipeline.
+> **WebStreamrMBG** is a fork of [WebStreamr](https://github.com/webstreamr/webstreamr) with redesigned config UI.
 
 [Stremio](https://www.stremio.com/) add-on which provides HTTP URLs from streaming websites.
 
