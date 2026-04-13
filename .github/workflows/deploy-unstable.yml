@@ -1,0 +1,39 @@
+name: Deploy to Unstable
+on:
+  push:
+    branches:
+      - main
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - name: Install and build
+        run: |
+          npm install
+          npm run build
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.BEAMUP_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan a.baby-beamup.club >> ~/.ssh/known_hosts
+      - name: Deploy to Unstable
+        run: |
+          git config user.email "ci@github.com"
+          git config user.name "GitHub Actions"
+          git remote add beamup-dev dokku@a.baby-beamup.club:87d6a6ef6b58/webstreamrmbg-dev
+          git add dist/ --force
+          git commit -m "ci: build for unstable deploy" || true
+          git push beamup-dev HEAD:main --force
+      - name: Verify deployment
+        run: |
+          sleep 30
+          curl -f https://87d6a6ef6b58-webstreamrmbg-dev.baby-beamup.club/manifest.json \
+            || echo "Warning: may still be starting up"
