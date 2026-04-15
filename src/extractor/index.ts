@@ -1,62 +1,70 @@
 import { envGet, Fetcher } from '../utils';
-import { CineHDPlus } from './CineHDPlus';
-import { Cuevana } from './Cuevana';
-import { Einschalten } from './Einschalten';
-import { Eurostreaming } from './Eurostreaming';
-import { FilmpalastTO } from './FilmpalastTO';
-import { FourKHDHub } from './FourKHDHub';
-import { Frembed } from './Frembed';
-import { FrenchCloud } from './FrenchCloud';
-import { HDHub4u } from './HDHub4u';
-import { HomeCine } from './HomeCine';
+import { DoodStream } from './DoodStream';
+import { Dropload } from './Dropload';
+import { ExternalUrl } from './ExternalUrl';
+import { Extractor } from './Extractor';
+import { Fastream } from './Fastream';
+import { FileLions } from './FileLions';
+import { FileMoon } from './FileMoon';
+import { Fsst } from './Fsst';
+import { HubCloud } from './HubCloud';
+import { HubDrive } from './HubDrive';
 import { KinoGer } from './KinoGer';
-import { STo } from './STo';
-import { Kokoshka } from './Kokoshka';
-import { MegaKino } from './MegaKino';
-import { MeineCloud } from './MeineCloud';
-import { MostraGuarda } from './MostraGuarda';
-import { Movix } from './Movix';
+import { LuluStream } from './LuluStream';
+import { Mixdrop } from './Mixdrop';
 import { RgShows } from './RgShows';
-import { Source } from './Source';
-import { StreamKiste } from './StreamKiste';
-import { VerHdLink } from './VerHdLink';
+import { SaveFiles } from './SaveFiles';
+import { StreamEmbed } from './StreamEmbed';
+import { Streamtape } from './Streamtape';
+import { SuperVideo } from './SuperVideo';
+import { Uqload } from './Uqload';
+import { Vidora } from './Vidora';
+import { Vidsonic } from './Vidsonic';
 import { VidSrc } from './VidSrc';
 import { VixSrc } from './VixSrc';
+import { Voe } from './Voe';
+import { YouTube } from './YouTube';
 
-export * from './Source';
+export * from './Extractor';
+export * from './ExtractorRegistry';
 
-export const createSources = (fetcher: Fetcher): Source[] => {
-  const disabledSources = envGet('DISABLED_SOURCES')?.split(',') ?? [];
+export const createExtractors = (fetcher: Fetcher): Extractor[] => {
+  const disabledExtractors = envGet('DISABLED_EXTRACTORS')?.split(',') ?? [];
+
+  const hubCloud = new HubCloud(fetcher);
 
   return [
-    // multi
-    new FourKHDHub(fetcher),
-    new HDHub4u(fetcher),
-    new VixSrc(fetcher),
-    new VidSrc(),
-    new RgShows(fetcher),
-    // AL
-    new Kokoshka(fetcher),
-    // ES / MX
-    new CineHDPlus(fetcher),
-    new Cuevana(fetcher),
-    new HomeCine(fetcher),
-    new VerHdLink(fetcher),
-    // DE
-    new Einschalten(fetcher),
+    new DoodStream(fetcher),
+    new Dropload(fetcher),
+    new Fastream(fetcher),
+    new FileLions(fetcher),
+    new FileMoon(fetcher),
+    new Fsst(fetcher),
+    hubCloud,
+    new HubDrive(fetcher, hubCloud),
     new KinoGer(fetcher),
-    new MegaKino(fetcher),
-    new MeineCloud(fetcher),
-    new StreamKiste(fetcher),
-    new FilmpalastTO(fetcher),
-    new STo(fetcher),
-
-    // FR
-    new Frembed(fetcher),
-    new FrenchCloud(fetcher),
-    new Movix(fetcher),
-    // IT
-    new Eurostreaming(fetcher),
-    new MostraGuarda(fetcher),
-  ].filter(source => !disabledSources.includes(source.id));
+    new LuluStream(fetcher),
+    new Mixdrop(fetcher),
+    new RgShows(fetcher),
+    new SaveFiles(fetcher),
+    new StreamEmbed(fetcher),
+    new Streamtape(fetcher),
+    new SuperVideo(fetcher),
+    new Uqload(fetcher),
+    new Vidora(fetcher),
+    new Vidsonic(fetcher),
+    new VidSrc(fetcher, [ // https://vidsrc.domains/
+      'vidsrcme.ru',
+      'vidsrcme.su',
+      'vidsrc-me.ru',
+      'vidsrc-me.su',
+      'vidsrc-embed.ru',
+      'vidsrc-embed.su',
+      'vsrc.su',
+    ]),
+    new VixSrc(fetcher),
+    new Voe(fetcher),
+    new YouTube(fetcher),
+    new ExternalUrl(fetcher), // fallback extractor which must come last
+  ].filter(extractor => !disabledExtractors.includes(extractor.id));
 };
