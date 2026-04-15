@@ -110,6 +110,9 @@ body{position:relative;z-index:1;display:flex;justify-content:center;padding:2re
 .ibtn{display:inline-block;background:#8A5AAB;color:#fff;text-decoration:none;font-family:inherit;font-size:.88rem;font-weight:700;letter-spacing:.06em;padding:.72rem 3.5rem;border-radius:10px;transition:background .15s,transform .1s;box-shadow:0 3px 14px rgba(138,90,171,.36)}
 .ibtn:hover{background:#9d6dc0}
 .ibtn:active{transform:scale(.97)}
+.cbtn{display:inline-flex;align-items:center;gap:.4rem;background:#44475a;color:#f8f8f2;border:1px solid #6272a4;font-family:inherit;font-size:.78rem;font-weight:600;padding:.6rem 1.2rem;border-radius:10px;cursor:pointer;transition:background .15s}
+.cbtn:hover{background:#5a5e7a}
+.cbtn.copied{background:rgba(80,200,120,.22);border-color:rgba(80,200,120,.5);color:#50c878}
 @media(max-width:480px){.hdr{flex-direction:column;align-items:flex-start}.hdr-logo{width:46px;height:46px}}
 </style>
 </head>
@@ -175,7 +178,7 @@ body{position:relative;z-index:1;display:flex;justify-content:center;padding:2re
   <div class="note">💡 HTTP streams have limitations. For best results, use a Debrid service like <a href="https://torbox.app/subscription?referral=10c5caa4-4be7-424c-a92f-ae01bad60cda" target="_blank">TorBox</a>.</div>
 </div>
 
-<div class="ibar"><a id="installLink" class="ibtn" href="#">INSTALL</a></div>
+<div class="ibar" style="gap:.75rem"><a id="installLink" class="ibtn" href="#">INSTALL</a><button type="button" id="copyBtn" class="cbtn">📋 Copy URL</button></div>
 
 <script>
 const form=document.getElementById('mainForm');
@@ -233,7 +236,16 @@ document.querySelectorAll('.rc').forEach(chip=>{
     updateLink();
   });
 });
-
+const copyBtn=document.getElementById('copyBtn');
+if(copyBtn){
+  copyBtn.addEventListener('click',()=>{
+    const manifestUrl=ilink.href.replace(/^stremio:\\/\\//,'https://');
+    navigator.clipboard.writeText(manifestUrl).then(()=>{
+      copyBtn.textContent='✓ Copied!';copyBtn.classList.add('copied');
+      setTimeout(()=>{copyBtn.textContent='📋 Copy URL';copyBtn.classList.remove('copied');},2000);
+    }).catch(()=>{copyBtn.textContent='✗ Failed';setTimeout(()=>{copyBtn.textContent='📋 Copy URL';},1500);});
+  });
+}
 updateLink();
 </script>
 </body>

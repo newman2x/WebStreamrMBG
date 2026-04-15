@@ -10,7 +10,7 @@ const typedEntries = (obj) => Object.entries(obj);
 const buildManifest = (sources, extractors, config) => {
     const manifest = {
         id: (0, env_1.envGetAppId)(),
-        version: '0.70.0', // x-release-please-version
+        version: '0.70.1', // x-release-please-version
         name: (0, env_1.envGetAppName)(),
         description: 'Provides HTTP URLs from streaming websites. Configure add-on for additional languages. Add MediaFlow proxy for more URLs.',
         resources: [

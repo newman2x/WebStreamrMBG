@@ -22,16 +22,13 @@ class VixSrc extends Extractor_1.Extractor {
         playlistUrl.searchParams.append('token', tokenMatch[1]);
         playlistUrl.searchParams.append('expires', expiresMatch[1]);
         playlistUrl.searchParams.append('h', '1');
-        const finalUrl = (0, utils_1.supportsMediaFlowProxy)(ctx)
-            ? (0, utils_1.buildMediaFlowProxyHlsUrl)(ctx, playlistUrl, headers, true)
-            : playlistUrl;
         const countryCodes = meta.countryCodes ?? [types_1.CountryCode.multi, ...(await this.determineCountryCodesFromPlaylist(ctx, playlistUrl, { headers }))];
         if (!(0, utils_1.hasMultiEnabled)(ctx.config) && !countryCodes.some(countryCode => countryCode in ctx.config)) {
             return [];
         }
         return [
             {
-                url: finalUrl,
+                url: playlistUrl,
                 format: types_1.Format.hls,
                 meta: {
                     ...meta,
