@@ -44,22 +44,6 @@ The following hosters can be used only with MediaFlow Proxy:
 - Streamtape
 - VOE
 
-## Self-Hosting
-
-You can run the latest WebStreamrMBG via Docker. E.g.
-
-```shell
-docker run \
-    --detach=true \
-    --name webstreamr-mbg \
-    --rm \
-    --pull always \
-    --publish 51546:51546 \
-    --env TMDB_ACCESS_TOKEN="YOUR_TOKEN" \
-    --volume /tmp:/tmp \
-    newman2x/webstreamr-mbg
-```
-
 ## Environment variables
 
 #### `CACHE_DIR`
