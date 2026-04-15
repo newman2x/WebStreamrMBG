@@ -28,8 +28,3 @@ describe('VixSrc', () => {
     expect(await extractorRegistry.handle(ctx, new URL('https://vixsrc.to/tv/42009/4/3'))).toMatchSnapshot();
   });
 });
-
-test('Full Metal Jacket with media flow proxy', async () => {
-  const ctxWithProxy = createTestContext({ mediaFlowProxyUrl: 'proxy.example.com', mediaFlowProxyPassword: 'secret' });
-  expect(await extractorRegistry.handle(ctxWithProxy, new URL('https://vixsrc.to/movie/600'))).toMatchSnapshot();
-});

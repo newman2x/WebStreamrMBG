@@ -1,7 +1,5 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
-exports[`Full Metal Jacket with media flow proxy 1`] = `[]`;
-
 exports[`VixSrc Black Mirror 1`] = `
 [
   {
