@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.71.0](https://github.com/newman2x/WebStreamrMBG/compare/v0.70.1...v0.71.0) (2026-04-15)
+
+
+### Miscellaneous Chores
+
+* **deps:** update dependency typescript-eslint to v8.58.2 ([#32](https://github.com/newman2x/WebStreamrMBG/issues/32)) ([08eab96](https://github.com/newman2x/WebStreamrMBG/commit/08eab96731f76f24302aefd2c4619426036ae6ac))
+* disable renovate automerge ([1bfbc89](https://github.com/newman2x/WebStreamrMBG/commit/1bfbc89e07f85cf8f9bde47ac9e05f9748bf90ba))
+* rebuild dist ([08fc42c](https://github.com/newman2x/WebStreamrMBG/commit/08fc42c5dfe83566f09193666165f9b58d289567))
+* remove dist from version control ([5d67c3e](https://github.com/newman2x/WebStreamrMBG/commit/5d67c3ef9d18167e01fa8693017523483075280b))
+
+
+### Features
+
+* add copy manifest URL button to configure page ([9760386](https://github.com/newman2x/WebStreamrMBG/commit/97603860d15727aaab9c118c60b0e3aae327fffd))
+
+
+### Bug Fixes
+
+* VixSrc ([d64ddf4](https://github.com/newman2x/WebStreamrMBG/commit/d64ddf414ec6b66f599faaff481523cd0f4b9cd4))
+
 ## [0.70.1](https://github.com/newman2x/WebStreamrMBG/compare/v0.70.0...v0.70.1) (2026-04-13)
 
 
