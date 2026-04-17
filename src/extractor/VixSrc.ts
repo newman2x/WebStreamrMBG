@@ -14,9 +14,17 @@ export class VixSrc extends Extractor {
   }
 
   protected async extractInternal(ctx: Context, url: URL, meta: Meta): Promise<InternalUrlResult[]> {
-    const headers = { Referer: url.href };
-
-    const html = await this.fetcher.text(ctx, url);
+    const headers = {
+      'Referer': 'https://vixsrc.to/',
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+    };
+    // VixSrc is now a Next.js app - HTML is JS-rendered and contains no player config.
+    // The frontend calls /api/movie/{id} or /api/tv/{id}/{s}/{e} to get the embed src.
+    const apiUrl = new URL(`/api${url.pathname}`, 'https://vixsrc.to');
+    const apiJson = await this.fetcher.json(ctx, apiUrl, { headers }) as { src: string };
+    const embedUrl = new URL(apiJson.src, 'https://vixsrc.to');
+    // The embed page contains the player config (token, expires, url) in its HTML.
+    const html = await this.fetcher.text(ctx, embedUrl, { headers });
 
     const tokenMatch = html.match(/['"]token['"]: ?['"](.*?)['"]/) as string[];
     const expiresMatch = html.match(/['"]expires['"]: ?['"](.*?)['"]/) as string[];

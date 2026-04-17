@@ -4,6 +4,10 @@ exports[`VixSrc handle imdb black mirror s4e2 1`] = `
 [
   {
     "meta": {
+      "countryCodes": [
+        "multi",
+        "it",
+      ],
       "title": "Black Mirror S04E02",
     },
     "url": "https://vixsrc.to/tv/42009/4/2",
@@ -15,6 +19,10 @@ exports[`VixSrc handle imdb full metal jacket 1`] = `
 [
   {
     "meta": {
+      "countryCodes": [
+        "multi",
+        "it",
+      ],
       "title": "Full Metal Jacket (1987)",
     },
     "url": "https://vixsrc.to/movie/600",
