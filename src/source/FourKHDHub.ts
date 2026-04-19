@@ -95,36 +95,41 @@ export class FourKHDHub extends Source {
       .map(async (_i, el) => new URL($(el).attr('href') as string, await this.getBaseUrl(ctx)))
       .get(0);
   };
-
-  private readonly extractSourceResults = async (ctx: Context, $: CheerioAPI, el: BasicAcceptedElems<AnyNode>, countryCodes: CountryCode[]): Promise<SourceResult> => {
+private readonly extractSourceResults = async (ctx: Context, $: CheerioAPI, el: BasicAcceptedElems<AnyNode>, countryCodes: CountryCode[]): Promise<SourceResult> => {
     const localHtml = $(el).html() as string;
 
     const sizeMatch = localHtml.match(/([\d.]+ ?[GM]B)/);
-    const heightMatch = localHtml.match(/\d{3,}p/);
+    const heightMatch = localHtml.match(/\d{3,}p/) as string[];
 
     const meta: Meta = {
       countryCodes: [...new Set([...countryCodes, ...findCountryCodes(localHtml)])],
-      height: heightMatch ? parseInt(heightMatch[0]) : 0,
+      height: parseInt(heightMatch[0] as string),
       title: $('.file-title, .episode-file-title', el).text().trim(),
       ...(sizeMatch && { bytes: bytes.parse(sizeMatch[1] as string) as number }),
     };
 
-    const targetLink = $('a', el).filter((_i, linkEl) => {
-        const text = $(linkEl).text();
-        return text.includes('HubCloud') || text.includes('HubDrive');
-    }).attr('href');
+    const redirectUrlHubCloud = $('a', el)
+      .filter((_i, el) => $(el).text().includes('HubCloud'))
+      .map((_i, el) => new URL($(el).attr('href') as string))
+      .get(0);
 
-    if (targetLink) {
-      const proxyUrl = `https://87d6a6ef6b58-webstreamrmbg.baby-beamup.club/extract/?index=0&url=${encodeURIComponent(targetLink)}`;
-      
-      return { 
-        url: proxyUrl as any, 
-        meta 
-      };
+    if (redirectUrlHubCloud) {
+      const proxyUrl = `https://87d6a6ef6b58-webstreamrmbg.baby-beamup.club/extract/?index=0&url=${encodeURIComponent(redirectUrlHubCloud.toString())}`;
+      return { url: proxyUrl as any, meta };
+    }
+
+    const redirectUrlHubDrive = $('a', el)
+      .filter((_i, el) => $(el).text().includes('HubDrive'))
+      .map((_i, el) => new URL($(el).attr('href') as string))
+      .get(0) as URL;
+
+    if (redirectUrlHubDrive) {
+      const proxyUrl = `https://87d6a6ef6b58-webstreamrmbg.baby-beamup.club/extract/?index=0&url=${encodeURIComponent(redirectUrlHubDrive.toString())}`;
+      return { url: proxyUrl as any, meta };
     }
 
     return { url: '' as any, meta };
-  };
+}
 
   private readonly getBaseUrl = async (ctx: Context): Promise<URL> => {
     return await this.fetcher.getFinalRedirectUrl(ctx, new URL(this.baseUrl));
