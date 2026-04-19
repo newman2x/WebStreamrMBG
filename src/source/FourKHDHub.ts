@@ -95,7 +95,9 @@ export class FourKHDHub extends Source {
       .map(async (_i, el) => new URL($(el).attr('href') as string, await this.getBaseUrl(ctx)))
       .get(0);
   };
-private readonly extractSourceResults = async (ctx: Context, $: CheerioAPI, el: BasicAcceptedElems<AnyNode>, countryCodes: CountryCode[]): Promise<SourceResult> => {
+private readonly EXTRACTOR_BASE = 'https://87d6a6ef6b58-webstreamrmbg.baby-beamup.club/extract/';
+
+  private readonly extractSourceResults = async (ctx: Context, $: CheerioAPI, el: BasicAcceptedElems<AnyNode>, countryCodes: CountryCode[]): Promise<SourceResult | undefined> => {
     const localHtml = $(el).html() as string;
 
     const sizeMatch = localHtml.match(/([\d.]+ ?[GM]B)/);
@@ -114,8 +116,8 @@ private readonly extractSourceResults = async (ctx: Context, $: CheerioAPI, el: 
       .get(0);
 
     if (redirectUrlHubCloud) {
-      const proxyUrl = `https://87d6a6ef6b58-webstreamrmbg.baby-beamup.club/extract/?index=0&url=${encodeURIComponent(redirectUrlHubCloud.toString())}`;
-      return { url: proxyUrl as any, meta };
+      const proxyUrl = `${this.EXTRACTOR_BASE}?index=0&url=${encodeURIComponent(redirectUrlHubCloud.toString())}`;
+      return { url: new URL(proxyUrl), meta };
     }
 
     const redirectUrlHubDrive = $('a', el)
@@ -124,13 +126,12 @@ private readonly extractSourceResults = async (ctx: Context, $: CheerioAPI, el: 
       .get(0) as URL;
 
     if (redirectUrlHubDrive) {
-      const proxyUrl = `https://87d6a6ef6b58-webstreamrmbg.baby-beamup.club/extract/?index=0&url=${encodeURIComponent(redirectUrlHubDrive.toString())}`;
-      return { url: proxyUrl as any, meta };
+      const proxyUrl = `${this.EXTRACTOR_BASE}?index=0&url=${encodeURIComponent(redirectUrlHubDrive.toString())}`;
+      return { url: new URL(proxyUrl), meta };
     }
 
-    return { url: '' as any, meta };
-}
-
+    return undefined;
+  }
   private readonly getBaseUrl = async (ctx: Context): Promise<URL> => {
     return await this.fetcher.getFinalRedirectUrl(ctx, new URL(this.baseUrl));
   };
