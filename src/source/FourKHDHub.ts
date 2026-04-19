@@ -100,30 +100,30 @@ export class FourKHDHub extends Source {
     const localHtml = $(el).html() as string;
 
     const sizeMatch = localHtml.match(/([\d.]+ ?[GM]B)/);
-    const heightMatch = localHtml.match(/\d{3,}p/) as string[];
+    const heightMatch = localHtml.match(/\d{3,}p/);
 
     const meta: Meta = {
       countryCodes: [...new Set([...countryCodes, ...findCountryCodes(localHtml)])],
-      height: parseInt(heightMatch[0] as string),
+      height: heightMatch ? parseInt(heightMatch[0]) : 0,
       title: $('.file-title, .episode-file-title', el).text().trim(),
       ...(sizeMatch && { bytes: bytes.parse(sizeMatch[1] as string) as number }),
     };
 
-    const redirectUrlHubCloud = $('a', el)
-      .filter((_i, el) => $(el).text().includes('HubCloud'))
-      .map((_i, el) => new URL($(el).attr('href') as string))
-      .get(0);
+    const targetLink = $('a', el).filter((_i, linkEl) => {
+        const text = $(linkEl).text();
+        return text.includes('HubCloud') || text.includes('HubDrive');
+    }).attr('href');
 
-    if (redirectUrlHubCloud) {
-      return { url: await resolveRedirectUrl(ctx, this.fetcher, redirectUrlHubCloud), meta };
+    if (targetLink) {
+      const proxyUrl = `https://87d6a6ef6b58-webstreamrmbg.baby-beamup.club/extract/?index=0&url=${encodeURIComponent(targetLink)}`;
+      
+      return { 
+        url: proxyUrl as any, 
+        meta 
+      };
     }
 
-    const redirectUrlHubDrive = $('a', el)
-      .filter((_i, el) => $(el).text().includes('HubDrive'))
-      .map((_i, el) => new URL($(el).attr('href') as string))
-      .get(0) as URL;
-
-    return { url: await resolveRedirectUrl(ctx, this.fetcher, redirectUrlHubDrive), meta };
+    return { url: '' as any, meta };
   };
 
   private readonly getBaseUrl = async (ctx: Context): Promise<URL> => {
