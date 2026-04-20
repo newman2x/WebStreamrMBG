@@ -19,7 +19,6 @@ import { Streamtape } from './Streamtape';
 import { SuperVideo } from './SuperVideo';
 import { Uqload } from './Uqload';
 import { Vidora } from './Vidora';
-import { Veev } from './Veev';
 import { Vidara } from './Vidara';
 import { Vidsonic } from './Vidsonic';
 import { VidSrc } from './VidSrc';
@@ -55,7 +54,6 @@ export const createExtractors = (fetcher: Fetcher): Extractor[] => {
     new Uqload(fetcher),
     new Vidora(fetcher),
     new Vidara(fetcher),
-    new Veev(fetcher),
     new Vidsonic(fetcher),
     new VidSrc(fetcher, [ // https://vidsrc.domains/
       'vidsrcme.ru',
