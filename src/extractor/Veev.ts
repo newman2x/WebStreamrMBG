@@ -8,7 +8,7 @@ export class Veev extends Extractor {
   public readonly label = 'Veev';
 
   public supports(_ctx: Context, url: URL): boolean {
-    // This host often appears in the source or the URL itself
+    // Covers both the embed host and the CDN host
     return url.host.includes('veev.to') || url.host.includes('veevcdn.co');
   }
 
@@ -26,21 +26,23 @@ export class Veev extends Extractor {
 
     const videoUrl = new URL(videoSrc);
 
-    // 2. Extract title from meta or title tag
-    const title = $('title').text() || meta.title;
+    // 2. Fix for TS18048: Ensure title is a string before calling .trim()
+    const rawTitle = $('title').text() || meta.title || 'Unknown Video';
+    const cleanTitle = rawTitle.trim();
 
     return [
       {
         url: videoUrl,
-        // The snippet specifically says type="video/mp4"
+        // Using Format.mp4 as indicated by the HTML type="video/mp4"
         format: Format.mp4, 
         meta: {
           ...meta,
-          title: title.trim(),
+          title: cleanTitle,
           height: parseInt(quality, 10),
         },
         requestHeaders: {
           'Referer': url.origin,
+          // Fixed User-Agent to prevent CDN blocking
           'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
         },
       },
