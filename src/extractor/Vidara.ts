@@ -24,7 +24,7 @@ export class Vidara extends Extractor {
 
     const apiUrl = new URL('/api/stream', url.origin);
     
-    // FIX 1: Removed type argument from .json() and used 'as any' or a local type cast
+    
     const response = await this.fetcher.json(ctx, apiUrl, {
       method: 'POST',
       headers: {
@@ -32,11 +32,12 @@ export class Vidara extends Extractor {
         'Referer': url.href,
         'X-Requested-With': 'XMLHttpRequest',
       },
-      body: JSON.stringify({
+      // In many TypeScript fetchers, 'data' is used for the payload
+      data: JSON.stringify({
         filecode: filecode,
         device: 'web'
       }),
-    }) as { streaming_url?: string; title?: string };
+    } as any) as { streaming_url?: string; title?: string };
 
     if (!response || !response.streaming_url) {
       throw new NotFoundError('API response did not contain a streaming URL');
