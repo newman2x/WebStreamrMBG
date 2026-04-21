@@ -9,7 +9,7 @@ export class Vidara extends Extractor {
   public readonly label = 'Vidara';
 
   public supports(_ctx: Context, url: URL): boolean {
-    return /vidara\.(so|to|net|org)/.test(url.host);
+    return /vidara\.(so|to)/.test(url.host);
   }
 
   protected async extractInternal(ctx: Context, url: URL, meta: Meta): Promise<InternalUrlResult[]> {
