@@ -18,7 +18,7 @@ export class Vidsonic extends Extractor {
 
     // 1. Suche nach dem verschlüsselten String _0x1
     const encodedMatch = html.match(/const _0x1 = '([^']+)';/);
-    
+
     // Validierung, um "possibly undefined" Fehler zu vermeiden
     if (!encodedMatch || !encodedMatch[1]) {
       throw new NotFoundError();
@@ -29,7 +29,7 @@ export class Vidsonic extends Extractor {
     // 2. Dekodierung: Hex -> String -> Reverse
     const cleanHex = encodedData.replace(/\|/g, '');
     let decoded = '';
-    
+
     for (let i = 0; i < cleanHex.length; i += 2) {
       const hexPair = cleanHex.substring(i, i + 2);
       decoded += String.fromCharCode(parseInt(hexPair, 16));
@@ -40,7 +40,7 @@ export class Vidsonic extends Extractor {
 
     // 3. Qualität (Höhe) aus der Playlist ermitteln
     const height = await guessHeightFromPlaylist(ctx, this.fetcher, playlistUrl, {
-      headers: { Referer: url.href }
+      headers: { Referer: url.href },
     });
 
     // 4. Titel extrahieren
