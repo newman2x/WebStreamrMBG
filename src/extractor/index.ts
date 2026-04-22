@@ -52,7 +52,7 @@ export const createExtractors = (fetcher: Fetcher): Extractor[] => {
     new Streamtape(fetcher),
     new SuperVideo(fetcher),
     new Uqload(fetcher),
-        new Vidara(fetcher),
+    new Vidara(fetcher),
     new Vidora(fetcher),
     new Vidsonic(fetcher),
     new VidSrc(fetcher, [ // https://vidsrc.domains/
