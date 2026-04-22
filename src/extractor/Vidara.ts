@@ -4,6 +4,11 @@ import { Context, Format, InternalUrlResult, Meta } from '../types';
 import { guessHeightFromPlaylist } from '../utils';
 import { Extractor } from './Extractor';
 
+interface VidaraApiResponse {
+  streaming_url?: string;
+  title?: string;
+}
+
 export class Vidara extends Extractor {
   public readonly id = 'vidara';
   public readonly label = 'Vidara';
@@ -23,23 +28,21 @@ export class Vidara extends Extractor {
     const filecode = filecodeMatch[1];
 
     const apiUrl = new URL('/api/stream', url.origin);
-    
-    
-    const response = await this.fetcher.json(ctx, apiUrl, {
+
+    const response = await this.fetcher.json<VidaraApiResponse>(ctx, apiUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Referer': url.href,
         'X-Requested-With': 'XMLHttpRequest',
       },
-      // In many TypeScript fetchers, 'data' is used for the payload
       data: JSON.stringify({
-        filecode: filecode,
-        device: 'web'
+        filecode,
+        device: 'web',
       }),
-    } as any) as { streaming_url?: string; title?: string };
+    });
 
-    if (!response || !response.streaming_url) {
+    if (!response?.streaming_url) {
       throw new NotFoundError('API response did not contain a streaming URL');
     }
 
@@ -48,7 +51,7 @@ export class Vidara extends Extractor {
     const videoTitle = response.title || pageTitle || meta.title;
 
     const height = await guessHeightFromPlaylist(ctx, this.fetcher, playlistUrl, {
-      headers: { Referer: url.href }
+      headers: { Referer: url.href },
     });
 
     return [
@@ -62,7 +65,6 @@ export class Vidara extends Extractor {
         },
         requestHeaders: {
           'Referer': url.href,
-          // FIX 2: Replaced ctx.userAgent with a fallback string or common header
           'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
         },
       },
