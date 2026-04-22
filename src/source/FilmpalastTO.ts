@@ -57,8 +57,8 @@ export class FilmpalastTO extends Source {
         return [];
       }
 
-      const filteredResult =
-        movieList.find(title =>
+      const filteredResult
+        = movieList.find(title =>
           !title.toLowerCase().includes('english'),
         ) || movieList[0];
 
@@ -147,8 +147,8 @@ export class FilmpalastTO extends Source {
         `[Filmpalast] Successfully added ${results.length} results for ${imdbId}`,
       );
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : 'Unknown error';
+      const message
+        = error instanceof Error ? error.message : 'Unknown error';
 
       console.error(
         `[Filmpalast] Scraper failed for ${imdbId}: ${message}`,
