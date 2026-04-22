@@ -41,7 +41,7 @@ export class FilmpalastTO extends Source {
       const movieList = JSON.parse(responseText);
       if (!Array.isArray(movieList) || movieList.length === 0) return [];
 
-      // Step 2: Prefer non-English titles - Fixed arrow-parens here
+      // Step 2: Fixed the arrow-parens error here
       const filteredResult = movieList.find(title => !title.toLowerCase().includes('english')) || movieList[0];
       const searchPageURL = `${this.baseUrl}/search/title/${encodeURIComponent(filteredResult)}`;
 
@@ -68,7 +68,6 @@ export class FilmpalastTO extends Source {
       const streamHtml = await this.fetcher.text(ctx, new URL(streamPageUrl));
       const $stream = cheerio.load(streamHtml);
 
-      // Broad selector to catch all 4 links seen in your logs
       const linkElements = $stream('.currentStreamLinks a, .hosterSite span a, .streamList a');
 
       linkElements.each((_, element) => {
@@ -76,15 +75,12 @@ export class FilmpalastTO extends Source {
         let hosterName = $stream(element).text().trim();
 
         if (href && href !== '#' && !href.includes('javascript:void')) {
-          // Normalize the URL
           const fullUrl = href.startsWith('http') ? href : (href.startsWith('//') ? `https:${href}` : `https://${href}`);
 
-          // Get hoster name from title attribute if text is missing
           if (!hosterName || !isNaN(Number(hosterName))) {
             hosterName = $stream(element).attr('title') || 'Stream';
           }
 
-          // DEBUG LOG
           console.info(`[Filmpalast] Found Link: ${fullUrl} (${hosterName})`);
 
           try {
