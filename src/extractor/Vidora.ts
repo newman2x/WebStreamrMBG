@@ -39,5 +39,5 @@ export class Vidora extends Extractor {
         requestHeaders: headers,
       },
     ];
-  };
+  }
 }
