@@ -41,8 +41,8 @@ export class FilmpalastTO extends Source {
       const movieList = JSON.parse(responseText);
       if (!Array.isArray(movieList) || movieList.length === 0) return [];
 
-      // Step 2: Prefer non-English titles
-      const filteredResult = movieList.find((title) => !title.toLowerCase().includes('english')) || movieList[0];
+      // Step 2: Prefer non-English titles - Fixed arrow-parens here
+      const filteredResult = movieList.find(title => !title.toLowerCase().includes('english')) || movieList[0];
       const searchPageURL = `${this.baseUrl}/search/title/${encodeURIComponent(filteredResult)}`;
 
       // Step 3: Find the stream page link
