@@ -17,7 +17,11 @@ export class Vidara extends Extractor {
     return /vidara\.(so|to)/.test(url.host);
   }
 
-  protected async extractInternal(ctx: Context, url: URL, meta: Meta): Promise<InternalUrlResult[]> {
+  protected async extractInternal(
+    ctx: Context,
+    url: URL,
+    meta: Meta
+  ): Promise<InternalUrlResult[]> {
     const html = await this.fetcher.text(ctx, url);
     const $ = cheerio.load(html);
 
@@ -25,34 +29,45 @@ export class Vidara extends Extractor {
     if (!filecodeMatch) {
       throw new NotFoundError('Could not find filecode in URL');
     }
-    const filecode = filecodeMatch[1];
 
+    const filecode = filecodeMatch[1];
     const apiUrl = new URL('/api/stream', url.origin);
 
-    const response = await this.fetcher.json<VidaraApiResponse>(ctx, apiUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Referer': url.href,
-        'X-Requested-With': 'XMLHttpRequest',
-      },
-      data: JSON.stringify({
-        filecode,
-        device: 'web',
-      }),
-    });
+    // ✅ FIX: remove generic and cast instead
+    const response = (await this.fetcher.json(
+      ctx,
+      apiUrl,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Referer: url.href,
+          'X-Requested-With': 'XMLHttpRequest',
+        },
+        data: JSON.stringify({
+          filecode,
+          device: 'web',
+        }),
+      }
+    )) as VidaraApiResponse;
 
     if (!response?.streaming_url) {
       throw new NotFoundError('API response did not contain a streaming URL');
     }
 
     const playlistUrl = new URL(response.streaming_url);
+
     const pageTitle = $('title').text().trim();
     const videoTitle = response.title || pageTitle || meta.title;
 
-    const height = await guessHeightFromPlaylist(ctx, this.fetcher, playlistUrl, {
-      headers: { Referer: url.href },
-    });
+    const height = await guessHeightFromPlaylist(
+      ctx,
+      this.fetcher,
+      playlistUrl,
+      {
+        headers: { Referer: url.href },
+      }
+    );
 
     return [
       {
@@ -64,8 +79,9 @@ export class Vidara extends Extractor {
           height: height || meta.height,
         },
         requestHeaders: {
-          'Referer': url.href,
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+          Referer: url.href,
+          'User-Agent':
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
         },
       },
     ];
