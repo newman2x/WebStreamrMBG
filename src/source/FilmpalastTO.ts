@@ -41,7 +41,7 @@ export class FilmpalastTO extends Source {
       const movieList = JSON.parse(responseText);
       if (!Array.isArray(movieList) || movieList.length === 0) return [];
 
-      // Step 2: Fixed the arrow-parens error here
+      // Step 2: Parentheses removed from title to satisfy @stylistic/arrow-parens
       const filteredResult = movieList.find(title => !title.toLowerCase().includes('english')) || movieList[0];
       const searchPageURL = `${this.baseUrl}/search/title/${encodeURIComponent(filteredResult)}`;
 
