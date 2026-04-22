@@ -29,7 +29,8 @@ export class Vidara extends Extractor {
 
     const apiUrl = new URL('/api/stream', url.origin);
 
-    const response = await this.fetcher.json<VidaraApiResponse>(ctx, apiUrl, {
+    // Removed the <VidaraApiResponse> generic from .json() and cast the result instead
+    const response = await this.fetcher.json(ctx, apiUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -40,7 +41,7 @@ export class Vidara extends Extractor {
         filecode,
         device: 'web',
       }),
-    });
+    }) as VidaraApiResponse;
 
     if (!response?.streaming_url) {
       throw new NotFoundError('API response did not contain a streaming URL');
