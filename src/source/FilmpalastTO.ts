@@ -6,13 +6,18 @@ import { Source, SourceResult } from './Source';
 
 export class FilmpalastTO extends Source {
   public override readonly id = 'filmpalast';
+
   public override readonly label = 'Filmpalast';
+
   public override readonly baseUrl = 'https://filmpalast.to';
+
   public override readonly contentTypes: ContentType[] = [
     'movie' as ContentType,
     'series' as ContentType,
   ];
+
   public override readonly countryCodes = [CountryCode.de];
+
   public override readonly priority = 1;
 
   private readonly fetcher: Fetcher;
@@ -52,9 +57,10 @@ export class FilmpalastTO extends Source {
         return [];
       }
 
-      const filteredResult = movieList.find(
-        (title) => !title.toLowerCase().includes('english'),
-      ) || movieList[0];
+      const filteredResult =
+        movieList.find(title =>
+          !title.toLowerCase().includes('english'),
+        ) || movieList[0];
 
       const searchPageURL = `${this.baseUrl}/search/title/${encodeURIComponent(
         filteredResult,
@@ -93,6 +99,7 @@ export class FilmpalastTO extends Source {
         ctx,
         new URL(streamPageUrl),
       );
+
       const $stream = cheerio.load(streamHtml);
 
       const linkElements = $stream(
@@ -140,8 +147,8 @@ export class FilmpalastTO extends Source {
         `[Filmpalast] Successfully added ${results.length} results for ${imdbId}`,
       );
     } catch (error) {
-      const message
-        = error instanceof Error ? error.message : 'Unknown error';
+      const message =
+        error instanceof Error ? error.message : 'Unknown error';
 
       console.error(
         `[Filmpalast] Scraper failed for ${imdbId}: ${message}`,
