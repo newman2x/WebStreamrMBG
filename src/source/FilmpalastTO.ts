@@ -50,7 +50,7 @@ export class FilmpalastTO extends Source {
       }
 
       // ✅ FIXED: no parentheses around single param
-      const filteredResult = movieList.find(title => !title.toLowerCase().includes('english')) || movieList[0];
+     const filteredResult = movieList.find(title => !title.toLowerCase().includes('english')) || movieList[0];
 
       const searchPageURL = `${this.baseUrl}/search/title/${encodeURIComponent(
         filteredResult
