@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.70.6](https://github.com/newman2x/WebStreamrMBG/compare/v0.70.5...v0.70.6) (2026-04-22)
+
+
+### Bug Fixes
+
+* **vidsrc:** add vsembed.ru/su domains, remove fallback restriction ([502c99f](https://github.com/newman2x/WebStreamrMBG/commit/502c99f9339f6601df3dff4ea2274d8c3d4c26ce))
+
 ## [0.70.5](https://github.com/newman2x/WebStreamrMBG/compare/v0.70.4...v0.70.5) (2026-04-21)
 
 

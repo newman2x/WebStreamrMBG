@@ -1,7 +1,7 @@
 {
   "name": "webstreamr-mbg",
   "description": "Provides HTTP URLs from streaming websites.",
-  "version": "0.70.5",
+  "version": "0.70.6",
   "type": "commonjs",
   "scripts": {
     "analyse": "tsc --noEmit --project ./tsconfig.dev.json",
