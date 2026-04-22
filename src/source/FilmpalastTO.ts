@@ -19,13 +19,18 @@ export class FilmpalastTO extends Source {
     this.fetcher = fetcher;
   }
 
-  protected override async handleInternal(ctx: Context, _type: ContentType, id: Id): Promise<SourceResult[]> {
+  protected override async handleInternal(
+    ctx: Context,
+    _type: ContentType,
+    id: Id
+  ): Promise<SourceResult[]> {
     const results: SourceResult[] = [];
     const imdbId = id.toString();
 
     try {
       // Step 1: Autocomplete via POST
       const autocompleteUrl = new URL(`${this.baseUrl}/autocomplete.php`);
+
       const responseText = await this.fetcher.textPost(
         ctx,
         autocompleteUrl,
@@ -33,55 +38,84 @@ export class FilmpalastTO extends Source {
         {
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
-            'Referer': this.baseUrl,
+            Referer: this.baseUrl,
           },
-        },
+        }
       );
 
       const movieList = JSON.parse(responseText);
-      if (!Array.isArray(movieList) || movieList.length === 0) return [];
 
-      // Step 2: Parentheses removed from title to satisfy @stylistic/arrow-parens
-      const filteredResult = movieList.find(title => !title.toLowerCase().includes('english')) || movieList[0];
-      const searchPageURL = `${this.baseUrl}/search/title/${encodeURIComponent(filteredResult)}`;
+      if (!Array.isArray(movieList) || movieList.length === 0) {
+        return [];
+      }
 
-      // Step 3: Find the stream page link
+      // Prefer non-English titles if available
+      const filteredResult =
+        movieList.find(title => !title.toLowerCase().includes('english')) ||
+        movieList[0];
+
+      const searchPageURL = `${this.baseUrl}/search/title/${encodeURIComponent(
+        filteredResult
+      )}`;
+
+      // Step 2: Find the stream page link
       const html = await this.fetcher.text(ctx, new URL(searchPageURL));
       const $ = cheerio.load(html);
 
       let streamPageUrl: string | undefined;
+
       const streamAnchor = $('a[href*="filmpalast.to/stream/"]').first();
 
       if (streamAnchor.length > 0) {
         const href = streamAnchor.attr('href');
+
         if (href) {
-          // Handle protocol-relative or relative paths
-          streamPageUrl = href.startsWith('http') ? href : (href.startsWith('//') ? `https:${href}` : `${this.baseUrl}${href}`);
+          if (href.startsWith('http')) {
+            streamPageUrl = href;
+          } else if (href.startsWith('//')) {
+            streamPageUrl = `https:${href}`;
+          } else {
+            streamPageUrl = `${this.baseUrl}${href}`;
+          }
         }
       } else if (html.includes('currentStreamLinks')) {
         streamPageUrl = searchPageURL;
       }
 
-      if (!streamPageUrl) return [];
+      if (!streamPageUrl) {
+        return [];
+      }
 
-      // Step 4: Scrape the hoster links
+      // Step 3: Scrape hoster links
       const streamHtml = await this.fetcher.text(ctx, new URL(streamPageUrl));
       const $stream = cheerio.load(streamHtml);
 
-      const linkElements = $stream('.currentStreamLinks a, .hosterSite span a, .streamList a');
+      const linkElements = $stream(
+        '.currentStreamLinks a, .hosterSite span a, .streamList a'
+      );
 
       linkElements.each((_, element) => {
         const href = $stream(element).attr('href');
         let hosterName = $stream(element).text().trim();
 
         if (href && href !== '#' && !href.includes('javascript:void')) {
-          const fullUrl = href.startsWith('http') ? href : (href.startsWith('//') ? `https:${href}` : `https://${href}`);
+          let fullUrl: string;
+
+          if (href.startsWith('http')) {
+            fullUrl = href;
+          } else if (href.startsWith('//')) {
+            fullUrl = `https:${href}`;
+          } else {
+            fullUrl = `https://${href}`;
+          }
 
           if (!hosterName || !isNaN(Number(hosterName))) {
             hosterName = $stream(element).attr('title') || 'Stream';
           }
 
-          console.info(`[Filmpalast] Found Link: ${fullUrl} (${hosterName})`);
+          console.info(
+            `[Filmpalast] Found Link: ${fullUrl} (${hosterName})`
+          );
 
           try {
             results.push({
@@ -97,10 +131,16 @@ export class FilmpalastTO extends Source {
         }
       });
 
-      console.info(`[Filmpalast] Successfully added ${results.length} results for ${imdbId}`);
+      console.info(
+        `[Filmpalast] Successfully added ${results.length} results for ${imdbId}`
+      );
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Unknown error';
-      console.error(`[Filmpalast] Scraper failed for ${imdbId}: ${message}`);
+      const message =
+        error instanceof Error ? error.message : 'Unknown error';
+
+      console.error(
+        `[Filmpalast] Scraper failed for ${imdbId}: ${message}`
+      );
     }
 
     return results;
