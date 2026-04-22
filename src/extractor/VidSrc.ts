@@ -20,7 +20,7 @@ export class VidSrc extends Extractor {
   }
 
   public supports(_ctx: Context, url: URL): boolean {
-    return null !== url.host.match(/vidsrc|vsrc/);
+    return null !== url.host.match(/vidsrc|vsrc|vsembed/);
   }
 
   protected async extractInternal(ctx: Context, url: URL, meta: Meta): Promise<InternalUrlResult[]> {

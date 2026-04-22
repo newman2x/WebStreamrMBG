@@ -4,14 +4,12 @@ import { BlockedError, HttpError, NotFoundError, QueueIsFullError, TimeoutError,
 import { createExtractors, Extractor, ExtractorRegistry } from '../extractor';
 import { HubCloud } from '../extractor/HubCloud';
 import { RgShows as RgShowsExtractor } from '../extractor/RgShows';
-import { VidSrc as VidSrcExtractor } from '../extractor/VidSrc';
 import { VixSrc as VixSrcExtractor } from '../extractor/VixSrc';
 import { Source, SourceResult } from '../source';
 import { FourKHDHub } from '../source/FourKHDHub';
 import { MeineCloud } from '../source/MeineCloud';
 import { MostraGuarda } from '../source/MostraGuarda';
 import { RgShows } from '../source/RgShows';
-import { VidSrc } from '../source/VidSrc';
 import { VixSrc } from '../source/VixSrc';
 import { createTestContext } from '../test';
 import { BlockedReason, CountryCode, Format, UrlResult } from '../types';
@@ -26,7 +24,6 @@ const ctx = createTestContext({ de: 'on', it: 'on' });
 const fourKhdHub = new FourKHDHub(fetcher);
 const meineCloud = new MeineCloud(fetcher);
 const mostraGuarda = new MostraGuarda(fetcher);
-const vidSrc = new VidSrc();
 
 describe('resolve', () => {
   test('returns info as stream if no sources were configured', async () => {
@@ -79,16 +76,16 @@ describe('resolve', () => {
   });
 
   test('skips fallback sources if possible', async () => {
-    const streamResolver = new StreamResolver(logger, new ExtractorRegistry(logger, [new HubCloud(fetcher), new VidSrcExtractor(fetcher, ['vidsrc-embed.ru'])]));
+    const streamResolver = new StreamResolver(logger, new ExtractorRegistry(logger, [new HubCloud(fetcher), new RgShowsExtractor(fetcher)]));
 
-    const streams = await streamResolver.resolve(createTestContext(), [fourKhdHub, vidSrc], 'movie', new TmdbId(812583, undefined, undefined));
+    const streams = await streamResolver.resolve(createTestContext(), [fourKhdHub, new RgShows(fetcher)], 'movie', new TmdbId(812583, undefined, undefined));
     expect(streams.streams).toMatchSnapshot();
   });
 
   test('keeps fallback sources if needed', async () => {
-    const streamResolver = new StreamResolver(logger, new ExtractorRegistry(logger, [new HubCloud(fetcher), new VidSrcExtractor(fetcher, ['vidsrc-embed.ru'])]));
+    const streamResolver = new StreamResolver(logger, new ExtractorRegistry(logger, [new HubCloud(fetcher), new RgShowsExtractor(fetcher)]));
 
-    const streams = await streamResolver.resolve(createTestContext(), [vidSrc], 'movie', new TmdbId(812583, undefined, undefined));
+    const streams = await streamResolver.resolve(createTestContext(), [new RgShows(fetcher)], 'movie', new TmdbId(812583, undefined, undefined));
     expect(streams.streams).toMatchSnapshot();
   });
 

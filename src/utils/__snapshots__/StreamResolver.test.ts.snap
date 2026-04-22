@@ -210,13 +210,20 @@ exports[`resolve keeps fallback sources if needed 1`] = `
 [
   {
     "behaviorHints": {
-      "bingeGroup": "webstreamr-mbg-vidsrc-vidsrc-multi",
+      "bingeGroup": "webstreamr-mbg-rgshows-rgshows-multi",
       "notWebReady": true,
+      "proxyHeaders": {
+        "request": {
+          "Origin": "https://www.rgshows.ru",
+          "Referer": "https://www.rgshows.ru/",
+          "User-Agent": "Mozilla",
+        },
+      },
     },
     "name": "WebStreamrMBG 🌐 1080p",
     "title": "Wake Up Dead Man: A Knives Out Mystery (2025)
-🔗 CloudStream Pro from VidSrc",
-    "url": "https://tmstr4.cloudnestra.com/pl/H4sIAAAAAAAAAwXB0ZKCIBQA0F8CMSf3sTUrAlpQLsYbqE2jWM7WbOLX7zkk6ck2y3ybo_SW4a5zeer7bXbLvWvRBn1Vo5IsAWoPY5SP8SOJeLUQXhWRaY130aGwCEMXi.6Kl2H2JkxnUl66cZ4VoUxpxWC4pvXxFK9aBIZmCdraPiheYVgtqKH_fv_BQJkn4mBqirwu1x7U7lLQn64Ruk44FkdYvZELfwTCVv3xexn7o_7ravXUw27jcTe7cVZmAmG1iupAn3KCeE1ASNyxS6N_W1JK.Sgbvb9HV1jHCwpt9V5NIZBAtK6M3YiCRzUobJrw5Hsc6ykwF04rH8Tiy5A6Avac2MYB_dgV5f.vyM6uQQEAAA--/master.m3u8",
+🔗 RgShows",
+    "url": "https://cdn.1shows.app/e/DBkXNgRLXFBfRllF/master.m3u8",
   },
 ]
 `;

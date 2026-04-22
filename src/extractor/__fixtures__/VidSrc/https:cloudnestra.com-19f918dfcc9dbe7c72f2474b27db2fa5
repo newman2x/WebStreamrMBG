@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Black Mirror (2011) S04E02</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="referrer" content="origin" />
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<style>
+
+    /* scroll */
+    /* Hide the default scrollbar */
+    ::-webkit-scrollbar {
+      position: absolute;
+      width: 5px; /* Width of the scrollbar */
+    }
+    
+    
+    /* Track (the area on which the scrollbar is rendered) */
+    ::-webkit-scrollbar-track {
+      background: rgba(255,255,255,0); /* Track background color */
+    }
+    
+    /* Handle (the draggable part of the scrollbar) */
+    ::-webkit-scrollbar-thumb {
+      background: #888; /* Handle background color */
+      border-radius: 3px; /* Handle border radius */
+    }
+    
+    /* Handle on hover */
+    ::-webkit-scrollbar-thumb:hover {
+      background: #555; /* Handle background color on hover */
+    }
+    
+
+        
+    pjsdiv:has(> #player_parent_settings) {
+        box-shadow: 0 -1px 10px black;
+        border-top-left-radius: 5px !important;
+        border-bottom-left-radius: 5px !important;
+    }
+    
+    
+    .hidden {
+        display:none !important;
+    }
+    
+    
+    
+    #pjs_player_parent_subtitle {
+        display: block !important;
+    }
+    
+    
+    #player_parent , #player {
+        width: 100%;
+        height: 100%;
+    }
+    
+    
+    html {
+        margin:0;
+        width:100%;
+        height:100%;
+    }
+    body {
+        margin:0;
+        width:100%;
+        height:100%;
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    }
+    
+    
+    :root {
+        --plyr-color-main: #e600e6;
+        --webkit-text-track-display: none;
+    }
+    
+    .plyr__menu__container div[role="menu"] {
+        max-height: calc(100vh - 100px) !important;
+        overflow-y: auto !important;
+    }
+    
+    .plyr {
+        height: 100%;
+    }
+    
+    .plyr--full-ui ::-webkit-media-text-track-container {
+        display: var(--webkit-text-track-display);
+    }
+    
+    .plyr__captions {
+        font-size: 21px !important;
+        font-family: Arial !important;
+    }
+    .plyr__controls{
+        z-index: 999999;
+    }
+    .plyr__progress {
+        z-index: 999999;
+    }
+    
+    #player_parent_control_showSubtitles {
+        display: none;
+    }
+    
+    #player_parent_control_unmute_button {
+        opacity: 0.8;
+    }
+    
+    #player_parent_control_unmute_button pjsdiv:nth-child(3) {
+        width:95px !important;
+    }
+    #player_parent_control_unmute_button:hover {
+        opacity: 1;
+    }
+    #player_parent_control_unmute_button::after {
+        content: " UNMUTE";
+        background: #000;
+        padding: 6px 5px 4px 5px;
+        margin-left: 12px;
+        font-size: 12px;
+        margin-top: -12px;
+        position: absolute;
+        border-radius: 3px;
+        font-weight: bold;
+        pointer-events: none;
+    }
+    
+    #subtitles_button img {
+        width: 100%;
+        height: 100%;
+    }
+    
+    
+    .reporting_window {
+        border-top-left-radius: 5px !important;
+        border-bottom-left-radius: 5px !important;
+        box-shadow: 0px -1px 7px black !important;
+        font-size:14px;
+        display: none;
+        color: white;
+        right: 0;
+        position: absolute;
+        width: 100%;
+        bottom: 60px;
+        z-index: 999;
+        overflow:hidden;
+        background: #333333;
+        max-width: 150px !important;
+    }
+    
+    .reporting_window .header {
+        width: 100%;
+        height: 30px;
+    }
+    
+    .reporting_window .header i {
+        font-size: 14px;
+        line-height: 30px;
+        padding: 0 10px;
+    }
+    .reporting_window .header i:hover {
+        cursor: pointer;
+    }
+    
+    
+    .reporting_window .header #close {
+        float: right;
+    }
+    
+    .reporting_window .content {
+        width: 100%;
+        height: calc(100% - 30px);
+        overflow: hidden;
+        overflow-y: auto;
+        font-size: 0.8rem;
+    }
+    
+    .reporting_window .content div {
+        color: white;
+        padding: 0px 5px;
+        overflow-wrap: anywhere;
+    }
+    
+    .reporting_window .content div:hover {
+        cursor: pointer;
+        background-color: #222222;
+    }
+    
+    .reporting_window .content * {
+        cursor: pointer;
+    }
+    
+    .reporting_window #sentReport {
+        margin: 10px;
+    }
+    
+    
+    
+    
+    .subtitles_window {
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+        border-top-left-radius: 5px !important;
+        border-bottom-left-radius: 5px !important;
+        box-shadow: 0px -1px 7px black !important;
+        font-size:14px;
+        display: none;
+        color: white;
+        right: 0;
+        position: absolute;
+        width: 100%;
+        height: calc(100% - 65px);
+        bottom: 60px;
+        z-index: 999;
+        overflow:hidden;
+        background: #333333;
+        max-width: 300px !important;
+    }
+    
+    .subtitles_loader {
+        position: absolute;
+        width: 100%;
+        height: calc(100% - 30px);
+        margin-top: 30px;
+        background: rgba(0,0,0,0.7);
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5em;
+        display: none;
+    }
+    .subtitles_loader::after {
+        content: 'Loading...';
+    }
+    
+    .subtitles_window .header {
+        width: 100%;
+        height: 30px;
+    }
+    
+    .subtitles_window .header i {
+        font-size: 14px;
+        line-height: 30px;
+        padding: 0 10px;
+    }
+    .subtitles_window .header i:hover {
+        cursor: pointer;
+    }
+    
+    .subtitles_window .header #back {
+        float: left;
+        display: none;
+    }
+    .subtitles_window .header #close {
+        float: right;
+    }
+    
+    .subtitles_window .header #title {
+        font-size: 14px;
+        line-height: 30px;
+        font-weight: bold;
+    }
+    
+    .subtitles_window .content {
+        width: 100%;
+        height: calc(100% - 30px);
+        overflow: hidden;
+        overflow-y: auto;
+        font-size: 0.8rem;
+    }
+    
+    .subtitles_window .content div {
+        color: white;
+        padding: 7px 10px;
+        overflow-wrap: anywhere;
+    }
+    
+    .subtitles_window .content div:hover {
+        cursor: pointer;
+        background-color: #222222;
+    } 
+    
+    
+    .subtitles_window .content .subtitle_active {
+        background-color: rgba(255, 255, 255, 0.2);
+    }
+    
+    .subtitles_window .content .lang {
+        font-weight: bold;
+    }
+    
+    
+    
+    #player_parent_control_player_logo svg {
+        width:56px !important;
+        height:22.75px !important;
+    }
+    
+    
+        
+    @media (max-width: 400px) {
+        
+        #player_parent_control_reportingButton {
+            display: none !important;
+        }
+        
+        #player_parent_control_player_logo {
+            display: none !important;
+        }
+    }
+    
+    .loader {
+        top: calc(50% - 24px);
+        left: calc(50% - 24px);
+        position: absolute;
+        width: 48px;
+        height: 48px;
+        border: 5px solid;
+        border-color: #e600e6 transparent;
+        border-radius: 50%;
+        display: none;
+        box-sizing: border-box;
+        animation: rotation 1s linear infinite;
+    }
+    
+    @keyframes rotation {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+    
+    
+</style>
+
+</head>
+<body data-i="2085059" data-s="4" data-e="2">
+    
+    
+    <div id="player_parent">
+    </div>
+    
+    <div id="reporting_content" style="display: none;">
+                
+        
+        <div class='header'>
+            <i id="close" class="fa-solid fa-xmark"></i>
+        </div>
+        <div class='content'>
+            <div>
+                <input type="radio" id="reportError" name="problem" value="file_error" checked="checked">
+                <label for="reportError" >File Error</label><br>
+            </div>
+            <div>
+                <input type="radio" id="reportVideo" name="problem" value="wrong_video">
+                <label for="reportVideo">Wrong Video</label><br>
+            </div>
+            <div>
+                <input type="radio" id="reportAudio" name="problem" value="wrong_audio">
+                <label for="reportAudio">Wrong Audio</label><br>
+            </div>
+            
+            <div>
+                <input id="math" type="hidden" name="math" value="7-7" />
+                <p>
+                    7-7 = <input id="solution" type="number" name="solution" min="0" max="9"/>
+                </p>
+            </div>
+            
+            <button id="sentReport" data-hash="NTM3YWYzOTlmMTcwZjc5Nzc2MDRhMjdkY2Y3Y2NmMzM6ZDBsc2JqRXpObFpRVGl0UlZuSnZVV2x3VnpKS09GazFUMlYwWldsYVZVdDRURk5DYkVvNVRHVmtUMVI2VVZscmRrYzFhRWwwYlhnNU9IcExSekpGTVhKdlIyUkdka3B1TDBaWU5sb3JUVTV0VFRkYWNWTnRia28wUzJ4cFQwTnFOaXQzZVVoTGQyNUVNVEpxWlM5a1FVSkdaRkJDV1ZWUk1XWXZla3h6Um5kWE15dDBSVmhGZVdReVVXZDVWMlpHY0dvMGR5OU1OelZHTW1oSmFsWXJNRVpKUW5OdFdFdzJTMVZ2ZDBWckwyaGthbnAyUVRreFoxVklORXR6ZEZWdVVWVjNhMlpITVZsdGJIZExLM3BGTml0c1V6aG1kME5CZWxaU2JqVjFSbUpyY0ZFeGRESnNPSEJLUVhjelpuSm1ZazFzU25GaWRDc3daVzFIUjJ0UlZESXZabVZQUVVKc2FreFBVbFZZYmtRMVdTdDRZWEp1YXpCSVdVa3hUSHBJWkVkQlVFWTBiRVJaV1V4UlNFWTBSRmRaVTNWTGFWSlhaakpHTjJOU1IwaEtLMU5oV25sNVpFTTFkMkZ6ZDNNeGNVcGtkVzB3YUZCNWNVVnphR3ByVUd4dWNVTkVaRzg0Y1RKRFJ6RnJjVFk0YlhRNE9VaERWMEpqVnpGTlRYRkhSa0kzUms5SGRTc3lNazFhWlRSeGN6TmlLelJQWm5sRmNUbGtlbk5hTURBck4wTnFWVVJRUkRKMGFrMDFOMDB3WWpadmFrcEdZMkkwT0Zkd01VdEVaa0UyWlVobk5tOWxObEJLUmtWcFJHZDJiMDVLZUUxcWRsUmhlWGh0ZUc5c1RFaGxhRXRPYmpsS1lqaElXVFZxU1M5bGNXaGxPV3hHZW5KbVRVdDVWSEJ4WTNCUGJrNVNOM0pRUVVWUlJHeEVjVTkyUmtORk5uaDJkV1JGTkVwMk1HaHRkRTV6T1ZoRlUzQnFkRzgxVW1Gek1saHBValJQV0UxVlZVbGhVaTl6ZDI5ak9EQkVlRE5EVlV0UVdqQkZaRnBPU1d4Rk1GUjVNa2Q1YjBOYVdtYzRNVUphWld0c01EUnJaek5rWWtFNVFVUjZha2RtWjBGTWFuRjJVM0pPTW5wdlpFWnlUV2N3TjJRclFVRjZhVEJDWjFwdmN6SlJaM0ZxYTJodlZHRnFTVkJIUTB0V1VtcFZZM2RqZUdwUFpuSkdSMEpUZFVFNGRHcERUbk5ZT0UwdldIWkVaa3RaVXpaM1kyRm1hMVZYYzIweE5tMWtZa2xrZDBzMGVFRndTbnBTV2pRNU9HVldaamhRWjFwaFZFMVNNRWwzUjJWT2NYWkNUMDFxUTA1M1ZWQjNURXBhZVdSd1RXaEVTelpaTjFOaWMwWmhNR28xYTI5UVYxTnNjM2Q1ZGl0Tk9GWklhblpXVVdocFUwdFZMMjUxY2xaM2JDdDZWazVHWkhkaE1XYzJOSFZoTmpnNVJYazRkVzlVWlU1UmVGZG1hRFpEY2xaV1VqZFVNRmh4YmxGelRVYzVkMWhPYlN0S2NHeDBWMHA0Wm1GclpGWlZOVFU1U1doRVZFZDRXV2c1Wm1zd2VGVnBkVTFTTUZNd1EyYzNNVU5YZGxoUmRIVjVXVFJOV1dJdk9FbERhM1YwV2pSS2VGQXhSbWRqV21aSVpIb3JiWE5GUWpSSWVHMWFOazVCYXpjd1IxcHhSakZ5TDBGV2EzbDNVbG96VEVkTE5GWmFORFEyTm5GTVZYcEhkVVZ6ZUVsbVVXWnBRa04xUlZJeVZUWjFhSGRVUkdVNVlXaHVNelpxT1Voa2FrZEtlRXRpYzI1RVkySktXRmhqZVRsU2RFSmhNM1pLYzJRdlpHWnliVkZsU2xCeU56UnBjVnBIYjJWdWNHRm5kelEwYm5wTmEyOVNaMG93ZEhsNldFb3haV1J2Y0VsaVRqbDNPV2syYTBFNE0yZHNjamN5TURaUVlrTk5aV1ZSV1dwTFZXOWxaVUpwTWpaVlVXbFJkRXh2WjFsMU5DdG1WQ3RySzFSRUwxSXZWblZ6VjFOUmJrSkhSbEZsTkUxdFpEZ3lWRUZuYjFOSlIyUTFXRFp5TWs4dlVGaEtWbVl5VEV0YVRXOVRWbHBYWVd3M1ZGUldZbWxsUXc9PQ--">Sent report</button>
+        </div>
+    </div>
+    
+    <!--
+    <div id="eSfH1IRMyL" style="display:none;">946844e7f35848:7d7g325252525f51678973724:4955844168434148416669637b6:8f744e7g768f7c5f326:545:8:43768b5g5g557:4848436d5e54474g618b6276828e5461498c7:8444427:584b87484d768:8:7:61628e764e53547676795e5b5c5c78547e5f5:895:5469655271638d516e7b7966894f748g5d52414e79495f54586:5468676858796889837b8:6f5841654277685c7845728b7f524g7471856269467e7:5d5g7541884e5262724686614e567c554684768446698689867b5255568484498b7f535568578:4859546:6e5447877b69647f546b8347424f5e576:485d5673664:755:6d7:8c5g645b644c5858774f37514252635:545848614359688252525252525252525:5485495g3385848f75747g3e86478c8f334181827g3g3b448185858971338g713946844e7f33867584827e7g32525262535:4386835874416363497f378f7871425d7964878453495g67816b6958757365524d7458548:6d5g574b5:8:425e728b8345594648844978735545414:41458d52714284826e54687:6884685b8748737f3371635:5:747f374b66798d7b787e775c5e778b6b535b5b5445754c76644c737c778e728g72674249428742478962648c5b844686698e7f5854644:424866686:7g63685b66738647886:6g6b7c7145598b6676634b54757:54457466897b7f754g53846b648b876b776347646772524g597:825d564988876d5587695f5:635454438f5289744f3e5d78537546458749725948774f7:51635d5f736:6d7:634356696b76668976434g5:4g74598g54427586778:63774:848447874:895:516:45546g564:5e536957476653575:584b665b5e746e788e5686655c575b6b667c77584b6f7f3:4d5655684886527b545557568b8:565769837274685d7g557f5:89645947514252635:555c544:8e54488252525252525252525:5485495g3d718g3e85478c8f324385848e758g3g3b448185858971338g713946844e7f33867584827e7g32525262535:4386835874416363497f378f7871425d7964878453495g67816b6958757365524d7458548:6d5g574b5:8:425e728b8345594648844978735545414:41458d52714284826e54687:6884685b8748737f3371635:5:747f374b66798d7b787e775c5e778b6b535b5b5445754c76644c737c778e728g72674249428742478962648c5b844686698e7f5854644:424866686:7g63685b66738647886:6g6b7c7145598b6676634b54757:54457466897b7f754g53846b648b876b776347646772524g597:825d564988876d5587695f5:635454438f5289744f3e5d78537546458749725948774f7:51635d5f736:6d7:634356696b76668976434g5:4g74598g54427586778:63774:848447874:895:516:45546g564:5e536957476653575:584b665b5e746e788e5686655c575b6b667c77584b6f7f3:4d5655684886527b545557568b8:565769837274685d7g557f5:89645947514252635:555c544:8e54488252525252525252525:5485495g3d718g3e84478c8f324385848e758g3g3b448185858971338g713946844e7f33867584827e7g32525262535:4386835874416363497f378f7871425d7964878453495g67816b6958757365524d7458548:6d5g574b5:8:425e728b8345594648844978735545414:41458d52714284826e54687:6884685b8748737f3371635:5:747f374b66798d7b787e775c5e778b6b535b5b5445754c76644c737c778e728g72674249428742478962648c5b844686698e7f5854644:424866686:7g63685b66738647886:6g6b7c7145598b6676634b54757:54457466897b7f754g53846b648b876b776347646772524g597:825d564988876d5587695f5:635454438f5289744f3e5d78537546458749725948774f7:51635d5f736:6d7:634356696b76668976434g5:4g74598g54427586778:63774:848447874:895:516:45546g564:5e536957476653575:584b665b5e746e788e5686655c575b6b667c77584b6f7f3:4d5655684886527b545557568b8:565769837274685d7g557f5:89645947514252635:555c544:8e54488252525252525252525:5485495g3d718g3e83478c8f324385848e758g3g3b448185858971338g713946844e7f33867584827e7g32525262535:4386835874416363497f378f7871425d7964878453495g67816b6958757365524d7458548:6d5g574b5:8:425e728b8345594648844978735545414:41458d52714284826e54687:6884685b8748737f3371635:5:747f374b66798d7b787e775c5e778b6b535b5b5445754c76644c737c778e728g72674249428742478962648c5b844686698e7f5854644:424866686:7g63685b66738647886:6g6b7c7145598b6676634b54757:54457466897b7f754g53846b648b876b776347646772524g597:825d564988876d5587695f5:635454438f5289744f3e5d78537546458749725948774f7:51635d5f736:6d7:634356696b76668976434g5:4g74598g54427586778:63774:848447874:895:516:45546g564:5e536957476653575:584b665b5e746e788e5686655c575b6b667c77584b6f7f3:4d5655684886527b545557568b8:565769837274685d7g557f5:89645947514252635:555c544:8e54488252525252525252525:5485495g3d718g3e82478c8f324385848e758g3g3b448185858971338g713946844e7f33867584827e7g3e32525253565c7f53735d51655g778671494e7:6g5e544c7247595861488e51426b68676:444f3958787b656347464748668648645e755f7b5575434:6d524:437e747c7g6b625548618e764752798352595188485e7f395845655c59714c788g538f585:81434:6572764453798956528b616c5g5c554:456c7d7e5772755787794363726f75697459475d7c5b875b5:887g6:838d7455727g558f75636g667352564f59837g5:8e534976625f35668b767:668c5f384d7946566b526d5d73778368425779847:7d75657c775b845146844343438g55448c5g78627364657g566946896:7b88795b5c72886:598g525f534883844684824b766g5c7g5f788958524e785c7561687d5f748b7e5b665b8579454955594b664:4987496951847g757183418255595978598d7745596g5272866d5676635g6f5:414f796d757869567458638942514g637944545f77554e798145416867864:6:7787554258735:545377684f54488252525252525252525:5485495g3d718g3e85478c8f324385848e758g3g3b448185858971338g713946844e7f33867584827e7g3e32525253565c7f53735d51655g778671494e7:6g5e544c7247595861488e51426b68676:444f3958787b656347464748668648645e755f7b5575434:6d524:437e747c7g6b625548618e764752798352595188485e7f395845655c59714c788g538f585:81434:6572764453798956528b616c5g5c554:456c7d7e5772755787794363726f75697459475d7c5b875b5:887g6:838d7455727g558f75636g667352564f59837g5:8e534976625f35668b767:668c5f384d7946566b526d5d73778368425779847:7d75657c775b845146844343438g55448c5g78627364657g566946896:7b88795b5c72886:598g525f534883844684824b766g5c7g5f788958524e785c7561687d5f748b7e5b665b8579454955594b664:4987496951847g757183418255595978598d7745596g5272866d5676635g6f5:414f796d757869567458638942514g637944545f77554e798145416867864:6:7787554258735:545377684f54488252525252525252525:5485495g3d718g3e84478c8f324385848e758g3g3b448185858971338g713946844e7f33867584827e7g3e32525253565c7f53735d51655g778671494e7:6g5e544c7247595861488e51426b68676:444f3958787b656347464748668648645e755f7b5575434:6d524:437e747c7g6b625548618e764752798352595188485e7f395845655c59714c788g538f585:81434:6572764453798956528b616c5g5c554:456c7d7e5772755787794363726f75697459475d7c5b875b5:887g6:838d7455727g558f75636g667352564f59837g5:8e534976625f35668b767:668c5f384d7946566b526d5d73778368425779847:7d75657c775b845146844343438g55448c5g78627364657g566946896:7b88795b5c72886:598g525f534883844684824b766g5c7g5f788958524e785c7561687d5f748b7e5b665b8579454955594b664:4987496951847g757183418255595978598d7745596g5272866d5676635g6f5:414f796d757869567458638942514g637944545f77554e798145416867864:6:7787554258735:545377684f54488252525252525252525:5485495g3d718g3e83478c8f324385848e758g3g3b448185858971338g713946844e7f33867584827e7g3e32525253565c7f53735d51655g778671494e7:6g5e544c7247595861488e51426b68676:444f3958787b656347464748668648645e755f7b5575434:6d524:437e747c7g6b625548618e764752798352595188485e7f395845655c59714c788g538f585:81434:6572764453798956528b616c5g5c554:456c7d7e5772755787794363726f75697459475d7c5b875b5:887g6:838d7455727g558f75636g667352564f59837g5:8e534976625f35668b767:668c5f384d7946566b526d5d73778368425779847:7d75657c775b845146844343438g55448c5g78627364657g566946896:7b88795b5c72886:598g525f534883844684824b766g5c7g5f788958524e785c7561687d5f748b7e5b665b8579454955594b664:4987496951847g757183418255595978598d7745596g5272866d5676635g6f5:414f796d757869567458638942514g637944545f77554e798145416867864:6:7787554258735:545377684f54488252525252525252525:5485495g3d718g3e82478c8f324385848e758g3g3b44818585897</div>
+    -->
+    
+    
+        
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.0.3/pako.min.js"></script>
+    
+    
+    <srcipt src="https://unpkg.com/pako@2.1.0/dist/pako.min.js"></srcipt>
+
+                
+    <script src="/pjs/pjs_main_drv_cast.030226.js?_=1770086161"></script>
+    
+    <script src="/srt2vtt.js?t=1744906949"></script>
+    
+
+
+    
+    
+    <script src="/subtitles_pjs_24.04.js?t=1744906949"></script>
+    
+    <script src="/reporting.js?t=1744906950"></script>
+    
+    
+    <script src="/tprs/src/parser.js?_=1744906890"></script>
+    <script src="/tprs/src/handlers.js?_=1744906890"></script>
+    <script src="/tprs/index.js?_=1744906890"></script>
+    
+    <script src="/sbx.js?t=1751380596"></script>
+        
+    <!--
+    <script src="/sV05kUlNvOdOxvtC/04ce07a8c2a05e7cd0a83c172996261b.js?_=1744906950"></script>
+    -->
+
+    <script>
+    
+    
+        
+        var ds_langs = [];
+        var ds_lang = false;
+        var sub_shown_lang = "";
+        
+        
+        
+        
+        var flnm = removeExtension(atob('QmxhY2suTWlycm9yLlMwNC4xMDgwcC5CbHVSYXkueDI2NC1TSE9SVEJSRUhEL0JsYWNrLk1pcnJvci5TMDRFMDIuMTA4MHAuQmx1UmF5LngyNjQtU0hPUlRCUkVIRC5ta3Y='));
+        
+        
+        flnm = flnm.split("/");
+        var flnm_data = [];
+        for (const key in flnm) {
+            flnm_data.push(tprs.parse(flnm[key]));
+        }
+        
+        var pljs_sub_lang = localStorage.getItem("pljssubtitle");
+        if(typeof pljs_sub_lang === 'string' || pljs_sub_lang instanceof String){
+            for (let lang of sub_langs) {
+                var tmp_lang_regexp = new RegExp(lang.LanguageName, "i");
+                if(tmp_lang_regexp.test(pljs_sub_lang)){
+                    ds_lang = lang;
+                    break;
+                }
+            }
+        }
+    
+        
+        
+        
+    
+                ds_lang = get_lang_from_iso639(JSON.parse('[]')[0]);
+                
+                
+        
+        var pass_path = "//tmstr1.cloudnestra.com/rt_ping.php";
+        
+        var ping_interval = false;
+        
+        
+        var subs_shown = false;
+        var the_subtitles = [];
+        
+        var default_subtitles = "";
+          
+                    default_subtitles = "[]";
+                    
+        
+        
+        
+                var db_subs = [];
+                
+        
+        var lc_on = IsLcOn();
+        
+        var current_sub_name = "cs_"+$("body").data("i");
+        
+        if($("body").data("s") && $("body").data("e")){
+            current_sub_name += "_"+$("body").data("s")+"x"+$("body").data("e");
+        }
+        
+        if(default_subtitles.length > 0){
+            the_subtitles = default_subtitles.split(",");
+            //player.api("subtitle",default_subtitles);
+        }
+        
+        
+        //var player = new Playerjs({id:"player_parent", cuid:"71ec1cf7bbf3d784501b7a7cc8dcf34f",file:"", poster:"//image.tmdb.org/t/p/w780/dg3OindVAGZBjlT3xYKqIAdukPL.jpg" , ready:"PlayerReady" , autoplay:1 , subtitle: default_subtitles});
+        
+                
+        
+        
+        
+                var player = new Playerjs({id:"player_parent", file: "https://tmstr1.{v1}/pl/H4sIAAAAAAAAAw3N7VbCIBgA4FviY5vWP40xm4FnCC8b_0A8rWCeHWdlXn09N_BUeLUqaOXD6lxGhHDAp2pdocpHX6x95Z8DH48dzEZMjsnLgPTkGm1GHwnOkOUj1su3rw2NAOxIWqkJHgziXu8UOdSRaWoKs4Or223u0CzFkdTlicxfA7RvblLQJUE8l7.KuYejuT.AUh2MyObxN5ABe_RTntOadClry_gyJFzKlF8ChTnQbR8fvDafMlkT94KOKPZqEHxbC5adY20yGNrOwk0hKDT7H.mG7pHABxaF5mpW4AZ_kcmb91LY24dJnDmCW5uW6562TZggH.39VWZQ0Mw0WHF1k3MOYm80evoDPLBbNkEBAAA-/master.m3u8 or https://tmstr1.{v2}/pl/H4sIAAAAAAAAAw3N7VbCIBgA4FviY5vWP40xm4FnCC8b_0A8rWCeHWdlXn09N_BUeLUqaOXD6lxGhHDAp2pdocpHX6x95Z8DH48dzEZMjsnLgPTkGm1GHwnOkOUj1su3rw2NAOxIWqkJHgziXu8UOdSRaWoKs4Or223u0CzFkdTlicxfA7RvblLQJUE8l7.KuYejuT.AUh2MyObxN5ABe_RTntOadClry_gyJFzKlF8ChTnQbR8fvDafMlkT94KOKPZqEHxbC5adY20yGNrOwk0hKDT7H.mG7pHABxaF5mpW4AZ_kcmb91LY24dJnDmCW5uW6562TZggH.39VWZQ0Mw0WHF1k3MOYm80evoDPLBbNkEBAAA-/master.m3u8 or https://tmstr1.{v3}/pl/H4sIAAAAAAAAAw3N7VbCIBgA4FviY5vWP40xm4FnCC8b_0A8rWCeHWdlXn09N_BUeLUqaOXD6lxGhHDAp2pdocpHX6x95Z8DH48dzEZMjsnLgPTkGm1GHwnOkOUj1su3rw2NAOxIWqkJHgziXu8UOdSRaWoKs4Or223u0CzFkdTlicxfA7RvblLQJUE8l7.KuYejuT.AUh2MyObxN5ABe_RTntOadClry_gyJFzKlF8ChTnQbR8fvDafMlkT94KOKPZqEHxbC5adY20yGNrOwk0hKDT7H.mG7pHABxaF5mpW4AZ_kcmb91LY24dJnDmCW5uW6562TZggH.39VWZQ0Mw0WHF1k3MOYm80evoDPLBbNkEBAAA-/master.m3u8 or https://tmstr1.{v4}/pl/H4sIAAAAAAAAAw3N7VbCIBgA4FviY5vWP40xm4FnCC8b_0A8rWCeHWdlXn09N_BUeLUqaOXD6lxGhHDAp2pdocpHX6x95Z8DH48dzEZMjsnLgPTkGm1GHwnOkOUj1su3rw2NAOxIWqkJHgziXu8UOdSRaWoKs4Or223u0CzFkdTlicxfA7RvblLQJUE8l7.KuYejuT.AUh2MyObxN5ABe_RTntOadClry_gyJFzKlF8ChTnQbR8fvDafMlkT94KOKPZqEHxbC5adY20yGNrOwk0hKDT7H.mG7pHABxaF5mpW4AZ_kcmb91LY24dJnDmCW5uW6562TZggH.39VWZQ0Mw0WHF1k3MOYm80evoDPLBbNkEBAAA-/master.m3u8 or https://tmstr1.{v1}/pl/H4sIAAAAAAAAAw3My3KDIBQA0F8CXyNdOlGSabxVEIzuFDCJaEw7TEL9.nZ7FkeZZFKDUuMwmSmJEZ7IFBEV6HRMI5OSD9PIHy6v3sy6bYveta3OxCo9O25huUjXUB2YlYRnLBPIn6g8Ah6t54bGlM.3hqNr3CBYNHVtLVwx5LAyhO1AfSV2VjVzsZSrO4njhuSd3IdcJ2UeZxD0kj_YWv5reZGR_iWUW193SGNmxUu3zKsQXv16q816Qoqmvkbk3Uk4d3JJBJZvmKFmgjlxeZ6.ciIBPb.bg6zGSwYgSMQsq0aLt09044Bgh3w58D2zqmA9yJ6OLYsGCl1DRdgHZPv_H2CvsXlA0gnv.h2RP3gBur9BAQAA/master.m3u8 or https://tmstr1.{v2}/pl/H4sIAAAAAAAAAw3My3KDIBQA0F8CXyNdOlGSabxVEIzuFDCJaEw7TEL9.nZ7FkeZZFKDUuMwmSmJEZ7IFBEV6HRMI5OSD9PIHy6v3sy6bYveta3OxCo9O25huUjXUB2YlYRnLBPIn6g8Ah6t54bGlM.3hqNr3CBYNHVtLVwx5LAyhO1AfSV2VjVzsZSrO4njhuSd3IdcJ2UeZxD0kj_YWv5reZGR_iWUW193SGNmxUu3zKsQXv16q816Qoqmvkbk3Uk4d3JJBJZvmKFmgjlxeZ6.ciIBPb.bg6zGSwYgSMQsq0aLt09044Bgh3w58D2zqmA9yJ6OLYsGCl1DRdgHZPv_H2CvsXlA0gnv.h2RP3gBur9BAQAA/master.m3u8 or https://tmstr1.{v3}/pl/H4sIAAAAAAAAAw3My3KDIBQA0F8CXyNdOlGSabxVEIzuFDCJaEw7TEL9.nZ7FkeZZFKDUuMwmSmJEZ7IFBEV6HRMI5OSD9PIHy6v3sy6bYveta3OxCo9O25huUjXUB2YlYRnLBPIn6g8Ah6t54bGlM.3hqNr3CBYNHVtLVwx5LAyhO1AfSV2VjVzsZSrO4njhuSd3IdcJ2UeZxD0kj_YWv5reZGR_iWUW193SGNmxUu3zKsQXv16q816Qoqmvkbk3Uk4d3JJBJZvmKFmgjlxeZ6.ciIBPb.bg6zGSwYgSMQsq0aLt09044Bgh3w58D2zqmA9yJ6OLYsGCl1DRdgHZPv_H2CvsXlA0gnv.h2RP3gBur9BAQAA/master.m3u8 or https://tmstr1.{v4}/pl/H4sIAAAAAAAAAw3My3KDIBQA0F8CXyNdOlGSabxVEIzuFDCJaEw7TEL9.nZ7FkeZZFKDUuMwmSmJEZ7IFBEV6HRMI5OSD9PIHy6v3sy6bYveta3OxCo9O25huUjXUB2YlYRnLBPIn6g8Ah6t54bGlM.3hqNr3CBYNHVtLVwx5LAyhO1AfSV2VjVzsZSrO4njhuSd3IdcJ2UeZxD0kj_YWv5reZGR_iWUW193SGNmxUu3zKsQXv16q816Qoqmvkbk3Uk4d3JJBJZvmKFmgjlxeZ6.ciIBPb.bg6zGSwYgSMQsq0aLt09044Bgh3w58D2zqmA9yJ6OLYsGCl1DRdgHZPv_H2CvsXlA0gnv.h2RP3gBur9BAQAA/master.m3u8 or https://app2.{v5}/cdnstr/H4sIAAAAAAAAAwXB0W7CIBQA0F.6gGK3ZC_KylYDi5ReLG9VMN162zSNcXZfv3MYSHG9vGTBNjx3suDAJexuxU3ucu4KeM0Uu1aQM7p4oLIme8QTpco1Njqd7kGVa4P7NYzbxwXgGVWSIWCNH8m01LOsn8uXjmPLrPaDXSIHyNMcGkKJMHeecBM5mqPYiyul76z7Ia33ykx0SMquaZp_63MLR779dOOJub9yCIQ.Knuom3nyZbXUP7027P3tH91bhvPNAAAA/list.m3u8" , cuid:"71ec1cf7bbf3d784501b7a7cc8dcf34f",poster:"//image.tmdb.org/t/p/w780/dg3OindVAGZBjlT3xYKqIAdukPL.jpg" , ready:"PlayerReady" , autoplay:1 , subtitle: default_subtitles , "default_quality":"max"});    
+                
+        
+        
+        if(player.api("subtitles").length > 1 && ds_lang){
+            setStartSubtitle();
+        }else if(player.api("subtitles").length === 1){
+            player.api("subtitle" , player.api("subtitles").length-1);
+        }
+        
+                
+        
+        
+        if(lc_on){
+            current_sub = localStorage.getItem(current_sub_name);
+            if(typeof current_sub === 'string' && isJson(current_sub)){
+                current_sub = JSON.parse(current_sub);
+                if(current_sub.lang_short != sub_shown_lang){
+                    addSubtitle(current_sub);
+                }
+            }
+        }
+        
+        var video = $("#player_parent").find("video")[0];
+    
+    
+        
+                var watched = {
+            value: 0,
+            report: 0,
+            interval: false ,
+            duration: 0,
+            set: function (value) {
+                this.value = value;
+                this.onChange();
+            },
+            onChange: function(){
+                //console.log(this.value);
+                //console.log(this.duration);
+                if(this.duration > 0){
+                    if(this.report < 5){
+                        var limit = this.duration*0.05;
+                        if(limit < 30){
+                            limit = 30
+                        }
+                        if(this.value > limit){
+                            this.report = 5;
+                            $.get("/fsdD/NTM3YWYzOTlmMTcwZjc5Nzc2MDRhMjdkY2Y3Y2NmMzM6ZDBsc2JqRXpObFpRVGl0UlZuSnZVV2x3VnpKS09GazFUMlYwWldsYVZVdDRURk5DYkVvNVRHVmtUMVI2VVZscmRrYzFhRWwwYlhnNU9IcExSekpGTVhKdlIyUkdka3B1TDBaWU5sb3JUVTV0VFRkYWNWTnRia28wUzJ4cFQwTnFOaXQzZVVoTGQyNUVNVEpxWlM5a1FVSkdaRkJDV1ZWUk1XWXZla3h6Um5kWE15dDBSVmhGZVdReVVXZDVWMlpHY0dvMGR5OU1OelZHTW1oSmFsWXJNRVpKUW5OdFdFdzJTMVZ2ZDBWckwyaGthbnAyUVRreFoxVklORXR6ZEZWdVVWVjNhMlpITVZsdGJIZExLM3BGTml0c1V6aG1kME5CZWxaU2JqVjFSbUpyY0ZFeGRESnNPSEJLUVhjelpuSm1ZazFzU25GaWRDc3daVzFIUjJ0UlZESXZabVZQUVVKc2FreFBVbFZZYmtRMVdTdDRZWEp1YXpCSVdVa3hUSHBJWkVkQlVFWTBiRVJaV1V4UlNFWTBSRmRaVTNWTGFWSlhaakpHTjJOU1IwaEtLMU5oV25sNVpFTTFkMkZ6ZDNNeGNVcGtkVzB3YUZCNWNVVnphR3ByVUd4dWNVTkVaRzg0Y1RKRFJ6RnJjVFk0YlhRNE9VaERWMEpqVnpGTlRYRkhSa0kzUms5SGRTc3lNazFhWlRSeGN6TmlLelJQWm5sRmNUbGtlbk5hTURBck4wTnFWVVJRUkRKMGFrMDFOMDB3WWpadmFrcEdZMkkwT0Zkd01VdEVaa0UyWlVobk5tOWxObEJLUmtWcFJHZDJiMDVLZUUxcWRsUmhlWGh0ZUc5c1RFaGxhRXRPYmpsS1lqaElXVFZxU1M5bGNXaGxPV3hHZW5KbVRVdDVWSEJ4WTNCUGJrNVNOM0pRUVVWUlJHeEVjVTkyUmtORk5uaDJkV1JGTkVwMk1HaHRkRTV6T1ZoRlUzQnFkRzgxVW1Gek1saHBValJQV0UxVlZVbGhVaTl6ZDI5ak9EQkVlRE5EVlV0UVdqQkZaRnBPU1d4Rk1GUjVNa2Q1YjBOYVdtYzRNVUphWld0c01EUnJaek5rWWtFNVFVUjZha2RtWjBGTWFuRjJVM0pPTW5wdlpFWnlUV2N3TjJRclFVRjZhVEJDWjFwdmN6SlJaM0ZxYTJodlZHRnFTVkJIUTB0V1VtcFZZM2RqZUdwUFpuSkdSMEpUZFVFNGRHcERUbk5ZT0UwdldIWkVaa3RaVXpaM1kyRm1hMVZYYzIweE5tMWtZa2xrZDBzMGVFRndTbnBTV2pRNU9HVldaamhRWjFwaFZFMVNNRWwzUjJWT2NYWkNUMDFxUTA1M1ZWQjNURXBhZVdSd1RXaEVTelpaTjFOaWMwWmhNR28xYTI5UVYxTnNjM2Q1ZGl0Tk9GWklhblpXVVdocFUwdFZMMjUxY2xaM2JDdDZWazVHWkhkaE1XYzJOSFZoTmpnNVJYazRkVzlVWlU1UmVGZG1hRFpEY2xaV1VqZFVNRmh4YmxGelRVYzVkMWhPYlN0S2NHeDBWMHA0Wm1GclpGWlZOVFU1U1doRVZFZDRXV2c1Wm1zd2VGVnBkVTFTTUZNd1EyYzNNVU5YZGxoUmRIVjVXVFJOV1dJdk9FbERhM1YwV2pSS2VGQXhSbWRqV21aSVpIb3JiWE5GUWpSSWVHMWFOazVCYXpjd1IxcHhSakZ5TDBGV2EzbDNVbG96VEVkTE5GWmFORFEyTm5GTVZYcEhkVVZ6ZUVsbVVXWnBRa04xUlZJeVZUWjFhSGRVUkdVNVlXaHVNelpxT1Voa2FrZEtlRXRpYzI1RVkySktXRmhqZVRsU2RFSmhNM1pLYzJRdlpHWnliVkZsU2xCeU56UnBjVnBIYjJWdWNHRm5kelEwYm5wTmEyOVNaMG93ZEhsNldFb3haV1J2Y0VsaVRqbDNPV2syYTBFNE0yZHNjamN5TURaUVlrTk5aV1ZSV1dwTFZXOWxaVUpwTWpaVlVXbFJkRXh2WjFsMU5DdG1WQ3RySzFSRUwxSXZWblZ6VjFOUmJrSkhSbEZsTkUxdFpEZ3lWRUZuYjFOSlIyUTFXRFp5TWs4dlVGaEtWbVl5VEV0YVRXOVRWbHBYWVd3M1ZGUldZbWxsUXc9PQ--");
+                        }
+                        /*
+                        if(this.value > (this.duration*0.05)){
+                            this.report = 5;
+                            $.get("/vsdV/NTM3YWYzOTlmMTcwZjc5Nzc2MDRhMjdkY2Y3Y2NmMzM6ZDBsc2JqRXpObFpRVGl0UlZuSnZVV2x3VnpKS09GazFUMlYwWldsYVZVdDRURk5DYkVvNVRHVmtUMVI2VVZscmRrYzFhRWwwYlhnNU9IcExSekpGTVhKdlIyUkdka3B1TDBaWU5sb3JUVTV0VFRkYWNWTnRia28wUzJ4cFQwTnFOaXQzZVVoTGQyNUVNVEpxWlM5a1FVSkdaRkJDV1ZWUk1XWXZla3h6Um5kWE15dDBSVmhGZVdReVVXZDVWMlpHY0dvMGR5OU1OelZHTW1oSmFsWXJNRVpKUW5OdFdFdzJTMVZ2ZDBWckwyaGthbnAyUVRreFoxVklORXR6ZEZWdVVWVjNhMlpITVZsdGJIZExLM3BGTml0c1V6aG1kME5CZWxaU2JqVjFSbUpyY0ZFeGRESnNPSEJLUVhjelpuSm1ZazFzU25GaWRDc3daVzFIUjJ0UlZESXZabVZQUVVKc2FreFBVbFZZYmtRMVdTdDRZWEp1YXpCSVdVa3hUSHBJWkVkQlVFWTBiRVJaV1V4UlNFWTBSRmRaVTNWTGFWSlhaakpHTjJOU1IwaEtLMU5oV25sNVpFTTFkMkZ6ZDNNeGNVcGtkVzB3YUZCNWNVVnphR3ByVUd4dWNVTkVaRzg0Y1RKRFJ6RnJjVFk0YlhRNE9VaERWMEpqVnpGTlRYRkhSa0kzUms5SGRTc3lNazFhWlRSeGN6TmlLelJQWm5sRmNUbGtlbk5hTURBck4wTnFWVVJRUkRKMGFrMDFOMDB3WWpadmFrcEdZMkkwT0Zkd01VdEVaa0UyWlVobk5tOWxObEJLUmtWcFJHZDJiMDVLZUUxcWRsUmhlWGh0ZUc5c1RFaGxhRXRPYmpsS1lqaElXVFZxU1M5bGNXaGxPV3hHZW5KbVRVdDVWSEJ4WTNCUGJrNVNOM0pRUVVWUlJHeEVjVTkyUmtORk5uaDJkV1JGTkVwMk1HaHRkRTV6T1ZoRlUzQnFkRzgxVW1Gek1saHBValJQV0UxVlZVbGhVaTl6ZDI5ak9EQkVlRE5EVlV0UVdqQkZaRnBPU1d4Rk1GUjVNa2Q1YjBOYVdtYzRNVUphWld0c01EUnJaek5rWWtFNVFVUjZha2RtWjBGTWFuRjJVM0pPTW5wdlpFWnlUV2N3TjJRclFVRjZhVEJDWjFwdmN6SlJaM0ZxYTJodlZHRnFTVkJIUTB0V1VtcFZZM2RqZUdwUFpuSkdSMEpUZFVFNGRHcERUbk5ZT0UwdldIWkVaa3RaVXpaM1kyRm1hMVZYYzIweE5tMWtZa2xrZDBzMGVFRndTbnBTV2pRNU9HVldaamhRWjFwaFZFMVNNRWwzUjJWT2NYWkNUMDFxUTA1M1ZWQjNURXBhZVdSd1RXaEVTelpaTjFOaWMwWmhNR28xYTI5UVYxTnNjM2Q1ZGl0Tk9GWklhblpXVVdocFUwdFZMMjUxY2xaM2JDdDZWazVHWkhkaE1XYzJOSFZoTmpnNVJYazRkVzlVWlU1UmVGZG1hRFpEY2xaV1VqZFVNRmh4YmxGelRVYzVkMWhPYlN0S2NHeDBWMHA0Wm1GclpGWlZOVFU1U1doRVZFZDRXV2c1Wm1zd2VGVnBkVTFTTUZNd1EyYzNNVU5YZGxoUmRIVjVXVFJOV1dJdk9FbERhM1YwV2pSS2VGQXhSbWRqV21aSVpIb3JiWE5GUWpSSWVHMWFOazVCYXpjd1IxcHhSakZ5TDBGV2EzbDNVbG96VEVkTE5GWmFORFEyTm5GTVZYcEhkVVZ6ZUVsbVVXWnBRa04xUlZJeVZUWjFhSGRVUkdVNVlXaHVNelpxT1Voa2FrZEtlRXRpYzI1RVkySktXRmhqZVRsU2RFSmhNM1pLYzJRdlpHWnliVkZsU2xCeU56UnBjVnBIYjJWdWNHRm5kelEwYm5wTmEyOVNaMG93ZEhsNldFb3haV1J2Y0VsaVRqbDNPV2syYTBFNE0yZHNjamN5TURaUVlrTk5aV1ZSV1dwTFZXOWxaVUpwTWpaVlVXbFJkRXh2WjFsMU5DdG1WQ3RySzFSRUwxSXZWblZ6VjFOUmJrSkhSbEZsTkUxdFpEZ3lWRUZuYjFOSlIyUTFXRFp5TWs4dlVGaEtWbVl5VEV0YVRXOVRWbHBYWVd3M1ZGUldZbWxsUXc9PQ--");
+                        }
+                        */
+                    }
+                    
+                }
+            },
+            setDur: function(dur){
+                this.duration = dur;
+            }
+        }
+                
+        function PlayerReady(){
+            gen_subs_el();
+            gen_reporting_el();
+        }
+    
+    
+            
+        var pm_player_data = {type:"PLAYER_EVENT"};
+        var pm_time_last_update = 0;
+        var pm_time_last_update_use = false;
+        
+        pm_player_data.data = {
+            imdbId: "tt2085059",
+            tmdbId: 42009,
+            type: "tv",
+            season: 4,
+            episode: 2,
+            currentTime: 0,
+            duration: 0
+        };
+    
+        function PlayerjsEvents(event,id,data){
+            
+            if(event=="play"){
+                if(!ping_interval)
+                    restart_ping_interval();
+                
+                pm_player_data.data.event = "play";
+                window.parent.postMessage(pm_player_data , '*');
+                //console.log(pm_player_data);
+                
+                if(!watched.interval){
+                    watched.interval = setInterval(function(){
+                        if(player.api("playing")){
+                            watched.set(watched.value+1);
+                            if(watched.value % 60 == 0){
+                                //$.get("/watched");
+                            }
+                        }
+                    },1000);
+                }
+            }
+            
+            if(event == "pause"){
+                clearInterval(ping_interval);
+                ping_interval = false;
+                pm_player_data.data.event = "pause";
+                window.parent.postMessage(pm_player_data , '*');
+                //console.log(pm_player_data);
+            }
+            
+            if(event == "time"){
+                if((Date.now() - pm_time_last_update) > 5000){
+                    pm_time_last_update = Date.now();
+                    pm_player_data.data.event = "timeupdate";
+                    pm_player_data.data.currentTime = parseInt(player.api("time"));
+                    window.parent.postMessage(pm_player_data , '*');
+                }
+            }
+            
+            if(event == "end"){
+                clearInterval(ping_interval);
+                ping_interval = false;
+                pm_player_data.data.event = "ended";
+                pm_player_data.data.currentTime = parseInt(player.api("duration"));
+                window.parent.postMessage(pm_player_data , '*');
+                player.api("pause");
+                //console.log(pm_player_data);
+                
+                            }
+            
+            if(event == "seek"){
+                pm_player_data.data.event = "seeked";
+                pm_player_data.data.currentTime = parseInt(player.api("time"));
+                window.parent.postMessage(pm_player_data , '*');
+                //console.log(pm_player_data);
+            }
+            
+            
+            if(event=="networkErrorHls"){
+                data_parsed = JSON.parse(data);
+                if(data_parsed.details == "fragLoadError" && data_parsed.fatal && watched.value < 60){
+                    // checkAndLogUrlStatus();
+                    // logToServerAndRedirect(pm_player_data);
+                    // window.location.replace("https://cloudnestra.comNTM3YWYzOTlmMTcwZjc5Nzc2MDRhMjdkY2Y3Y2NmMzM6ZDBsc2JqRXpObFpRVGl0UlZuSnZVV2x3VnpKS09GazFUMlYwWldsYVZVdDRURk5DYkVvNVRHVmtUMVI2VVZscmRrYzFhRWwwYlhnNU9IcExSekpGTVhKdlIyUkdka3B1TDBaWU5sb3JUVTV0VFRkYWNWTnRia28wUzJ4cFQwTnFOaXQzZVVoTGQyNUVNVEpxWlM5a1FVSkdaRkJDV1ZWUk1XWXZla3h6Um5kWE15dDBSVmhGZVdReVVXZDVWMlpHY0dvMGR5OU1OelZHTW1oSmFsWXJNRVpKUW5OdFdFdzJTMVZ2ZDBWckwyaGthbnAyUVRreFoxVklORXR6ZEZWdVVWVjNhMlpITVZsdGJIZExLM3BGTml0c1V6aG1kME5CZWxaU2JqVjFSbUpyY0ZFeGRESnNPSEJLUVhjelpuSm1ZazFzU25GaWRDc3daVzFIUjJ0UlZESXZabVZQUVVKc2FreFBVbFZZYmtRMVdTdDRZWEp1YXpCSVdVa3hUSHBJWkVkQlVFWTBiRVJaV1V4UlNFWTBSRmRaVTNWTGFWSlhaakpHTjJOU1IwaEtLMU5oV25sNVpFTTFkMkZ6ZDNNeGNVcGtkVzB3YUZCNWNVVnphR3ByVUd4dWNVTkVaRzg0Y1RKRFJ6RnJjVFk0YlhRNE9VaERWMEpqVnpGTlRYRkhSa0kzUms5SGRTc3lNazFhWlRSeGN6TmlLelJQWm5sRmNUbGtlbk5hTURBck4wTnFWVVJRUkRKMGFrMDFOMDB3WWpadmFrcEdZMkkwT0Zkd01VdEVaa0UyWlVobk5tOWxObEJLUmtWcFJHZDJiMDVLZUUxcWRsUmhlWGh0ZUc5c1RFaGxhRXRPYmpsS1lqaElXVFZxU1M5bGNXaGxPV3hHZW5KbVRVdDVWSEJ4WTNCUGJrNVNOM0pRUVVWUlJHeEVjVTkyUmtORk5uaDJkV1JGTkVwMk1HaHRkRTV6T1ZoRlUzQnFkRzgxVW1Gek1saHBValJQV0UxVlZVbGhVaTl6ZDI5ak9EQkVlRE5EVlV0UVdqQkZaRnBPU1d4Rk1GUjVNa2Q1YjBOYVdtYzRNVUphWld0c01EUnJaek5rWWtFNVFVUjZha2RtWjBGTWFuRjJVM0pPTW5wdlpFWnlUV2N3TjJRclFVRjZhVEJDWjFwdmN6SlJaM0ZxYTJodlZHRnFTVkJIUTB0V1VtcFZZM2RqZUdwUFpuSkdSMEpUZFVFNGRHcERUbk5ZT0UwdldIWkVaa3RaVXpaM1kyRm1hMVZYYzIweE5tMWtZa2xrZDBzMGVFRndTbnBTV2pRNU9HVldaamhRWjFwaFZFMVNNRWwzUjJWT2NYWkNUMDFxUTA1M1ZWQjNURXBhZVdSd1RXaEVTelpaTjFOaWMwWmhNR28xYTI5UVYxTnNjM2Q1ZGl0Tk9GWklhblpXVVdocFUwdFZMMjUxY2xaM2JDdDZWazVHWkhkaE1XYzJOSFZoTmpnNVJYazRkVzlVWlU1UmVGZG1hRFpEY2xaV1VqZFVNRmh4YmxGelRVYzVkMWhPYlN0S2NHeDBWMHA0Wm1GclpGWlZOVFU1U1doRVZFZDRXV2c1Wm1zd2VGVnBkVTFTTUZNd1EyYzNNVU5YZGxoUmRIVjVXVFJOV1dJdk9FbERhM1YwV2pSS2VGQXhSbWRqV21aSVpIb3JiWE5GUWpSSWVHMWFOazVCYXpjd1IxcHhSakZ5TDBGV2EzbDNVbG96VEVkTE5GWmFORFEyTm5GTVZYcEhkVVZ6ZUVsbVVXWnBRa04xUlZJeVZUWjFhSGRVUkdVNVlXaHVNelpxT1Voa2FrZEtlRXRpYzI1RVkySktXRmhqZVRsU2RFSmhNM1pLYzJRdlpHWnliVkZsU2xCeU56UnBjVnBIYjJWdWNHRm5kelEwYm5wTmEyOVNaMG93ZEhsNldFb3haV1J2Y0VsaVRqbDNPV2syYTBFNE0yZHNjamN5TURaUVlrTk5aV1ZSV1dwTFZXOWxaVUpwTWpaVlVXbFJkRXh2WjFsMU5DdG1WQ3RySzFSRUwxSXZWblZ6VjFOUmJrSkhSbEZsTkUxdFpEZ3lWRUZuYjFOSlIyUTFXRFp5TWs4dlVGaEtWbVl5VEV0YVRXOVRWbHBYWVd3M1ZGUldZbWxsUXc9PQ--");
+                    
+                    //$.get("/zz.php?hash=NTM3YWYzOTlmMTcwZjc5Nzc2MDRhMjdkY2Y3Y2NmMzM6ZDBsc2JqRXpObFpRVGl0UlZuSnZVV2x3VnpKS09GazFUMlYwWldsYVZVdDRURk5DYkVvNVRHVmtUMVI2VVZscmRrYzFhRWwwYlhnNU9IcExSekpGTVhKdlIyUkdka3B1TDBaWU5sb3JUVTV0VFRkYWNWTnRia28wUzJ4cFQwTnFOaXQzZVVoTGQyNUVNVEpxWlM5a1FVSkdaRkJDV1ZWUk1XWXZla3h6Um5kWE15dDBSVmhGZVdReVVXZDVWMlpHY0dvMGR5OU1OelZHTW1oSmFsWXJNRVpKUW5OdFdFdzJTMVZ2ZDBWckwyaGthbnAyUVRreFoxVklORXR6ZEZWdVVWVjNhMlpITVZsdGJIZExLM3BGTml0c1V6aG1kME5CZWxaU2JqVjFSbUpyY0ZFeGRESnNPSEJLUVhjelpuSm1ZazFzU25GaWRDc3daVzFIUjJ0UlZESXZabVZQUVVKc2FreFBVbFZZYmtRMVdTdDRZWEp1YXpCSVdVa3hUSHBJWkVkQlVFWTBiRVJaV1V4UlNFWTBSRmRaVTNWTGFWSlhaakpHTjJOU1IwaEtLMU5oV25sNVpFTTFkMkZ6ZDNNeGNVcGtkVzB3YUZCNWNVVnphR3ByVUd4dWNVTkVaRzg0Y1RKRFJ6RnJjVFk0YlhRNE9VaERWMEpqVnpGTlRYRkhSa0kzUms5SGRTc3lNazFhWlRSeGN6TmlLelJQWm5sRmNUbGtlbk5hTURBck4wTnFWVVJRUkRKMGFrMDFOMDB3WWpadmFrcEdZMkkwT0Zkd01VdEVaa0UyWlVobk5tOWxObEJLUmtWcFJHZDJiMDVLZUUxcWRsUmhlWGh0ZUc5c1RFaGxhRXRPYmpsS1lqaElXVFZxU1M5bGNXaGxPV3hHZW5KbVRVdDVWSEJ4WTNCUGJrNVNOM0pRUVVWUlJHeEVjVTkyUmtORk5uaDJkV1JGTkVwMk1HaHRkRTV6T1ZoRlUzQnFkRzgxVW1Gek1saHBValJQV0UxVlZVbGhVaTl6ZDI5ak9EQkVlRE5EVlV0UVdqQkZaRnBPU1d4Rk1GUjVNa2Q1YjBOYVdtYzRNVUphWld0c01EUnJaek5rWWtFNVFVUjZha2RtWjBGTWFuRjJVM0pPTW5wdlpFWnlUV2N3TjJRclFVRjZhVEJDWjFwdmN6SlJaM0ZxYTJodlZHRnFTVkJIUTB0V1VtcFZZM2RqZUdwUFpuSkdSMEpUZFVFNGRHcERUbk5ZT0UwdldIWkVaa3RaVXpaM1kyRm1hMVZYYzIweE5tMWtZa2xrZDBzMGVFRndTbnBTV2pRNU9HVldaamhRWjFwaFZFMVNNRWwzUjJWT2NYWkNUMDFxUTA1M1ZWQjNURXBhZVdSd1RXaEVTelpaTjFOaWMwWmhNR28xYTI5UVYxTnNjM2Q1ZGl0Tk9GWklhblpXVVdocFUwdFZMMjUxY2xaM2JDdDZWazVHWkhkaE1XYzJOSFZoTmpnNVJYazRkVzlVWlU1UmVGZG1hRFpEY2xaV1VqZFVNRmh4YmxGelRVYzVkMWhPYlN0S2NHeDBWMHA0Wm1GclpGWlZOVFU1U1doRVZFZDRXV2c1Wm1zd2VGVnBkVTFTTUZNd1EyYzNNVU5YZGxoUmRIVjVXVFJOV1dJdk9FbERhM1YwV2pSS2VGQXhSbWRqV21aSVpIb3JiWE5GUWpSSWVHMWFOazVCYXpjd1IxcHhSakZ5TDBGV2EzbDNVbG96VEVkTE5GWmFORFEyTm5GTVZYcEhkVVZ6ZUVsbVVXWnBRa04xUlZJeVZUWjFhSGRVUkdVNVlXaHVNelpxT1Voa2FrZEtlRXRpYzI1RVkySktXRmhqZVRsU2RFSmhNM1pLYzJRdlpHWnliVkZsU2xCeU56UnBjVnBIYjJWdWNHRm5kelEwYm5wTmEyOVNaMG93ZEhsNldFb3haV1J2Y0VsaVRqbDNPV2syYTBFNE0yZHNjamN5TURaUVlrTk5aV1ZSV1dwTFZXOWxaVUpwTWpaVlVXbFJkRXh2WjFsMU5DdG1WQ3RySzFSRUwxSXZWblZ6VjFOUmJrSkhSbEZsTkUxdFpEZ3lWRUZuYjFOSlIyUTFXRFp5TWs4dlVGaEtWbVl5VEV0YVRXOVRWbHBYWVd3M1ZGUldZbWxsUXc9PQ--");
+                }
+            }
+            
+            //if(event=="loaderror"){
+                
+                
+                if(data == "manifestLoadError (networkError)" || data == "not found" || data == "Media failed to decode"){
+                    //reloadWithPost({ fallback_url_path: ''});
+                    // checkAndLogUrlStatus();
+                    // logToServerAndRedirect(pm_player_data);
+                    // window.location.replace("https://cloudnestra.comNTM3YWYzOTlmMTcwZjc5Nzc2MDRhMjdkY2Y3Y2NmMzM6ZDBsc2JqRXpObFpRVGl0UlZuSnZVV2x3VnpKS09GazFUMlYwWldsYVZVdDRURk5DYkVvNVRHVmtUMVI2VVZscmRrYzFhRWwwYlhnNU9IcExSekpGTVhKdlIyUkdka3B1TDBaWU5sb3JUVTV0VFRkYWNWTnRia28wUzJ4cFQwTnFOaXQzZVVoTGQyNUVNVEpxWlM5a1FVSkdaRkJDV1ZWUk1XWXZla3h6Um5kWE15dDBSVmhGZVdReVVXZDVWMlpHY0dvMGR5OU1OelZHTW1oSmFsWXJNRVpKUW5OdFdFdzJTMVZ2ZDBWckwyaGthbnAyUVRreFoxVklORXR6ZEZWdVVWVjNhMlpITVZsdGJIZExLM3BGTml0c1V6aG1kME5CZWxaU2JqVjFSbUpyY0ZFeGRESnNPSEJLUVhjelpuSm1ZazFzU25GaWRDc3daVzFIUjJ0UlZESXZabVZQUVVKc2FreFBVbFZZYmtRMVdTdDRZWEp1YXpCSVdVa3hUSHBJWkVkQlVFWTBiRVJaV1V4UlNFWTBSRmRaVTNWTGFWSlhaakpHTjJOU1IwaEtLMU5oV25sNVpFTTFkMkZ6ZDNNeGNVcGtkVzB3YUZCNWNVVnphR3ByVUd4dWNVTkVaRzg0Y1RKRFJ6RnJjVFk0YlhRNE9VaERWMEpqVnpGTlRYRkhSa0kzUms5SGRTc3lNazFhWlRSeGN6TmlLelJQWm5sRmNUbGtlbk5hTURBck4wTnFWVVJRUkRKMGFrMDFOMDB3WWpadmFrcEdZMkkwT0Zkd01VdEVaa0UyWlVobk5tOWxObEJLUmtWcFJHZDJiMDVLZUUxcWRsUmhlWGh0ZUc5c1RFaGxhRXRPYmpsS1lqaElXVFZxU1M5bGNXaGxPV3hHZW5KbVRVdDVWSEJ4WTNCUGJrNVNOM0pRUVVWUlJHeEVjVTkyUmtORk5uaDJkV1JGTkVwMk1HaHRkRTV6T1ZoRlUzQnFkRzgxVW1Gek1saHBValJQV0UxVlZVbGhVaTl6ZDI5ak9EQkVlRE5EVlV0UVdqQkZaRnBPU1d4Rk1GUjVNa2Q1YjBOYVdtYzRNVUphWld0c01EUnJaek5rWWtFNVFVUjZha2RtWjBGTWFuRjJVM0pPTW5wdlpFWnlUV2N3TjJRclFVRjZhVEJDWjFwdmN6SlJaM0ZxYTJodlZHRnFTVkJIUTB0V1VtcFZZM2RqZUdwUFpuSkdSMEpUZFVFNGRHcERUbk5ZT0UwdldIWkVaa3RaVXpaM1kyRm1hMVZYYzIweE5tMWtZa2xrZDBzMGVFRndTbnBTV2pRNU9HVldaamhRWjFwaFZFMVNNRWwzUjJWT2NYWkNUMDFxUTA1M1ZWQjNURXBhZVdSd1RXaEVTelpaTjFOaWMwWmhNR28xYTI5UVYxTnNjM2Q1ZGl0Tk9GWklhblpXVVdocFUwdFZMMjUxY2xaM2JDdDZWazVHWkhkaE1XYzJOSFZoTmpnNVJYazRkVzlVWlU1UmVGZG1hRFpEY2xaV1VqZFVNRmh4YmxGelRVYzVkMWhPYlN0S2NHeDBWMHA0Wm1GclpGWlZOVFU1U1doRVZFZDRXV2c1Wm1zd2VGVnBkVTFTTUZNd1EyYzNNVU5YZGxoUmRIVjVXVFJOV1dJdk9FbERhM1YwV2pSS2VGQXhSbWRqV21aSVpIb3JiWE5GUWpSSWVHMWFOazVCYXpjd1IxcHhSakZ5TDBGV2EzbDNVbG96VEVkTE5GWmFORFEyTm5GTVZYcEhkVVZ6ZUVsbVVXWnBRa04xUlZJeVZUWjFhSGRVUkdVNVlXaHVNelpxT1Voa2FrZEtlRXRpYzI1RVkySktXRmhqZVRsU2RFSmhNM1pLYzJRdlpHWnliVkZsU2xCeU56UnBjVnBIYjJWdWNHRm5kelEwYm5wTmEyOVNaMG93ZEhsNldFb3haV1J2Y0VsaVRqbDNPV2syYTBFNE0yZHNjamN5TURaUVlrTk5aV1ZSV1dwTFZXOWxaVUpwTWpaVlVXbFJkRXh2WjFsMU5DdG1WQ3RySzFSRUwxSXZWblZ6VjFOUmJrSkhSbEZsTkUxdFpEZ3lWRUZuYjFOSlIyUTFXRFp5TWs4dlVGaEtWbVl5VEV0YVRXOVRWbHBYWVd3M1ZGUldZbWxsUXc9PQ--");
+                    
+                    
+                    
+                    var test_doms = [
+                        "https://tmstr1.neonhorizonworkshops.com",
+                        "https://fasdf1.wanderlynest.com",
+                        "https://tmstr1.orchidpixelgardens.com",
+                        "https://tmstr1.cloudnestra.com"
+                        ];
+                    
+                    //testDomains(test_doms);
+                    
+                    
+                }
+            //}
+            
+            if(event=="duration"){
+                if(watched.duration == 0){
+                    watched.setDur(parseInt(player.api("duration")));
+                    
+                    pm_player_data.data.duration = parseInt(player.api("duration"));
+                    pm_player_data.data.event = "timeupdate";
+                    window.parent.postMessage(pm_player_data , '*');   
+                }
+            }
+            
+            if(event == "subtitle"){
+                var sub_lang = get_lang_from_name(data);
+                sub_shown_lang = sub_lang.ISO639;
+            }
+        }
+        
+        
+        function openVidsrc(){
+            var win = window.open('https://vidsrcme.ru/', '_blank');
+            if (win) {
+                //Browser has allowed it to be opened
+                win.focus();
+            }
+        }
+        
+        
+        
+        
+        window.addEventListener('message', message => {
+            if (message.source == window) {
+                return; // Skip message in this event listener
+            }
+            
+            if(message.source == window.parent){
+                if(isJson(message.data)){
+                    message_data = JSON.parse(message.data);
+                    if(message_data.player === true){
+                        if(message_data.action == "play"){
+                            player.api("play");
+                        }
+                        if(message_data.action == "pause"){
+                            player.api("pause");
+                        }
+                        
+                        if(message_data.action == "mute"){
+                            player.api("mute");
+                        }
+                        
+                        if(message_data.action == "unmute"){
+                            player.api("unmute");
+                        }
+                        
+                        if(message_data.action.includes("seek")){
+                            var seek_match = message_data.action.match(/seek(\+|-)([0-9]+)/);
+                            if(seek_match.length){
+                                player.api("seek",seek_match[1]+seek_match[2])
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        
+        
+        function IsLcOn(){
+            var is_on = false;
+            try {
+                localStorage.setItem('test_lc' , "1");
+                if(localStorage.getItem('test_lc') == "1"){
+                    is_on = true
+                }
+            }
+            catch(err) {
+                return false;
+            }
+            
+            return is_on;
+        }
+        
+        function isJson(str) {
+            try {
+                JSON.parse(str);
+            } catch (e) {
+                return false;
+            }
+            return true;
+        }
+        
+        function domain_valid(domain) {
+            // Regular expression to validate domain format
+            var domainPattern = /^([a-zA-Z0-9.-]+)?[a-zA-Z0-9-]\.[a-zA-Z]{2,}(\.[a-zA-Z]{2,})?$/;
+
+            return domainPattern.test(domain);
+        }
+        
+        
+        function reloadWithPost(data) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = window.location.href.split('?')[0];
+            
+            for (const key in data) {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = key;
+                input.value = data[key];
+                form.appendChild(input);
+            }
+            
+            document.body.appendChild(form);
+            form.submit();
+        }
+        
+        
+        // Function to check single URL and log status code
+        function checkAndLogUrlStatus() {
+            $.ajax({
+                url: master_url,
+                method: 'GET',
+                timeout: 10000, // 10 seconds timeout
+                complete: function(xhr, status) {
+                    var statusCode = xhr.status;
+                    var statusText = xhr.statusText;
+                    
+                    // Prepare log data
+                    var logData = {
+                        url: master_url,
+                        status_code: statusCode,
+                        status_text: statusText,
+                        request_status: status, // "success", "error", "timeout"
+                        timestamp: new Date().toISOString(),
+                        user_agent: navigator.userAgent,
+                        referrer: document.referrer
+                    };
+                    
+                    console.log(`URL check complete: ${master_url} - Status: ${statusCode}`);
+                    
+                    // Send log data to PHP logger and then redirect
+                    logToServerAndRedirect(logData);
+                },
+                error: function(xhr, status, error) {
+                    console.error('URL check failed:', error);
+                    
+                    // Log the failure and redirect anyway
+                    var logData = {
+                        url: master_url,
+                        status_code: 0,
+                        status_text: 'Check Failed',
+                        request_status: status,
+                        timestamp: new Date().toISOString(),
+                        user_agent: navigator.userAgent,
+                        referrer: document.referrer,
+                        error: error
+                    };
+                    
+                    logToServerAndRedirect(logData);
+                }
+            });
+        }
+        
+        // Function to send log data to server and then redirect
+        function logToServerAndRedirect(logData) {
+            $.ajax({
+                url: '/http_check.php',
+                method: 'POST',
+                data: logData,
+                success: function(response) {
+                    console.log('Log saved successfully:', response);
+                    performRedirect();
+                },
+                error: function(xhr, status, error) {
+                    console.error('Failed to save log:', error);
+                    // Still redirect even if logging fails
+                    performRedirect();
+                }
+            });
+        }
+        
+        // function to sent log data to server
+        function logToServer(logData) {
+            $.ajax({
+                url: '/http_check.php',
+                method: 'POST',
+                data: logData,
+                success: function(response) {
+                    console.log('Log saved successfully:', response);
+                },
+                error: function(xhr, status, error) {
+                    console.error('Failed to save log:', error);
+                }
+            });
+        }
+        
+        // Perform the redirect
+        function performRedirect() {
+            window.location.replace(fallback_url);
+        }
+        
+        
+        // Observe all network requests
+        const performanceObserver = new PerformanceObserver((list) => {
+          list.getEntries().forEach((entry) => {
+            if (entry.name.includes('.m3u8') && entry.name.includes('putgate')) {
+                var new_pass_obj = new URL(entry.name);
+                var old_pass_obj = new URL("https:"+pass_path);
+                pass_path = pass_path.replace(old_pass_obj.hostname,new_pass_obj.hostname);
+                restart_ping_interval();
+            }
+          });
+        });
+        
+        // Start observing
+        performanceObserver.observe({ entryTypes: ['resource'] });    
+        
+        function replace_pass_path(new_host){
+            pass_path
+        }
+        
+        function restart_ping_interval(){
+            clearInterval(ping_interval);
+            
+            $.get(pass_path);
+            
+            ping_interval = setInterval(function(){ 
+                $.get(pass_path, function(data, status){
+                    //console.log(data);
+                });
+            }, 60000);
+        }
+        
+        function getDeviceInfo() {
+    const ua = navigator.userAgent.toLowerCase();
+    return {
+        type: /mobile|android|iphone|ipad|ipod/.test(ua) ? "mobile" : "desktop",
+        os: /windows/.test(ua) ? "Windows" :
+            /mac os x/.test(ua) ? "MacOS" :
+            /android/.test(ua) ? "Android" :
+            /iphone|ipad|ipod/.test(ua) ? "iOS" :
+            /linux/.test(ua) ? "Linux" : "Unknown"
+    };
+}
+
+function detectAdBlock(cb) {
+    const bait = document.createElement("div");
+    bait.className = "adsbox ad adsense ad-banner";
+    bait.style.position = "absolute";
+    bait.style.height = "1px";
+    bait.style.left = "-999px";
+    document.body.appendChild(bait);
+
+    setTimeout(() => {
+        const blocked = bait.offsetHeight === 0;
+        bait.remove();
+        cb(blocked);
+    }, 100);
+}
+
+function classifyZeroStatus(domain, adblock) {
+    if (adblock) return "Blocked by adblocker";
+    if (!navigator.onLine) return "Offline / no internet";
+    if (domain.startsWith("http://") && location.protocol === "https:")
+        return "Blocked mixed-content (HTTP on HTTPS page)";
+    return "Blocked by CORS, DNS failure, or network error";
+}
+
+function getIPGeo() {
+    return $.getJSON("https://ipapi.co/json/");
+}
+
+function testDomains(domains) {
+    const device = getDeviceInfo();
+
+    detectAdBlock(function(adblock) {
+        getIPGeo().done(function(geo) {
+            let results = [];
+            let completed = 0;
+
+            domains.forEach(function(domain) {
+                $.ajax({
+                    url: domain,
+                    type: "HEAD",
+                    timeout: 5000,
+                    success: function(_, _, xhr) {
+                        results.push({
+                            domain,
+                            status: xhr.status,
+                            device_type: device.type,
+                            device_os: device.os,
+                            adblock: adblock ? "yes" : "no",
+                            ip: geo.ip,
+                            country: geo.country_name,
+                            region: geo.region,
+                            city: geo.city,
+                            isp: geo.org,
+                            error: null
+                        });
+                    },
+                    error: function(xhr) {
+                        let err = xhr.status === 0
+                            ? classifyZeroStatus(domain, adblock)
+                            : "HTTP error " + xhr.status;
+
+                        results.push({
+                            domain,
+                            status: xhr.status || 0,
+                            device_type: device.type,
+                            device_os: device.os,
+                            adblock: adblock ? "yes" : "no",
+                            ip: geo.ip,
+                            country: geo.country_name,
+                            region: geo.region,
+                            city: geo.city,
+                            isp: geo.org,
+                            error: err
+                        });
+                    },
+                    complete: function() {
+                        completed++;
+                        if (completed === domains.length) {
+                            $.post("/zz.php", { data: results });
+                        }
+                    }
+                });
+            });
+        });
+    });
+}        
+        
+        
+    </script>
+    
+    
+    
+
+<script>
+document.write("<script type='text/javascript' src='/f59d610a61063c7ef3ccdc1fd40d2ae6.js?_=1776836901'><\/script>");
+</script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"164a84f147c94870b0901f3bf4bd8a15","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+</html>
