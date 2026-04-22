@@ -8,7 +8,10 @@ export class FilmpalastTO extends Source {
   public override readonly id = 'filmpalast';
   public override readonly label = 'Filmpalast';
   public override readonly baseUrl = 'https://filmpalast.to';
-  public override readonly contentTypes: ContentType[] = ['movie' as ContentType, 'series' as ContentType];
+  public override readonly contentTypes: ContentType[] = [
+    'movie' as ContentType,
+    'series' as ContentType,
+  ];
   public override readonly countryCodes = [CountryCode.de];
   public override readonly priority = 1;
 
@@ -22,7 +25,7 @@ export class FilmpalastTO extends Source {
   protected override async handleInternal(
     ctx: Context,
     _type: ContentType,
-    id: Id
+    id: Id,
   ): Promise<SourceResult[]> {
     const results: SourceResult[] = [];
     const imdbId = id.toString();
@@ -38,9 +41,9 @@ export class FilmpalastTO extends Source {
         {
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
-            Referer: this.baseUrl,
+            'Referer': this.baseUrl,
           },
-        }
+        },
       );
 
       const movieList = JSON.parse(responseText);
@@ -49,11 +52,12 @@ export class FilmpalastTO extends Source {
         return [];
       }
 
-      // ✅ FIXED: no parentheses around single param
-     const filteredResult = movieList.find(title => !title.toLowerCase().includes('english')) || movieList[0];
+      const filteredResult = movieList.find(
+        (title) => !title.toLowerCase().includes('english'),
+      ) || movieList[0];
 
       const searchPageURL = `${this.baseUrl}/search/title/${encodeURIComponent(
-        filteredResult
+        filteredResult,
       )}`;
 
       // Step 2: Find stream page
@@ -85,14 +89,16 @@ export class FilmpalastTO extends Source {
       }
 
       // Step 3: Extract hoster links
-      const streamHtml = await this.fetcher.text(ctx, new URL(streamPageUrl));
+      const streamHtml = await this.fetcher.text(
+        ctx,
+        new URL(streamPageUrl),
+      );
       const $stream = cheerio.load(streamHtml);
 
       const linkElements = $stream(
-        '.currentStreamLinks a, .hosterSite span a, .streamList a'
+        '.currentStreamLinks a, .hosterSite span a, .streamList a',
       );
 
-      // ✅ VALID: multiple params → parentheses REQUIRED
       linkElements.each((_, element) => {
         const href = $stream(element).attr('href');
         let hosterName = $stream(element).text().trim();
@@ -113,7 +119,7 @@ export class FilmpalastTO extends Source {
           }
 
           console.info(
-            `[Filmpalast] Found Link: ${fullUrl} (${hosterName})`
+            `[Filmpalast] Found Link: ${fullUrl} (${hosterName})`,
           );
 
           try {
@@ -131,14 +137,14 @@ export class FilmpalastTO extends Source {
       });
 
       console.info(
-        `[Filmpalast] Successfully added ${results.length} results for ${imdbId}`
+        `[Filmpalast] Successfully added ${results.length} results for ${imdbId}`,
       );
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : 'Unknown error';
+      const message
+        = error instanceof Error ? error.message : 'Unknown error';
 
       console.error(
-        `[Filmpalast] Scraper failed for ${imdbId}: ${message}`
+        `[Filmpalast] Scraper failed for ${imdbId}: ${message}`,
       );
     }
 
