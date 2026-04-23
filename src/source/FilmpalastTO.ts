@@ -6,9 +6,7 @@ import { Source, SourceResult } from './Source';
 
 export class FilmpalastTO extends Source {
   public override readonly id = 'filmpalast';
-
   public override readonly label = 'Filmpalast';
-
   public override readonly baseUrl = 'https://filmpalast.to';
 
   public override readonly contentTypes: ContentType[] = [
@@ -17,7 +15,6 @@ export class FilmpalastTO extends Source {
   ];
 
   public override readonly countryCodes = [CountryCode.de];
-
   public override readonly priority = 1;
 
   private readonly fetcher: Fetcher;
@@ -57,102 +54,71 @@ export class FilmpalastTO extends Source {
         return [];
       }
 
-      const filteredResult
-        = movieList.find(title =>
-          !title.toLowerCase().includes('english'),
-        ) || movieList[0];
+      // Filter out English results to prioritize German dubbed content
+      const filteredResult = movieList.find(title => 
+        !title.toLowerCase().includes('english')
+      ) || movieList[0];
 
-      const searchPageURL = `${this.baseUrl}/search/title/${encodeURIComponent(
-        filteredResult,
-      )}`;
+      const searchPageURL = `${this.baseUrl}/search/title/${encodeURIComponent(filteredResult)}`;
 
       // Step 2: Find stream page
       const html = await this.fetcher.text(ctx, new URL(searchPageURL));
       const $ = cheerio.load(html);
 
       let streamPageUrl: string | undefined;
-
       const streamAnchor = $('a[href*="filmpalast.to/stream/"]').first();
 
       if (streamAnchor.length > 0) {
         const href = streamAnchor.attr('href');
-
         if (href) {
-          if (href.startsWith('http')) {
-            streamPageUrl = href;
-          } else if (href.startsWith('//')) {
-            streamPageUrl = `https:${href}`;
-          } else {
-            streamPageUrl = `${this.baseUrl}${href}`;
-          }
+          streamPageUrl = href.startsWith('http') 
+            ? href 
+            : `${this.baseUrl}${href.startsWith('/') ? '' : '/'}${href}`;
         }
       } else if (html.includes('currentStreamLinks')) {
         streamPageUrl = searchPageURL;
       }
 
-      if (!streamPageUrl) {
-        return [];
-      }
+      if (!streamPageUrl) return [];
 
       // Step 3: Extract hoster links
-      const streamHtml = await this.fetcher.text(
-        ctx,
-        new URL(streamPageUrl),
-      );
-
+      const streamHtml = await this.fetcher.text(ctx, new URL(streamPageUrl));
       const $stream = cheerio.load(streamHtml);
 
-      const linkElements = $stream(
-        '.currentStreamLinks a, .hosterSite span a, .streamList a',
-      );
+      // Targeting the specific button structure found in your trace
+      const linkElements = $stream('a.button[data-player-url]');
 
       linkElements.each((_, element) => {
-        const href = $stream(element).attr('href');
+        // FIX: Extract from data-player-url instead of href
+        const playerUrl = $stream(element).attr('data-player-url');
         let hosterName = $stream(element).text().trim();
 
-        if (href && href !== '#' && !href.includes('javascript:void')) {
-          let fullUrl: string;
-
-          if (href.startsWith('http')) {
-            fullUrl = href;
-          } else if (href.startsWith('//')) {
-            fullUrl = `https:${href}`;
-          } else {
-            fullUrl = `https://${href}`;
-          }
-
+        if (playerUrl && playerUrl.startsWith('http')) {
+          // Fallback for hoster name if text is empty or just a number
           if (!hosterName || !isNaN(Number(hosterName))) {
-            hosterName = $stream(element).attr('title') || 'Stream';
+            const classes = $stream(element).attr('class') || '';
+            // Try to extract hoster name from class (e.g., "verystream")
+            hosterName = classes.split(' ').pop() || 'Stream';
           }
-
-          console.info(
-            `[Filmpalast] Found Link: ${fullUrl} (${hosterName})`,
-          );
 
           try {
             results.push({
-              url: new URL(fullUrl),
+              url: new URL(playerUrl),
               meta: {
-                title: `${hosterName} (Filmpalast)`,
+                title: `${hosterName.toUpperCase()} (Filmpalast)`,
                 countryCodes: [CountryCode.de],
               },
             });
           } catch {
-            // ignore invalid URLs
+            // Context-injected logger handles silent failures
+            ctx.logger.debug(`[Filmpalast] Invalid URL skipped: ${playerUrl}`);
           }
         }
       });
 
-      console.info(
-        `[Filmpalast] Successfully added ${results.length} results for ${imdbId}`,
-      );
+      ctx.logger.info(`[Filmpalast] Found ${results.length} results for ${imdbId}`);
     } catch (error) {
-      const message
-        = error instanceof Error ? error.message : 'Unknown error';
-
-      console.error(
-        `[Filmpalast] Scraper failed for ${imdbId}: ${message}`,
-      );
+      ctx.logger.error(`[Filmpalast] Scraper failed for ${imdbId}`, { error });
     }
 
     return results;
