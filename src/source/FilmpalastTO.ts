@@ -108,6 +108,7 @@ export class FilmpalastTO extends Source {
         }
       });
     } catch (error) {
+      // Use console.error since Context.logger is missing.
       console.error(`[Filmpalast] Scraper error for ${imdbId}:`, error);
     }
 
