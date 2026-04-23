@@ -40,11 +40,11 @@ export class FilmpalastTO extends Source {
         autocompleteUrl,
         `term=${encodeURIComponent(imdbId)}`,
         {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Referer': this.baseUrl,
-          },
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Referer': this.baseUrl, // <--- Comma added
         },
+      }
       );
 
       const movieList = JSON.parse(responseText);
