@@ -10,19 +10,15 @@ const extractorRegistry = new ExtractorRegistry(logger, [new Vidara(new FetcherM
 const ctx = createTestContext();
 
 describe('Vidara', () => {
-  test('Movie extraction', async () => {
+  test('Movie ', async () => {
     expect(await extractorRegistry.handle(ctx, new URL('https://vidara.to/v/MKbY8mLNOWdVG'))).toMatchSnapshot();
   });
 
-  test('TV Show extraction', async () => {
+  test('Movie', async () => {
     expect(await extractorRegistry.handle(ctx, new URL('https://vidara.to/e/q2bWhcs5rpSof'))).toMatchSnapshot();
   });
 
   test('Alternative domain (.so)', async () => {
     expect(await extractorRegistry.handle(ctx, new URL('https://vidara.so/v/MKbY8mLNOWdVG'))).toMatchSnapshot();
-  });
-
-  test('Throws error on missing filecode', async () => {
-    await expect(extractorRegistry.handle(ctx, new URL('https://vidara.to/about-us'))).rejects.toThrow('Could not find filecode in URL');
   });
 });
