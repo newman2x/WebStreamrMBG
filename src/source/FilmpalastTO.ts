@@ -40,11 +40,11 @@ export class FilmpalastTO extends Source {
         autocompleteUrl,
         `term=${encodeURIComponent(imdbId)}`,
         {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Referer': this.baseUrl, // <--- Comma added
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Referer': this.baseUrl,
+          },
         },
-      }
       );
 
       const movieList = JSON.parse(responseText);
@@ -108,8 +108,6 @@ export class FilmpalastTO extends Source {
         }
       });
     } catch (error) {
-      // Use console.error since Context.logger is missing.
-      // Using 'error' variable prevents linting issues.
       console.error(`[Filmpalast] Scraper error for ${imdbId}:`, error);
     }
 
