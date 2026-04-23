@@ -50,8 +50,8 @@ export class FilmpalastTO extends Source {
       const movieList = JSON.parse(responseText);
       if (!Array.isArray(movieList) || movieList.length === 0) return [];
 
-      const filteredResult = movieList.find(title =>
-        !title.toLowerCase().includes('english')
+      const filteredResult = movieList.find((title) =>
+        !title.toLowerCase().includes('english'),
       ) || movieList[0];
 
       const searchPageURL = `${this.baseUrl}/search/title/${encodeURIComponent(filteredResult)}`;
