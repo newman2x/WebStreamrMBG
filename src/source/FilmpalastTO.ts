@@ -11,7 +11,6 @@ export class FilmpalastTO extends Source {
 
   public override readonly contentTypes: ContentType[] = [
     'movie' as ContentType,
-    'series' as ContentType,
   ];
 
   public override readonly countryCodes = [CountryCode.de];
