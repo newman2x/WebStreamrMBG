@@ -64,34 +64,42 @@ export class FilmpalastTO extends Source {
 
       if (!streamPageUrl) return [];
 
+     // Step 3: Extract hoster links
       const streamHtml = await this.fetcher.text(ctx, new URL(streamPageUrl));
       const $stream = cheerio.load(streamHtml);
 
+      const linkElements = $stream('.currentStreamLinks a.button');
 
-      $stream('.currentStreamLinks a, .hosterSite span a, .streamList a').each((_, element) => {
-        const dataUrl = $stream(element).attr('data-player-url');
-        let hosterName = $stream(element).text().trim();
+      linkElements.each((_, element) => {
+        const $el = $stream(element);
+        
+        // 1. Try data-player-url first, then fallback to href
+        const rawUrl = $el.attr('data-player-url') || $el.attr('href');
+        
+        // 2. Find the hoster name by looking at the sibling/parent structure
+        let hosterName = $el.closest('ul').find('.hostName').text().trim();
+        
+        if (!hosterName) {
+          hosterName = $el.text().trim().replace('Play', '').trim() || 'Stream';
+        }
 
-        if (dataUrl && dataUrl.startsWith('http')) {
-          if (!hosterName || !isNaN(Number(hosterName))) {
-            hosterName = $stream(element).attr('title') || 'Stream';
-          }
-
+        if (rawUrl && rawUrl.startsWith('http') && !rawUrl.includes('javascript:void')) {
           try {
+            const finalUrl = new URL(rawUrl);
+
             results.push({
-              url: new URL(dataUrl),
+              url: finalUrl,
               meta: {
                 title: `${hosterName} (Filmpalast)`,
                 countryCodes: [CountryCode.de],
               },
             });
-          } catch { /* skip invalid */ }
+          } catch (error) {
+          }
         }
       });
-    } catch (error) {
-       console.error(`[Filmpalast] Failed for ${imdbId}:`, error);
-    }
 
-    return results;
-  }
+      if (results.length > 0) {
+        console.info(`[Filmpalast] Found ${results.length} results for ${imdbId}`);
+      }
 }
