@@ -50,7 +50,7 @@ export class FilmpalastTO extends Source {
       const movieList = JSON.parse(responseText);
       if (!Array.isArray(movieList) || movieList.length === 0) return [];
 
-      const filteredResult = movieList.find(title => 
+      const filteredResult = movieList.find(title =>
         !title.toLowerCase().includes('english')
       ) || movieList[0];
 
@@ -66,10 +66,10 @@ export class FilmpalastTO extends Source {
       if (streamAnchor.length > 0) {
         const href = streamAnchor.attr('href');
         if (href) {
-          streamPageUrl = href.startsWith('http') 
-            ? href 
-            : href.startsWith('//') 
-              ? `https:${href}` 
+          streamPageUrl = href.startsWith('http')
+            ? href
+            : href.startsWith('//')
+              ? `https:${href}`
               : `${this.baseUrl}${href}`;
         }
       } else if (html.includes('currentStreamLinks')) {
@@ -84,7 +84,7 @@ export class FilmpalastTO extends Source {
 
       $stream('.currentStreamLinks a.button').each((_, element) => {
         const $el = $stream(element);
-        
+
         // Check BOTH attributes to catch Veev (data-player-url) AND VOE/Vidara (href)
         const rawUrl = $el.attr('data-player-url') || $el.attr('href');
         let hosterName = $el.closest('ul').find('.hostName').text().trim();
@@ -107,9 +107,8 @@ export class FilmpalastTO extends Source {
           }
         }
       });
-
     } catch (error) {
-      // Use console.error since Context.logger is missing. 
+      // Use console.error since Context.logger is missing.
       // Using 'error' variable prevents linting issues.
       console.error(`[Filmpalast] Scraper error for ${imdbId}:`, error);
     }
