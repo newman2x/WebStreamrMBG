@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.71.0](https://github.com/newman2x/WebStreamrMBG/compare/v0.70.8...v0.71.0) (2026-04-25)
+
+
+### Features
+
+* add Vidzee source and extractor ([baf0fee](https://github.com/newman2x/WebStreamrMBG/commit/baf0feedbd9f88a6bda933f6c58a540baf017b63))
+
+
+### Bug Fixes
+
+* HubCloud ([fd5e43f](https://github.com/newman2x/WebStreamrMBG/commit/fd5e43faa156314bfc10c2605fce30b56fe9bca0))
+* HubCloud + update snapshots ([6313902](https://github.com/newman2x/WebStreamrMBG/commit/63139028fbf824dd586aeaaa6bf22b6eb2252829))
+
 ## [0.70.8](https://github.com/newman2x/WebStreamrMBG/compare/v0.70.7...v0.70.8) (2026-04-24)
 
 
