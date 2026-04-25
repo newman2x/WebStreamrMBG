@@ -1,0 +1,1 @@
+{"code":0,"message":"ok","data":{"downloads":[{"format":"HLS","id":"2222222222222222222","url":"https://cdn.example.com/resource/playlist.m3u8?token=abc123","resolution":1080,"size":"0","duration":5000,"codecName":"h264"}],"captions":[],"limited":false,"limitedCode":"","freeNum":999,"hasResource":true}}

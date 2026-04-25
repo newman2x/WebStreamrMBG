@@ -1,0 +1,31 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`MovieBox handle movie avatar 1`] = `
+[
+  {
+    "meta": {
+      "countryCodes": [
+        "multi",
+      ],
+      "referer": "https://videodownloader.site/",
+      "title": "Avatar (2009)",
+    },
+    "url": "https://h5-api.aoneroom.com/wefeed-h5api-bff/subject/download?subjectId=8906247916759695608&se=0&ep=0&detailPath=avatar-WLDIi21IUBa",
+  },
+]
+`;
+
+exports[`MovieBox handle tv breaking bad s1e1 1`] = `
+[
+  {
+    "meta": {
+      "countryCodes": [
+        "multi",
+      ],
+      "referer": "https://videodownloader.site/",
+      "title": "Breaking Bad S01E01",
+    },
+    "url": "https://h5-api.aoneroom.com/wefeed-h5api-bff/subject/download?subjectId=6207982430134357800&se=1&ep=1&detailPath=breaking-bad-ej6Bp0MCAo7",
+  },
+]
+`;

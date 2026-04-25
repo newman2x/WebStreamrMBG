@@ -14,6 +14,7 @@ import { Kokoshka } from './Kokoshka';
 import { MegaKino } from './MegaKino';
 import { MeineCloud } from './MeineCloud';
 import { MostraGuarda } from './MostraGuarda';
+import { MovieBox } from './MovieBox';
 import { Movix } from './Movix';
 import { RgShows } from './RgShows';
 import { Source } from './Source';
@@ -36,6 +37,7 @@ export const createSources = (fetcher: Fetcher): Source[] => {
     new VidSrc(),
     new Vidzee(fetcher),
     new RgShows(fetcher),
+    new MovieBox(fetcher),
     // AL
     new Kokoshka(fetcher),
     // ES / MX

@@ -1,0 +1,1 @@
+{"code":0,"message":"ok","data":{"downloads":[{"format":"HLS","id":"hls-stream-id","url":"https://cdn.example.com/stream/playlist.m3u8","resolution":0,"size":"0","duration":7200,"codecName":"h264"}],"captions":[],"limited":false,"limitedCode":"","freeNum":999,"hasResource":true}}

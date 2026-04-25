@@ -1,0 +1,1 @@
+{"code":0,"message":"ok","data":{"downloads":[{"format":"MP4","id":"1111111111111111111","url":"https://cdn.example.com/resource/video?token=abc123&t=1777110085","resolution":720,"size":"1000000000","duration":5000,"codecName":"h264"}],"captions":[],"limited":false,"limitedCode":"","freeNum":999,"hasResource":true}}

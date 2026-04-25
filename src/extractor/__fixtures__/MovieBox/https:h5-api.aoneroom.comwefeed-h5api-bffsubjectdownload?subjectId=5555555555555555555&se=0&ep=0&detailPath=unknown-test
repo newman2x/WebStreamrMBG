@@ -1,0 +1,1 @@
+{"code":0,"message":"ok","data":{"downloads":[{"format":null,"id":"webm-stream-id","url":"https://cdn.example.com/stream/video.webm","resolution":1080,"size":"1500000000","duration":7200,"codecName":"vp9"}],"captions":[],"limited":false,"limitedCode":"","freeNum":999,"hasResource":true}}

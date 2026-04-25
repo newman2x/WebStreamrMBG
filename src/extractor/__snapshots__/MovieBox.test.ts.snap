@@ -1,0 +1,307 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`MovieBox Avatar movie streams 1`] = `
+[
+  {
+    "format": "mp4",
+    "label": "360p",
+    "meta": {
+      "countryCodes": [
+        "multi",
+      ],
+      "extractorId": "moviebox",
+      "height": 360,
+    },
+    "requestHeaders": {
+      "Referer": "https://videodownloader.site/",
+    },
+    "ttl": 10800000,
+    "url": "https://bcdnxw.hakunaymatata.com/resource/d458676bebce12788e93bc133178baf5.mp4?sign=45a73329c1dd480696dc7902eb062f5e&t=1777110085",
+  },
+  {
+    "format": "mp4",
+    "label": "480p",
+    "meta": {
+      "countryCodes": [
+        "multi",
+      ],
+      "extractorId": "moviebox",
+      "height": 480,
+    },
+    "requestHeaders": {
+      "Referer": "https://videodownloader.site/",
+    },
+    "ttl": 10800000,
+    "url": "https://bcdnxw.hakunaymatata.com/resource/19a242865ee738a33d1356729efe25ba.mp4?sign=9c0ff13dbe7d6b9a912281df83725c5b&t=1777110085",
+  },
+  {
+    "format": "mp4",
+    "label": "720p",
+    "meta": {
+      "countryCodes": [
+        "multi",
+      ],
+      "extractorId": "moviebox",
+      "height": 720,
+    },
+    "requestHeaders": {
+      "Referer": "https://videodownloader.site/",
+    },
+    "ttl": 10800000,
+    "url": "https://bcdnxw.hakunaymatata.com/resource/0eaac86c27d79b114e4b18a9f33bbe29.mp4?sign=ce07da3e6e0e790c76e7987707b1b5d2&t=1777110085",
+  },
+  {
+    "format": "mp4",
+    "label": "1080p",
+    "meta": {
+      "countryCodes": [
+        "multi",
+      ],
+      "extractorId": "moviebox",
+      "height": 1080,
+    },
+    "requestHeaders": {
+      "Referer": "https://videodownloader.site/",
+    },
+    "ttl": 10800000,
+    "url": "https://bcdnxw.hakunaymatata.com/resource/a26a05e0c4fc46d2a2489b5d2223723f.mp4?sign=989b614f5b7525cca59e375e86de1e75&t=1777110376",
+  },
+]
+`;
+
+exports[`MovieBox Breaking Bad S01E01 streams 1`] = `
+[
+  {
+    "format": "mp4",
+    "label": "360p",
+    "meta": {
+      "countryCodes": [
+        "multi",
+      ],
+      "extractorId": "moviebox",
+      "height": 360,
+    },
+    "requestHeaders": {
+      "Referer": "https://videodownloader.site/",
+    },
+    "ttl": 10800000,
+    "url": "https://bcdnxw.hakunaymatata.com/bt/ad047603b18afe1d194d5b9adb0c21a7.mp4?sign=8d4b3febae86ff46a0ff965c15529c5f&t=1777110304",
+  },
+  {
+    "format": "mp4",
+    "label": "480p",
+    "meta": {
+      "countryCodes": [
+        "multi",
+      ],
+      "extractorId": "moviebox",
+      "height": 480,
+    },
+    "requestHeaders": {
+      "Referer": "https://videodownloader.site/",
+    },
+    "ttl": 10800000,
+    "url": "https://bcdnxw.hakunaymatata.com/bt/5f906e7114a60381e5753a890b5360a5.mp4?sign=a827b1741f814c97893d7df8cb1ffde0&t=1777112159",
+  },
+  {
+    "format": "mp4",
+    "label": "720p",
+    "meta": {
+      "countryCodes": [
+        "multi",
+      ],
+      "extractorId": "moviebox",
+      "height": 720,
+    },
+    "requestHeaders": {
+      "Referer": "https://videodownloader.site/",
+    },
+    "ttl": 10800000,
+    "url": "https://bcdnxw.hakunaymatata.com/resource/500b601be87cc510e4eacb91e369d4a2.mp4?sign=a0059b8994e928b708026802eec9aa4e&t=1777111926",
+  },
+  {
+    "format": "mp4",
+    "label": "1080p",
+    "meta": {
+      "countryCodes": [
+        "multi",
+      ],
+      "extractorId": "moviebox",
+      "height": 1080,
+    },
+    "requestHeaders": {
+      "Referer": "https://videodownloader.site/",
+    },
+    "ttl": 10800000,
+    "url": "https://bcdnxw.hakunaymatata.com/resource/6e866b57952c462ef379b5aa7f34abce.mp4?sign=b239a086ca4214b8d8f81ec87b9a07a4&t=1777108543",
+  },
+]
+`;
+
+exports[`MovieBox HLS stream 1`] = `
+[
+  {
+    "format": "hls",
+    "label": "1080p",
+    "meta": {
+      "countryCodes": [
+        "multi",
+      ],
+      "extractorId": "moviebox",
+      "height": 1080,
+    },
+    "requestHeaders": {
+      "Referer": "https://videodownloader.site/",
+    },
+    "ttl": 10800000,
+    "url": "https://cdn.example.com/resource/playlist.m3u8?token=abc123",
+  },
+]
+`;
+
+exports[`MovieBox MP4 format field without .mp4 in URL 1`] = `
+[
+  {
+    "format": "mp4",
+    "label": "720p",
+    "meta": {
+      "countryCodes": [
+        "multi",
+      ],
+      "extractorId": "moviebox",
+      "height": 720,
+    },
+    "requestHeaders": {
+      "Referer": "https://videodownloader.site/",
+    },
+    "ttl": 10800000,
+    "url": "https://cdn.example.com/resource/video?token=abc123&t=1777110085",
+  },
+]
+`;
+
+exports[`MovieBox No streams available 1`] = `
+[
+  {
+    "error": [Error: Error],
+    "format": "unknown",
+    "isExternal": true,
+    "label": "MovieBox",
+    "meta": {
+      "extractorId": "moviebox",
+    },
+    "ttl": 0,
+    "url": "https://h5-api.aoneroom.com/wefeed-h5api-bff/subject/download?subjectId=9999999999999999999&se=0&ep=0&detailPath=notfound-abc123",
+  },
+]
+`;
+
+exports[`MovieBox No subjectId returns empty 1`] = `[]`;
+
+exports[`MovieBox Non-zero response code returns empty 1`] = `[]`;
+
+exports[`MovieBox URL without se/ep params uses defaults 1`] = `
+[
+  {
+    "format": "mp4",
+    "label": "360p",
+    "meta": {
+      "countryCodes": [
+        "multi",
+      ],
+      "extractorId": "moviebox",
+      "height": 360,
+    },
+    "requestHeaders": {
+      "Referer": "https://videodownloader.site/",
+    },
+    "ttl": 10800000,
+    "url": "https://bcdnxw.hakunaymatata.com/resource/d458676bebce12788e93bc133178baf5.mp4?sign=7fd85531df2023c99c8f0a07f785aeda&t=1777111300",
+  },
+  {
+    "format": "mp4",
+    "label": "480p",
+    "meta": {
+      "countryCodes": [
+        "multi",
+      ],
+      "extractorId": "moviebox",
+      "height": 480,
+    },
+    "requestHeaders": {
+      "Referer": "https://videodownloader.site/",
+    },
+    "ttl": 10800000,
+    "url": "https://bcdnxw.hakunaymatata.com/resource/19a242865ee738a33d1356729efe25ba.mp4?sign=789fd3108874fa3da00ff892b078e24c&t=1777110061",
+  },
+  {
+    "format": "mp4",
+    "label": "720p",
+    "meta": {
+      "countryCodes": [
+        "multi",
+      ],
+      "extractorId": "moviebox",
+      "height": 720,
+    },
+    "requestHeaders": {
+      "Referer": "https://videodownloader.site/",
+    },
+    "ttl": 10800000,
+    "url": "https://bcdnxw.hakunaymatata.com/resource/0eaac86c27d79b114e4b18a9f33bbe29.mp4?sign=69990ab0785a6c398f6f3d5d2f9f0dbd&t=1777108492",
+  },
+  {
+    "format": "mp4",
+    "label": "1080p",
+    "meta": {
+      "countryCodes": [
+        "multi",
+      ],
+      "extractorId": "moviebox",
+      "height": 1080,
+    },
+    "requestHeaders": {
+      "Referer": "https://videodownloader.site/",
+    },
+    "ttl": 10800000,
+    "url": "https://bcdnxw.hakunaymatata.com/resource/a26a05e0c4fc46d2a2489b5d2223723f.mp4?sign=c5e999f183e17a227d27a23850f9d98b&t=1777111357",
+  },
+]
+`;
+
+exports[`MovieBox Unknown format stream 1`] = `
+[
+  {
+    "format": "mp4",
+    "label": "0p",
+    "meta": {
+      "countryCodes": [
+        "multi",
+      ],
+      "extractorId": "moviebox",
+      "height": undefined,
+    },
+    "requestHeaders": {
+      "Referer": "https://videodownloader.site/",
+    },
+    "ttl": 10800000,
+    "url": "https://cdn.example.com/stream/video.webm",
+  },
+  {
+    "format": "unknown",
+    "label": "0p",
+    "meta": {
+      "countryCodes": [
+        "multi",
+      ],
+      "extractorId": "moviebox",
+      "height": undefined,
+    },
+    "requestHeaders": {
+      "Referer": "https://videodownloader.site/",
+    },
+    "ttl": 10800000,
+    "url": "https://cdn.example.com/stream/video2.webm",
+  },
+]
+`;

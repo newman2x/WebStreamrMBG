@@ -12,6 +12,7 @@ import { HubDrive } from './HubDrive';
 import { KinoGer } from './KinoGer';
 import { LuluStream } from './LuluStream';
 import { Mixdrop } from './Mixdrop';
+import { MovieBox } from './MovieBox';
 import { RgShows } from './RgShows';
 import { SaveFiles } from './SaveFiles';
 import { StreamEmbed } from './StreamEmbed';
@@ -45,6 +46,7 @@ export const createExtractors = (fetcher: Fetcher): Extractor[] => {
     new KinoGer(fetcher),
     new LuluStream(fetcher),
     new Mixdrop(fetcher),
+    new MovieBox(fetcher),
     new RgShows(fetcher),
     new SaveFiles(fetcher),
     new StreamEmbed(fetcher),
