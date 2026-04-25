@@ -11,7 +11,7 @@ exports[`buildManifest default manifest 1`] = `
   "config": [
     {
       "key": "multi",
-      "title": "Multi 🌐 (4KHDHub, HDHub4u, RgShows, VidSrc, VixSrc)",
+      "title": "Multi 🌐 (4KHDHub, HDHub4u, RgShows, VidSrc, VidZee, VixSrc)",
       "type": "checkbox",
     },
     {
@@ -151,7 +151,7 @@ exports[`buildManifest default manifest 1`] = `
 
 Supported languages: Albanian, German, Castilian Spanish, French, Gujarati, Hindi, Italian, Malayalam, Latin American Spanish, Punjabi, Tamil, Telugu
 
-Supported sources: 4KHDHub, CineHDPlus, Cuevana, Einschalten, Eurostreaming, Filmpalast, Frembed, FrenchCloud, HDHub4u, HomeCine, KinoGer, Kokoshka, MegaKino, MeineCloud, MostraGuarda, Movix, RgShows, StreamKiste, VerHdLink, VidSrc, VixSrc
+Supported sources: 4KHDHub, CineHDPlus, Cuevana, Einschalten, Eurostreaming, Filmpalast, Frembed, FrenchCloud, HDHub4u, HomeCine, KinoGer, Kokoshka, MegaKino, MeineCloud, MostraGuarda, Movix, RgShows, StreamKiste, VerHdLink, VidSrc, VidZee, VixSrc
 
 Supported extractors: ",
   "id": "webstreamr-mbg",

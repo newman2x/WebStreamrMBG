@@ -20,6 +20,7 @@ import { Source } from './Source';
 import { StreamKiste } from './StreamKiste';
 import { VerHdLink } from './VerHdLink';
 import { VidSrc } from './VidSrc';
+import { Vidzee } from './Vidzee';
 import { VixSrc } from './VixSrc';
 
 export * from './Source';
@@ -33,6 +34,7 @@ export const createSources = (fetcher: Fetcher): Source[] => {
     new HDHub4u(fetcher),
     new VixSrc(fetcher),
     new VidSrc(),
+    new Vidzee(fetcher),
     new RgShows(fetcher),
     // AL
     new Kokoshka(fetcher),

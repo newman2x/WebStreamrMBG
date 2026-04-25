@@ -20,6 +20,7 @@ import { SuperVideo } from './SuperVideo';
 import { Uqload } from './Uqload';
 import { Vidora } from './Vidora';
 import { VidSrc } from './VidSrc';
+import { Vidzee } from './Vidzee';
 import { VixSrc } from './VixSrc';
 import { Voe } from './Voe';
 import { YouTube } from './YouTube';
@@ -51,6 +52,7 @@ export const createExtractors = (fetcher: Fetcher): Extractor[] => {
     new SuperVideo(fetcher),
     new Uqload(fetcher),
     new Vidora(fetcher),
+    new Vidzee(fetcher),
     new VidSrc(fetcher, [ // https://vidsrc.domains/
       'vidsrcme.ru',
       'vidsrcme.su',

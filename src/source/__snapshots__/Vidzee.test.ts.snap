@@ -1,0 +1,47 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`Vidzee handle tmdb breaking bad s1e1 1`] = `
+[
+  {
+    "meta": {
+      "countryCodes": [
+        "en",
+      ],
+      "title": "Achilles (US)",
+    },
+    "url": "https://player.vidzee.wtf/v2/embed/tv/1396/1/1?sr=3",
+  },
+  {
+    "meta": {
+      "countryCodes": [
+        "en",
+      ],
+      "title": "Drag (US)",
+    },
+    "url": "https://player.vidzee.wtf/v2/embed/tv/1396/1/1?sr=5",
+  },
+]
+`;
+
+exports[`Vidzee handle tmdb inception movie 1`] = `
+[
+  {
+    "meta": {
+      "countryCodes": [
+        "en",
+      ],
+      "title": "Achilles (US)",
+    },
+    "url": "https://player.vidzee.wtf/v2/embed/movie/27205?sr=3",
+  },
+  {
+    "meta": {
+      "countryCodes": [
+        "en",
+      ],
+      "title": "Drag (US)",
+    },
+    "url": "https://player.vidzee.wtf/v2/embed/movie/27205?sr=5",
+  },
+]
+`;

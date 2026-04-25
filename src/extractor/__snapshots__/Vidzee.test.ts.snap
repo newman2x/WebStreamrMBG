@@ -1,0 +1,71 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`Vidzee Breaking Bad S1E1 (tv) 1`] = `
+[
+  {
+    "format": "hls",
+    "label": "Nflix (US) - English",
+    "meta": {
+      "extractorId": "vidzee",
+      "title": "Nflix - English",
+    },
+    "requestHeaders": {
+      "Referer": "https://player.vidzee.wtf/",
+      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36",
+    },
+    "ttl": 10800000,
+    "url": "https://late-rice-3ed4.8-97f.workers.dev/tv/yTnpUJV2CkR2aQrrLXxUIy9lcyK48Dccr42uIZHkZf4FlBy21K7xMGRvC-6jPLvC.xtP0oN0R/index.m3u8",
+  },
+]
+`;
+
+exports[`Vidzee Inception (movie) 1`] = `
+[
+  {
+    "format": "hls",
+    "label": "Nflix (US) - English",
+    "meta": {
+      "extractorId": "vidzee",
+      "title": "Nflix - English",
+    },
+    "requestHeaders": {
+      "Referer": "https://player.vidzee.wtf/",
+      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36",
+    },
+    "ttl": 10800000,
+    "url": "https://autumn-star-b7a5.u-f06.workers.dev/movie/cr-pNIvPNCL6G8qBwmaN-o3aJnPji3gFAkq94k8Z40L8aypPnMIMNrkQyMeE2Nf8.KrvYfwxr/index.m3u8",
+  },
+]
+`;
+
+exports[`Vidzee returns empty for empty URL response 1`] = `
+[
+  {
+    "error": [Error: Error],
+    "format": "unknown",
+    "isExternal": true,
+    "label": "VidZee",
+    "meta": {
+      "extractorId": "vidzee",
+    },
+    "ttl": 0,
+    "url": "https://player.vidzee.wtf/v2/embed/movie/88888?sr=4",
+  },
+]
+`;
+
+exports[`Vidzee returns empty for server error response 1`] = `
+[
+  {
+    "error": [Error: Error],
+    "format": "unknown",
+    "isExternal": true,
+    "label": "VidZee",
+    "meta": {
+      "extractorId": "vidzee",
+    },
+    "ttl": 0,
+    "url": "https://player.vidzee.wtf/v2/embed/movie/99999?sr=4",
+  },
+]
+`;
