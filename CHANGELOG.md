@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.72.0](https://github.com/newman2x/WebStreamrMBG/compare/v0.71.0...v0.72.0) (2026-04-26)
+
+
+### Features
+
+* add MovieBox source and extractor ([6711c49](https://github.com/newman2x/WebStreamrMBG/commit/6711c491e1ccdee36bc9abd84a6db522cf5eb4f3))
+
+
+### Bug Fixes
+
+* HubCloud ([e78529c](https://github.com/newman2x/WebStreamrMBG/commit/e78529cdf789ddcf0b8fbbd558c75d697f4a5b69))
+* MovieBox ([03b6466](https://github.com/newman2x/WebStreamrMBG/commit/03b6466b5a55f8e10d05593a4b3b322d8a7d41b1))
+
+
+### Code Refactoring
+
+* remove unnecessary istanbul ignore annotations ([458f35e](https://github.com/newman2x/WebStreamrMBG/commit/458f35ec785cfaa21c027affd6cc9be74be1f309))
+
 ## [0.71.0](https://github.com/newman2x/WebStreamrMBG/compare/v0.70.8...v0.71.0) (2026-04-25)
 
 
