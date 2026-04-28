@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.72.4](https://github.com/newman2x/WebStreamrMBG/compare/v0.72.3...v0.72.4) (2026-04-28)
+
+
+### Bug Fixes
+
+* always set Cache-Control, use must-revalidate over immutable ([700a2a5](https://github.com/newman2x/WebStreamrMBG/commit/700a2a52fe84e2265e3f711791b1b6b8ed3eea34))
+
 ## [0.72.3](https://github.com/newman2x/WebStreamrMBG/compare/v0.72.2...v0.72.3) (2026-04-28)
 
 
