@@ -3,6 +3,7 @@
 exports[`handles source throwing non-NotFoundError 1`] = `
 {
   "streams": [],
+  "ttl": 900000,
 }
 `;
 
@@ -16,6 +17,7 @@ exports[`handles source throwing non-NotFoundError 2`] = `
 ❌ Request failed. Request-id: test.",
     },
   ],
+  "ttl": 900000,
 }
 `;
 

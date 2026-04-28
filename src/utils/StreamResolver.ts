@@ -164,7 +164,9 @@ export class StreamResolver {
         })),
     );
 
-    const ttl = sourceErrorCount === 0 ? this.determineTtl(urlResults) : undefined;
+    // Always compute TTL from successful results so the CDN Cache-Control header is set.
+    // If any source errored, we still want to limit CDN caching for token-based URLs.
+    const ttl = this.determineTtl(urlResults);
 
     return {
       streams,
