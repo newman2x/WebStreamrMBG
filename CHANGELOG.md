@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.72.5](https://github.com/newman2x/WebStreamrMBG/compare/v0.72.4...v0.72.5) (2026-04-28)
+
+
+### Bug Fixes
+
+* bump ([f7f2ff8](https://github.com/newman2x/WebStreamrMBG/commit/f7f2ff8481cd561e5726be53e5259bd721d05421))
+
 ## [0.72.4](https://github.com/newman2x/WebStreamrMBG/compare/v0.72.3...v0.72.4) (2026-04-28)
 
 
