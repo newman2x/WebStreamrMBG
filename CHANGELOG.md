@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.72.3](https://github.com/newman2x/WebStreamrMBG/compare/v0.72.2...v0.72.3) (2026-04-28)
+
+
+### Bug Fixes
+
+* FileMoon ([1bdb750](https://github.com/newman2x/WebStreamrMBG/commit/1bdb7507f57c444597f0027529396b7d257e4450))
+* Filemoon mdf ([73b8a03](https://github.com/newman2x/WebStreamrMBG/commit/73b8a0325bf054b2d593ba3662f4870ab763100e))
+* Hubcloud ([a95c621](https://github.com/newman2x/WebStreamrMBG/commit/a95c6216e96125a2f1cd0adae74180f8e3fff35e))
+* HubCloud & HubDrive ([10a4c7f](https://github.com/newman2x/WebStreamrMBG/commit/10a4c7fd2588243754492cf3cd5a9c6ee0ffb656))
+* Movix ([82c0ac8](https://github.com/newman2x/WebStreamrMBG/commit/82c0ac8dca5cafaff231b2325cd76fa80e188e96))
+* respect per-result TTL in cache to prevent stale token URLs ([29ecb5a](https://github.com/newman2x/WebStreamrMBG/commit/29ecb5adf0c65f4fcfc1dc05fdf562df89a80c35))
+* StreamEmbed ([8caafde](https://github.com/newman2x/WebStreamrMBG/commit/8caafdea0affa44936d734aa50fca706ca49c3b5))
+
 ## [0.72.2](https://github.com/newman2x/WebStreamrMBG/compare/v0.72.1...v0.72.2) (2026-04-27)
 
 
