@@ -77,7 +77,11 @@ addon.use((req: Request, res: Response, next: NextFunction) => {
   res.setHeader('Access-Control-Allow-Headers', '*');
 
   if (envIsProd()) {
-    res.setHeader('Cache-Control', 'public, max-age=10, immutable');
+    // Default Cache-Control for non-stream routes (manifest, configure, etc.).
+    // Stream routes set their own Cache-Control in StreamController.
+    if (!req.path.includes('/stream/')) {
+      res.setHeader('Cache-Control', 'public, max-age=10, immutable');
+    }
   }
 
   next();

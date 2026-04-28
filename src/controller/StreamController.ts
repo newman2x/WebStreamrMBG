@@ -53,13 +53,10 @@ export class StreamController {
     }
 
     await mutex.runExclusive(async () => {
-      const { streams, ttl } = await this.streamResolver.resolve(ctx, sources, type, id);
+      const { streams } = await this.streamResolver.resolve(ctx, sources, type, id);
 
       if (envIsProd()) {
-        // Use the resolver's TTL (based on shortest-lived token) or fall back to 120s.
-        // Never use `immutable` — token-based URLs change frequently and must be revalidated.
-        const maxAge = ttl ? Math.floor(ttl / 1000) : 120;
-        res.setHeader('Cache-Control', `public, max-age=${maxAge}, must-revalidate`);
+        res.setHeader('Cache-Control', 'no-store');
       }
 
       res.setHeader('Content-Type', 'application/json');
