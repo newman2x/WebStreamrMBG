@@ -14,7 +14,7 @@ export class HubCloud extends Extractor {
 
   public readonly label = 'HubCloud';
 
-  public override readonly cacheVersion = 7;
+  public override readonly cacheVersion = 8;
 
   public override readonly ttl = HUBCLOUD_CACHE_TTL;
 
