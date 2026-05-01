@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.72.4](https://github.com/newman2x/WebStreamrMBG/compare/v0.72.3...v0.72.4) (2026-05-01)
+
+
+### Bug Fixes
+
+* startup race condition and cookie bugs ([533a929](https://github.com/newman2x/WebStreamrMBG/commit/533a929d8ee756d5fec533fdc83fd282a83001bd))
+
 ## [0.72.3](https://github.com/newman2x/WebStreamrMBG/compare/v0.72.2...v0.72.3) (2026-04-28)
 
 
