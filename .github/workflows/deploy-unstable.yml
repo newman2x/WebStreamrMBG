@@ -8,6 +8,7 @@ on:
       - '!src/utils/manifest.ts'
       - 'tsconfig.json'
       - 'Procfile'
+      - '.github/workflows/**'
 jobs:
   deploy:
     runs-on: ubuntu-latest
