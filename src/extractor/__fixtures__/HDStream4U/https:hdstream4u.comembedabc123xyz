@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head><title>HDStream4U - Watch Video</title></head>
+<body>
+<div id="vplayer"></div>
+<script type="text/javascript">
+var cdn = "https://cdn2.hdstream4u.com";
+var vvplay = "/hls/abc123xyz/master.m3u8";
+jwplayer('vplayer').setup({
+  sources: [{file: cdn + vvplay, type:"hls"}],
+  width: "100%",
+  aspectratio: "16:9"
+});
+</script>
+</body>
+</html>

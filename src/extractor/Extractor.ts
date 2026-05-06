@@ -1,3 +1,4 @@
+import winston from 'winston';
 import { NotFoundError } from '../error';
 import { Context, Format, InternalUrlResult, Meta, UrlResult } from '../types';
 import { Fetcher } from '../utils';
@@ -15,8 +16,11 @@ export abstract class Extractor {
 
   protected readonly fetcher: Fetcher;
 
-  public constructor(fetcher: Fetcher) {
+  protected readonly logger: winston.Logger;
+
+  public constructor(fetcher: Fetcher, logger: winston.Logger) {
     this.fetcher = fetcher;
+    this.logger = logger;
   }
 
   public abstract supports(ctx: Context, url: URL): boolean;

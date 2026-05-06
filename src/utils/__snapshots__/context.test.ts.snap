@@ -5,7 +5,7 @@ exports[`contextFromRequest with config and ip 1`] = `
   "config": {
     "de": "on",
   },
-  "hostUrl": "https://localhost/",
+  "hostUrl": "https://example.test/",
   "id": "fake-id",
   "ip": "127.0.0.1",
 }
@@ -17,7 +17,7 @@ exports[`contextFromRequest without config 1`] = `
     "en": "on",
     "multi": "on",
   },
-  "hostUrl": "https://localhost/",
+  "hostUrl": "https://example.test/",
   "id": "fake-id",
 }
 `;

@@ -4,17 +4,61 @@ import { Context, Format, InternalUrlResult, Meta } from '../types';
 import { findCountryCodes, findHeight } from '../utils';
 import { Extractor } from './Extractor';
 
-const HUBCLOUD_CACHE_TTL = 120000; // 2 minutes
+const HUBCLOUD_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+const DEAD_DOMAINS = new Set([
+  'hubcloud.ink',
+  'hubcloud.co',
+  'hubcloud.cc',
+  'hubcloud.me',
+  'hubcloud.xyz',
+]);
 
 /** Delay before retrying Hop 1 after a failed Hop 2 (ms). */
 const RETRY_DELAY_MS = 2500;
+
+const REDIRECT_STRATEGIES: readonly ((html: string) => string | null)[] = [
+  html => html.match(/var url\s*=\s*['"](.*?)['"]/)?.[1] ?? null,
+
+  html => html.match(/window\.location(?:\.href)?\s*=\s*['"](.*?)['"]/)?.[1] ?? null,
+
+  html => html.match(/location\.replace\(['"](.*?)['"]\)/)?.[1] ?? null,
+
+  html => html.match(/<meta[^>]*http-equiv=["']?refresh["']?[^>]*content=["']?\d+;\s*url=(.*?)["']/i)?.[1] ?? null,
+
+  html => html.match(/document\.location(?:\.href)?\s*=\s*['"](.*?)['"]/)?.[1] ?? null,
+
+  html => html.match(/location\.href\s*=\s*['"](.*?)['"]/)?.[1] ?? null,
+
+  html => html.match(/location\.assign\(['"](.*?)['"]\)/)?.[1] ?? null,
+
+  html => html.match(/window\.open\(['"](.*?)['"]/)?.[1] ?? null,
+
+  html => html.match(/data-(?:url|href|link)\s*=\s*['"](.*?)['"]/)?.[1] ?? null,
+
+  (html) => {
+    const m = html.match(/<iframe[^>]+src\s*=\s*['"](.*?)['"]/);
+    if (m?.[1] && (m[1].includes('hubcloud') || m[1].includes('gamerxyt'))) return m[1];
+    return null;
+  },
+
+  (html) => {
+    const m = html.match(/var\s+\w+\s*=\s*['"]([^'"]*(?:hubcloud|gamerxyt|hubdrive|hubcdn)[^'"]*)['"]/);
+    return m?.[1] ?? null;
+  },
+
+  (html) => {
+    const m = html.match(/https?:\/\/(?:hubcloud\.[a-z.]+|hubdrive\.[a-z.]+|gamerxyt\.com|hubcdn\.fans)[^\s'"<>)]+/);
+    return m?.[0] ?? null;
+  },
+];
 
 export class HubCloud extends Extractor {
   public readonly id = 'hubcloud';
 
   public readonly label = 'HubCloud';
 
-  public override readonly cacheVersion = 7;
+  public override readonly cacheVersion = 9;
 
   public override readonly ttl = HUBCLOUD_CACHE_TTL;
 
@@ -23,13 +67,19 @@ export class HubCloud extends Extractor {
   }
 
   protected async extractInternal(ctx: Context, url: URL, meta: Meta): Promise<InternalUrlResult[]> {
+    if (DEAD_DOMAINS.has(url.host.toLowerCase())) {
+      return [];
+    }
+
     const headers = { Referer: meta.referer ?? url.href };
 
     const redirectHtml = await this.fetcher.text(ctx, url, { headers });
-    const redirectUrl = this.extractRedirectUrl(redirectHtml);
-    if (!redirectUrl) {
+    const rawRedirectUrl = this.extractRedirectUrl(redirectHtml);
+    if (!rawRedirectUrl) {
       return [];
     }
+
+    const redirectUrl = rawRedirectUrl.startsWith('http') ? rawRedirectUrl : `${url.origin}${rawRedirectUrl}`;
 
     const cookieName = this.extractCookieName(redirectHtml);
     if (cookieName) {
@@ -46,8 +96,9 @@ export class HubCloud extends Extractor {
       await new Promise(resolve => setTimeout(resolve, RETRY_DELAY_MS));
 
       const retryHtml = await this.fetcher.text(ctx, url, { headers });
-      const retryRedirectUrl = this.extractRedirectUrl(retryHtml);
-      if (retryRedirectUrl) {
+      const rawRetryRedirectUrl = this.extractRedirectUrl(retryHtml);
+      if (rawRetryRedirectUrl) {
+        const retryRedirectUrl = rawRetryRedirectUrl.startsWith('http') ? rawRetryRedirectUrl : `${url.origin}${rawRetryRedirectUrl}`;
         if (cookieName) {
           this.fetcher.setCookie(retryRedirectUrl, `${cookieName}=s4t`);
         }
@@ -121,36 +172,15 @@ export class HubCloud extends Extractor {
   };
 
   private extractRedirectUrl(html: string): string | null {
-    // Pattern 1: var url = 'https://...'
-    const varUrlMatch = html.match(/var url ?= ?'(.*?)'/);
-    if (varUrlMatch) {
-      return varUrlMatch[1] as string;
+    for (const strategy of REDIRECT_STRATEGIES) {
+      const result = strategy(html);
+      if (result) {
+        if (strategy === REDIRECT_STRATEGIES[REDIRECT_STRATEGIES.length - 1]) {
+          this.logger.warn(`Brute-force URL extraction used — redirect strategy array may need updating. Extracted: ${result}`);
+        }
+        return result;
+      }
     }
-
-    // Pattern 2: window.location = 'https://...' or window.location.href = 'https://...'
-    const locationMatch = html.match(/window\.location(?:\.href)? ?= ?['"](.*?)['"]/);
-    if (locationMatch) {
-      return locationMatch[1] as string;
-    }
-
-    // Pattern 3: location.replace('https://...')
-    const replaceMatch = html.match(/location\.replace\(['"](.*?)['"]\)/);
-    if (replaceMatch) {
-      return replaceMatch[1] as string;
-    }
-
-    // Pattern 4: <meta http-equiv="refresh" content="0;url=https://...">
-    const metaRefreshMatch = html.match(/<meta[^>]*http-equiv=["']?refresh["']?[^>]*content=["']?\d+;\s*url=(.*?)["']/i);
-    if (metaRefreshMatch) {
-      return metaRefreshMatch[1] as string;
-    }
-
-    // Pattern 5: document.location = 'https://...'
-    const docLocationMatch = html.match(/document\.location(?:\.href)? ?= ?['"](.*?)['"]/);
-    if (docLocationMatch) {
-      return docLocationMatch[1] as string;
-    }
-
     return null;
   }
 
@@ -160,6 +190,27 @@ export class HubCloud extends Extractor {
   }
 
   private hasValidDownloadContent($: cheerio.CheerioAPI): boolean {
-    return $('#size').length > 0 || $('a:contains("FSL")').length > 0 || $('a:contains("PixelServer")').length > 0;
+    if ($('#size').length > 0 || $('a:contains("FSL")').length > 0 || $('a:contains("PixelServer")').length > 0) {
+      return true;
+    }
+
+    const extendedSelectors = [
+      'a#download',
+      'a[href*="hubcloud.php"]',
+      'a[href*="gamerxyt.com"]',
+      'a[href*="hubcloud.one"]',
+      '.download-btn',
+      'a[href*="download"]',
+      'a.btn.btn-primary',
+      '.btn-success',
+      '.btn-danger',
+    ];
+    for (const selector of extendedSelectors) {
+      if ($(selector).length > 0) {
+        return true;
+      }
+    }
+
+    return false;
   }
 }

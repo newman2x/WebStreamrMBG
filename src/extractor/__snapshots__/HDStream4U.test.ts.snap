@@ -1,0 +1,109 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`HDStream4U extracts .m3u8 URL without file: or master pattern 1`] = `
+[
+  {
+    "format": "hls",
+    "label": "HDStream4U",
+    "meta": {
+      "extractorId": "hdstream4u",
+    },
+    "requestHeaders": {
+      "Referer": "https://hdstream4u.com/",
+    },
+    "ttl": 300000,
+    "url": "https://cdn6.hdstream4u.com/hls/playlisttest/stream.m3u8?key=xyz",
+  },
+]
+`;
+
+exports[`HDStream4U extracts m3u8 stream from embed page with file: pattern 1`] = `
+[
+  {
+    "format": "hls",
+    "label": "HDStream4U",
+    "meta": {
+      "extractorId": "hdstream4u",
+    },
+    "requestHeaders": {
+      "Referer": "https://hdstream4u.com/",
+    },
+    "ttl": 300000,
+    "url": "https://cdn.hdstream4u.com/hls/f1km2fch7mgd/master.m3u8",
+  },
+]
+`;
+
+exports[`HDStream4U extracts m3u8 with dynamic CDN path 1`] = `[]`;
+
+exports[`HDStream4U extracts master.m3u8 URL without file: pattern 1`] = `
+[
+  {
+    "format": "hls",
+    "label": "HDStream4U",
+    "meta": {
+      "extractorId": "hdstream4u",
+    },
+    "requestHeaders": {
+      "Referer": "https://hdstream4u.com/",
+    },
+    "ttl": 300000,
+    "url": "https://cdn5.hdstream4u.com/hls/mastertest/master.m3u8",
+  },
+]
+`;
+
+exports[`HDStream4U extracts playlist m3u8 from embed page 1`] = `
+[
+  {
+    "format": "hls",
+    "label": "HDStream4U",
+    "meta": {
+      "extractorId": "hdstream4u",
+    },
+    "requestHeaders": {
+      "Referer": "https://hdstream4u.com/",
+    },
+    "ttl": 300000,
+    "url": "https://cdn3.hdstream4u.com/stream/dlmptest1/playlist.m3u8?token=abc123",
+  },
+]
+`;
+
+exports[`HDStream4U falls back to download page for MP4 when no m3u8 in embed 1`] = `
+[
+  {
+    "format": "mp4",
+    "label": "HDStream4U",
+    "meta": {
+      "extractorId": "hdstream4u",
+    },
+    "requestHeaders": {
+      "Referer": "https://hdstream4u.com/",
+    },
+    "ttl": 300000,
+    "url": "https://cdn.hdstream4u.com/dl/nom3u8vid/video.mp4",
+  },
+]
+`;
+
+exports[`HDStream4U falls back to download page with href Download link 1`] = `
+[
+  {
+    "format": "mp4",
+    "label": "HDStream4U",
+    "meta": {
+      "extractorId": "hdstream4u",
+    },
+    "requestHeaders": {
+      "Referer": "https://hdstream4u.com/",
+    },
+    "ttl": 300000,
+    "url": "https://cdn.hdstream4u.com/dl/dlclickvid/",
+  },
+]
+`;
+
+exports[`HDStream4U returns empty for not found page 1`] = `[]`;
+
+exports[`HDStream4U returns empty when no video links found on embed or download page 1`] = `[]`;

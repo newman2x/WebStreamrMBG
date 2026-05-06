@@ -1,5 +1,6 @@
 import * as cheerio from 'cheerio';
-import { Context, InternalUrlResult, Meta } from '../types';
+import winston from 'winston';
+import { Context, Format, InternalUrlResult, Meta } from '../types';
 import { Fetcher } from '../utils';
 import { Extractor } from './Extractor';
 import { HubCloud } from './HubCloud';
@@ -15,8 +16,8 @@ export class HubDrive extends Extractor {
 
   private readonly hubCloud: HubCloud;
 
-  public constructor(fetcher: Fetcher, hubCloud: HubCloud) {
-    super(fetcher);
+  public constructor(fetcher: Fetcher, logger: winston.Logger, hubCloud: HubCloud) {
+    super(fetcher, logger);
 
     this.hubCloud = hubCloud;
   }
@@ -29,6 +30,11 @@ export class HubDrive extends Extractor {
     const headers = { Referer: meta.referer ?? url.href };
 
     const html = await this.fetcher.text(ctx, url, { headers });
+
+    if (url.host.includes('hubcdn.fans')) {
+      return this.extractHubCdnResult(html, meta);
+    }
+
     const $ = cheerio.load(html);
 
     const hubCloudUrl = $('a:contains("HubCloud")')
@@ -37,4 +43,40 @@ export class HubDrive extends Extractor {
 
     return hubCloudUrl ? this.hubCloud.extract(ctx, hubCloudUrl, meta) : [];
   };
+
+  private extractHubCdnResult(html: string, meta: Meta): InternalUrlResult[] {
+    // Pattern 1: <a id="vd" href='URL'> (new hubcdn.fans format)
+    const vdMatch = html.match(/<a\s+id=["']vd["']\s+href=["']([^"']+)["']/i);
+    if (vdMatch?.[1]) {
+      try {
+        const directUrl = new URL(vdMatch[1]);
+        return [{ url: directUrl, format: Format.unknown, meta }];
+      // eslint-disable-next-line no-empty
+      } catch {
+      }
+    }
+
+    // Pattern 2: var reurl = "URL" (legacy hubcdn.fans format)
+    const reurlMatch = html.match(/var\s+reurl\s*=\s*["']([^"']+)["']/);
+    if (reurlMatch?.[1]) {
+      try {
+        const directUrl = new URL(reurlMatch[1]);
+        return [{ url: directUrl, format: Format.unknown, meta }];
+      // eslint-disable-next-line no-empty
+      } catch {
+      }
+    }
+
+    // Pattern 3: any googleusercontent.com URL (fallback)
+    const gdriveMatch = html.match(/(https?:\/\/[^\s"'<>]*googleusercontent\.com[^\s"'<>]*)/);
+    if (gdriveMatch?.[1]) {
+      try {
+        return [{ url: new URL(gdriveMatch[1]), format: Format.unknown, meta }];
+      // eslint-disable-next-line no-empty
+      } catch {
+      }
+    }
+
+    return [];
+  }
 }

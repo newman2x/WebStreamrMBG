@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head><title>HDStream4U - Watch Video</title></head>
+<body>
+<div id="vplayer"></div>
+<script type="text/javascript">
+var streamUrl = "https://cdn6.hdstream4u.com/hls/playlisttest/stream.m3u8?key=xyz";
+jwplayer('vplayer').setup({
+  width: "100%",
+  aspectratio: "16:9"
+});
+</script>
+</body>
+</html>

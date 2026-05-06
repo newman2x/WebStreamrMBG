@@ -5,7 +5,7 @@ import { ExtractorRegistry } from './ExtractorRegistry';
 import { Vidara } from './Vidara';
 
 const logger = winston.createLogger({ transports: [new winston.transports.Console({ level: 'nope' })] });
-const extractorRegistry = new ExtractorRegistry(logger, [new Vidara(new FetcherMock(`${__dirname}/__fixtures__/Vidara`))]);
+const extractorRegistry = new ExtractorRegistry(logger, [new Vidara(new FetcherMock(`${__dirname}/__fixtures__/Vidara`), logger)]);
 
 const ctx = createTestContext();
 

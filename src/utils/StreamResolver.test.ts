@@ -27,7 +27,7 @@ const mostraGuarda = new MostraGuarda(fetcher);
 
 describe('resolve', () => {
   test('returns info as stream if no sources were configured', async () => {
-    const streamResolver = new StreamResolver(logger, new ExtractorRegistry(logger, createExtractors(fetcher)));
+    const streamResolver = new StreamResolver(logger, new ExtractorRegistry(logger, createExtractors(fetcher, logger)));
 
     const streams = await streamResolver.resolve(ctx, [], 'movie', new ImdbId('tt123456789', undefined, undefined));
 
@@ -36,7 +36,7 @@ describe('resolve', () => {
 
   test('returns source errors as stream', async () => {
     const fetcherSpy = jest.spyOn(fetcher, 'text').mockRejectedValue('ups, an error occurred.');
-    const streamResolver = new StreamResolver(logger, new ExtractorRegistry(logger, createExtractors(fetcher)));
+    const streamResolver = new StreamResolver(logger, new ExtractorRegistry(logger, createExtractors(fetcher, logger)));
 
     const streams = await streamResolver.resolve(ctx, [meineCloud], 'movie', new ImdbId('tt123456789', undefined, undefined));
     expect(streams).toMatchSnapshot();
@@ -48,7 +48,7 @@ describe('resolve', () => {
   });
 
   test('returns empty array if no source found anything', async () => {
-    const streamResolver = new StreamResolver(logger, new ExtractorRegistry(logger, createExtractors(fetcher)));
+    const streamResolver = new StreamResolver(logger, new ExtractorRegistry(logger, createExtractors(fetcher, logger)));
 
     const streams = await streamResolver.resolve(ctx, [meineCloud, mostraGuarda], 'movie', new ImdbId('tt12345678', undefined, undefined));
 
@@ -56,7 +56,7 @@ describe('resolve', () => {
   });
 
   test('returns empty array if no source supported the type', async () => {
-    const streamResolver = new StreamResolver(logger, new ExtractorRegistry(logger, createExtractors(fetcher)));
+    const streamResolver = new StreamResolver(logger, new ExtractorRegistry(logger, createExtractors(fetcher, logger)));
 
     const streams = await streamResolver.resolve(ctx, [meineCloud, mostraGuarda], 'series', new ImdbId('tt12345678', 1, 1));
 
@@ -64,7 +64,7 @@ describe('resolve', () => {
   });
 
   test('returns sorted results', async () => {
-    const streamResolver = new StreamResolver(logger, new ExtractorRegistry(logger, createExtractors(fetcher)));
+    const streamResolver = new StreamResolver(logger, new ExtractorRegistry(logger, createExtractors(fetcher, logger)));
 
     const streams = await streamResolver.resolve(ctx, [meineCloud, mostraGuarda], 'movie', new ImdbId('tt29141112', undefined, undefined));
     expect(streams.ttl).not.toBeUndefined();
@@ -76,21 +76,21 @@ describe('resolve', () => {
   });
 
   test('skips fallback sources if possible', async () => {
-    const streamResolver = new StreamResolver(logger, new ExtractorRegistry(logger, [new HubCloud(fetcher), new RgShowsExtractor(fetcher)]));
+    const streamResolver = new StreamResolver(logger, new ExtractorRegistry(logger, [new HubCloud(fetcher, logger), new RgShowsExtractor(fetcher, logger)]));
 
     const streams = await streamResolver.resolve(createTestContext(), [fourKhdHub, new RgShows(fetcher)], 'movie', new TmdbId(812583, undefined, undefined));
     expect(streams.streams).toMatchSnapshot();
   });
 
   test('keeps fallback sources if needed', async () => {
-    const streamResolver = new StreamResolver(logger, new ExtractorRegistry(logger, [new HubCloud(fetcher), new RgShowsExtractor(fetcher)]));
+    const streamResolver = new StreamResolver(logger, new ExtractorRegistry(logger, [new HubCloud(fetcher, logger), new RgShowsExtractor(fetcher, logger)]));
 
     const streams = await streamResolver.resolve(createTestContext(), [new RgShows(fetcher)], 'movie', new TmdbId(812583, undefined, undefined));
     expect(streams.streams).toMatchSnapshot();
   });
 
   test('uses priority for sorting', async () => {
-    const streamResolver = new StreamResolver(logger, new ExtractorRegistry(logger, [new RgShowsExtractor(fetcher), new VixSrcExtractor(fetcher)]));
+    const streamResolver = new StreamResolver(logger, new ExtractorRegistry(logger, [new RgShowsExtractor(fetcher, logger), new VixSrcExtractor(fetcher, logger)]));
 
     const streams = await streamResolver.resolve(createTestContext(), [new RgShows(fetcher), new VixSrc(fetcher)], 'series', new TmdbId(2190, 26, 2));
     expect(streams.streams).toMatchSnapshot();
@@ -276,7 +276,7 @@ describe('resolve', () => {
         ];
     }
 
-    const streamResolver = new StreamResolver(logger, new ExtractorRegistry(logger, [new MockExtractor(fetcher)]));
+    const streamResolver = new StreamResolver(logger, new ExtractorRegistry(logger, [new MockExtractor(fetcher, logger)]));
 
     const streams = await streamResolver.resolve(ctx, [new MockSource()], 'movie', new ImdbId('tt11655566', undefined, undefined));
     expect(streams).toMatchSnapshot();
@@ -302,7 +302,7 @@ describe('resolve', () => {
       };
     }
 
-    const streamResolver = new StreamResolver(logger, new ExtractorRegistry(logger, createExtractors(fetcher)));
+    const streamResolver = new StreamResolver(logger, new ExtractorRegistry(logger, createExtractors(fetcher, logger)));
 
     const streams = await streamResolver.resolve(ctx, [new MockSource()], 'movie', new ImdbId('tt12345678', undefined, undefined));
 
@@ -322,7 +322,7 @@ test('handles source throwing non-NotFoundError', async () => {
     };
   }
 
-  const streamResolver = new StreamResolver(logger, new ExtractorRegistry(logger, createExtractors(fetcher)));
+  const streamResolver = new StreamResolver(logger, new ExtractorRegistry(logger, createExtractors(fetcher, logger)));
 
   const streams = await streamResolver.resolve(ctx, [new ThrowingSource()], 'movie', new ImdbId('tt12345678', undefined, undefined));
   expect(streams).toMatchSnapshot();

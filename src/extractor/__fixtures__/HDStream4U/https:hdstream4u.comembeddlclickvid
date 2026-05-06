@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head><title>HDStream4U - Watch Video</title></head>
+<body>
+<div id="vplayer"></div>
+<script type="text/javascript">
+jwplayer('vplayer').setup({
+  width: "100%",
+  aspectratio: "16:9"
+});
+</script>
+<p>No video links here</p>
+</body>
+</html>

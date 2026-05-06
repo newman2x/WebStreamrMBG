@@ -19,12 +19,10 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-      - name: Install and build
-        run: |
-          npm install
-          VERSION=$(node -p "require('./package.json').version")
-          sed -i "s/version: '[^']*', \/\/ x-release-please-version/version: '${VERSION}-dev', \/\/ x-release-please-version/" src/utils/manifest.ts
-          npm run build
+      - name: Generate beamup-host.json
+        run: echo '{"host":"87d6a6ef6b58-webstreamrmbg-dev.baby-beamup.club"}' > beamup-host.json
+      - name: Install
+        run: npm install
       - name: Setup SSH
         run: |
           mkdir -p ~/.ssh
@@ -35,9 +33,12 @@ jobs:
         run: |
           git config user.email "ci@github.com"
           git config user.name "GitHub Actions"
+          VERSION=$(node -p "require('./package.json').version")
+          sed -i "s/version: '[^']*', \/\/ x-release-please-version/version: '${VERSION}-dev', \/\/ x-release-please-version/" src/utils/manifest.ts
+          npm run build
           git remote add beamup-dev dokku@a.baby-beamup.club:87d6a6ef6b58/webstreamrmbg-dev
-          git add dist/ --force
-          git commit -m "ci: build for unstable deploy" || true
+          git add src/utils/manifest.ts dist/ beamup-host.json --force
+          git commit -m "ci: build for unstable deploy (v${VERSION}-dev)" || true
           git push beamup-dev HEAD:main --force
       - name: Verify deployment
         run: |

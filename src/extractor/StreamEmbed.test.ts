@@ -5,7 +5,7 @@ import { ExtractorRegistry } from './ExtractorRegistry';
 import { StreamEmbed } from './StreamEmbed';
 
 const logger = winston.createLogger({ transports: [new winston.transports.Console({ level: 'nope' })] });
-const extractorRegistry = new ExtractorRegistry(logger, [new StreamEmbed(new FetcherMock(`${__dirname}/__fixtures__/StreamEmbed`))]);
+const extractorRegistry = new ExtractorRegistry(logger, [new StreamEmbed(new FetcherMock(`${__dirname}/__fixtures__/StreamEmbed`), logger)]);
 
 const ctxWithoutMfp = createTestContext();
 const ctxWithMfp = createTestContext({ mediaFlowProxyUrl: 'https://mediaflow.test.org', mediaFlowProxyPassword: 'test' });

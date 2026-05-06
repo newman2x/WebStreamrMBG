@@ -5,7 +5,7 @@ import { ExtractorRegistry } from './ExtractorRegistry';
 import { Fastream } from './Fastream';
 
 const logger = winston.createLogger({ transports: [new winston.transports.Console({ level: 'nope' })] });
-const extractorRegistry = new ExtractorRegistry(logger, [new Fastream(new FetcherMock(`${__dirname}/__fixtures__/Fastream`))]);
+const extractorRegistry = new ExtractorRegistry(logger, [new Fastream(new FetcherMock(`${__dirname}/__fixtures__/Fastream`), logger)]);
 
 const ctx = createTestContext({ mediaFlowProxyUrl: 'https://mediaflow-proxy.test', mediaFlowProxyPassword: 'asdfg' });
 

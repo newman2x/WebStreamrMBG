@@ -5,7 +5,7 @@ import { ExtractorRegistry } from './ExtractorRegistry';
 import { YouTube } from './YouTube';
 
 const logger = winston.createLogger({ transports: [new winston.transports.Console({ level: 'nope' })] });
-const extractorRegistry = new ExtractorRegistry(logger, [new YouTube(new FetcherMock(`${__dirname}/__fixtures__/YouTube`))]);
+const extractorRegistry = new ExtractorRegistry(logger, [new YouTube(new FetcherMock(`${__dirname}/__fixtures__/YouTube`), logger)]);
 
 const ctx = createTestContext();
 

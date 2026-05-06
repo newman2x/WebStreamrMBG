@@ -4,6 +4,8 @@ import winston from 'winston';
 import { ExtractorRegistry } from '../extractor';
 import { contextFromRequestAndResponse, Fetcher } from '../utils';
 
+const EXTRACT_TIMEOUT_MS = 30_000;
+
 export class ExtractController {
   public readonly router: Router;
 
@@ -40,8 +42,15 @@ export class ExtractController {
       this.locks.set(url.href, mutex);
     }
 
-    await mutex.runExclusive(async () => {
+    let timedOut = false;
+
+    const extraction = mutex.runExclusive(async () => {
       const urlResults = await this.extractorRegistry.handle(ctx, url);
+
+      if (timedOut) {
+        this.logger.info(`Lazy extract completed after client timeout — result cached for URL ${url}`, ctx);
+        return;
+      }
 
       const urlResult = urlResults[index];
       if (!urlResult || urlResult.error) {
@@ -51,6 +60,19 @@ export class ExtractController {
 
       res.redirect(urlResult.url.href);
     });
+
+    const timeout = new Promise<void>((resolve) => {
+      setTimeout(() => {
+        if (!res.headersSent) {
+          timedOut = true;
+          this.logger.warn(`Lazy extract timed out after ${EXTRACT_TIMEOUT_MS}ms for URL ${url}`, ctx);
+          res.status(504).send('Gateway Timeout');
+        }
+        resolve();
+      }, EXTRACT_TIMEOUT_MS);
+    });
+
+    await Promise.race([extraction, timeout]);
 
     if (!mutex.isLocked()) {
       this.locks.delete(url.href);

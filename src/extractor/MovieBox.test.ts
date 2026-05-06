@@ -5,7 +5,7 @@ import { ExtractorRegistry } from './ExtractorRegistry';
 import { MovieBox } from './MovieBox';
 
 const logger = winston.createLogger({ transports: [new winston.transports.Console({ level: 'nope' })] });
-const extractorRegistry = new ExtractorRegistry(logger, [new MovieBox(new FetcherMock(`${__dirname}/__fixtures__/MovieBox`))]);
+const extractorRegistry = new ExtractorRegistry(logger, [new MovieBox(new FetcherMock(`${__dirname}/__fixtures__/MovieBox`), logger)]);
 
 const ctx = createTestContext();
 
@@ -47,22 +47,22 @@ describe('MovieBox', () => {
   });
 
   test('supports h5-api.aoneroom.com URLs', () => {
-    const extractor = new MovieBox(new FetcherMock(`${__dirname}/__fixtures__/MovieBox`));
+    const extractor = new MovieBox(new FetcherMock(`${__dirname}/__fixtures__/MovieBox`), logger);
     expect(extractor.supports(ctx, new URL('https://h5-api.aoneroom.com/wefeed-h5api-bff/subject/download?subjectId=123'))).toBe(true);
   });
 
   test('supports h5.aoneroom.com URLs', () => {
-    const extractor = new MovieBox(new FetcherMock(`${__dirname}/__fixtures__/MovieBox`));
+    const extractor = new MovieBox(new FetcherMock(`${__dirname}/__fixtures__/MovieBox`), logger);
     expect(extractor.supports(ctx, new URL('https://h5.aoneroom.com/wefeed-h5-bff/web/subject/play?subjectId=123'))).toBe(true);
   });
 
   test('supports moviebox.ph URLs', () => {
-    const extractor = new MovieBox(new FetcherMock(`${__dirname}/__fixtures__/MovieBox`));
+    const extractor = new MovieBox(new FetcherMock(`${__dirname}/__fixtures__/MovieBox`), logger);
     expect(extractor.supports(ctx, new URL('https://moviebox.ph/wefeed-h5api-bff/subject/download?subjectId=123'))).toBe(true);
   });
 
   test('does not support other URLs', () => {
-    const extractor = new MovieBox(new FetcherMock(`${__dirname}/__fixtures__/MovieBox`));
+    const extractor = new MovieBox(new FetcherMock(`${__dirname}/__fixtures__/MovieBox`), logger);
     expect(extractor.supports(ctx, new URL('https://example.com/play?id=123'))).toBe(false);
   });
 });

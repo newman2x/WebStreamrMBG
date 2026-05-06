@@ -1,5 +1,6 @@
 import { createDecipheriv, createHash } from 'node:crypto';
 import { Cacheable, CacheableMemory, Keyv } from 'cacheable';
+import winston from 'winston';
 import { Context, Format, InternalUrlResult, Meta } from '../types';
 import { Fetcher, guessHeightFromPlaylist } from '../utils';
 import { Extractor } from './Extractor';
@@ -97,8 +98,8 @@ export class Vidzee extends Extractor {
 
   public override readonly ttl: number = 10800000; // 3h
 
-  public constructor(fetcher: Fetcher) {
-    super(fetcher);
+  public constructor(fetcher: Fetcher, logger: winston.Logger) {
+    super(fetcher, logger);
   }
 
   public supports(_ctx: Context, url: URL): boolean {

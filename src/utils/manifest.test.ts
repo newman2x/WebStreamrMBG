@@ -1,3 +1,4 @@
+import winston from 'winston';
 import { DoodStream } from '../extractor/DoodStream';
 import { ExternalUrl } from '../extractor/ExternalUrl';
 import { SuperVideo } from '../extractor/SuperVideo';
@@ -10,6 +11,7 @@ import { FetcherMock } from './FetcherMock';
 import { buildManifest } from './manifest';
 
 const fetcher = new FetcherMock('/dev/null');
+const logger = winston.createLogger({ transports: [new winston.transports.Console({ level: 'nope' })] });
 
 describe('buildManifest', () => {
   test('default manifest', async () => {
@@ -64,9 +66,9 @@ describe('buildManifest', () => {
 
   test('disable extractors', () => {
     const extractors = [
-      new DoodStream(fetcher),
-      new SuperVideo(fetcher),
-      new ExternalUrl(fetcher),
+      new DoodStream(fetcher, logger),
+      new SuperVideo(fetcher, logger),
+      new ExternalUrl(fetcher, logger),
     ];
     const manifest = buildManifest([], extractors, { disableExtractor_doodstream: 'on' });
 

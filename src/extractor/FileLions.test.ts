@@ -5,7 +5,7 @@ import { ExtractorRegistry } from './ExtractorRegistry';
 import { FileLions } from './FileLions';
 
 const logger = winston.createLogger({ transports: [new winston.transports.Console({ level: 'nope' })] });
-const extractorRegistry = new ExtractorRegistry(logger, [new FileLions(new FetcherMock(`${__dirname}/__fixtures__/FileLions`))]);
+const extractorRegistry = new ExtractorRegistry(logger, [new FileLions(new FetcherMock(`${__dirname}/__fixtures__/FileLions`), logger)]);
 
 const ctx = createTestContext({ mediaFlowProxyUrl: 'https://mediaflow.test.org', mediaFlowProxyPassword: 'test' });
 

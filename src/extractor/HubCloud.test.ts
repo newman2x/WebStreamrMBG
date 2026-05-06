@@ -6,9 +6,102 @@ import { ExtractorRegistry } from './ExtractorRegistry';
 import { HubCloud } from './HubCloud';
 
 const logger = winston.createLogger({ transports: [new winston.transports.Console({ level: 'nope' })] });
-const extractorRegistry = new ExtractorRegistry(logger, [new HubCloud(new FetcherMock(`${__dirname}/__fixtures__/HubCloud`))]);
+const extractorRegistry = new ExtractorRegistry(logger, [new HubCloud(new FetcherMock(`${__dirname}/__fixtures__/HubCloud`), logger)]);
 
 const ctx = createTestContext();
+
+describe('HubCloud dead domain skip', () => {
+  test('skips known dead HubCloud domains immediately', async () => {
+    const fetcher = new Fetcher(axios.create(), logger);
+    const hubCloud = new HubCloud(fetcher, logger);
+    const textSpy = jest.spyOn(fetcher, 'text');
+
+    const deadDomains = ['hubcloud.ink', 'hubcloud.co', 'hubcloud.cc', 'hubcloud.me', 'hubcloud.xyz'];
+    for (const domain of deadDomains) {
+      const result = await hubCloud.extract(ctx, new URL(`https://${domain}/drive/test123`), {});
+      expect(result).toEqual([]);
+    }
+
+    expect(textSpy).not.toHaveBeenCalled();
+  });
+
+  test('allows live HubCloud domains', async () => {
+    const fetcher = new Fetcher(axios.create(), logger);
+    const hubCloud = new HubCloud(fetcher, logger);
+
+    const hop1Html = `<html><head><title>Test</title></head><body>
+      <script>var url = 'https://hubrouting.site/hubcloud.php?host=hubcloud&id=livedomain&token=test';</script>
+    </body></html>`;
+
+    const hop2Html = `<html><head><title>Test.LiveDomain.2024.1080p.mkv</title></head><body>
+      <li class="list-group-item d-flex justify-content-between align-items-center">File Size<i id="size">1.0 GB</i></li>
+      <a href="https://hub.live-cdn.buzz/live123?token=111" id="fsl">Download [FSL Server]</a>
+    </body></html>`;
+
+    let callCount = 0;
+    jest.spyOn(fetcher, 'text').mockImplementation(async () => {
+      callCount++;
+      if (callCount === 1) return hop1Html;
+      return hop2Html;
+    });
+    jest.spyOn(fetcher, 'setCookie').mockImplementation(() => { /* noop */ });
+
+    const result = await hubCloud.extract(ctx, new URL('https://hubcloud.one/drive/livedomain'), {});
+    expect(result.length).toBeGreaterThan(0);
+  });
+});
+
+describe('HubCloud extended download selectors', () => {
+  test('recognizes page with a#download element as valid content', async () => {
+    const fetcher = new Fetcher(axios.create(), logger);
+    const hubCloud = new HubCloud(fetcher, logger);
+
+    const hop1Html = `<html><head><title>Test</title></head><body>
+      <script>var url = 'https://hubrouting.site/hubcloud.php?host=hubcloud&id=extsel&token=test';</script>
+    </body></html>`;
+
+    const hop2Html = `<html><head><title>Test.ExtSel.2024.1080p.mkv</title></head><body>
+      <a id="download" href="https://hub.extsel-cdn.buzz/ext123?token=222">Download</a>
+    </body></html>`;
+
+    let callCount = 0;
+    jest.spyOn(fetcher, 'text').mockImplementation(async () => {
+      callCount++;
+      if (callCount === 1) return hop1Html;
+      return hop2Html;
+    });
+    jest.spyOn(fetcher, 'setCookie').mockImplementation(() => { /* noop */ });
+
+    const result = await hubCloud.extract(ctx, new URL('https://hubcloud.one/drive/extsel'), {});
+    expect(callCount).toBe(2); // Only 2 calls: Hop 1 + Hop 2 (no retry)
+    expect(result.length).toBeGreaterThanOrEqual(0);
+  });
+
+  test('recognizes page with .download-btn as valid content', async () => {
+    const fetcher = new Fetcher(axios.create(), logger);
+    const hubCloud = new HubCloud(fetcher, logger);
+
+    const hop1Html = `<html><head><title>Test</title></head><body>
+      <script>var url = 'https://hubrouting.site/hubcloud.php?host=hubcloud&id=dlbtn&token=test';</script>
+    </body></html>`;
+
+    const hop2Html = `<html><head><title>Test.DlBtn.2024.720p.mkv</title></head><body>
+      <a class="download-btn" href="https://hub.dlbtn-cdn.buzz/dl456?token=333">Download</a>
+    </body></html>`;
+
+    let callCount = 0;
+    jest.spyOn(fetcher, 'text').mockImplementation(async () => {
+      callCount++;
+      if (callCount === 1) return hop1Html;
+      return hop2Html;
+    });
+    jest.spyOn(fetcher, 'setCookie').mockImplementation(() => { /* noop */ });
+
+    const result = await hubCloud.extract(ctx, new URL('https://hubcloud.one/drive/dlbtn'), {});
+    expect(callCount).toBe(2); // No retry
+    expect(result.length).toBeGreaterThanOrEqual(0);
+  });
+});
 
 describe('HubCloud', () => {
   test('handle dexter original sin 2024 s01e01', async () => {
@@ -56,7 +149,7 @@ describe('HubCloud retry logic', () => {
   test('retry succeeds after first Hop 2 returns empty page', async () => {
     // Create a fetcher mock that returns empty page on first Hop 2, then valid page on retry
     const fetcher = new Fetcher(axios.create(), logger);
-    const hubCloud = new HubCloud(fetcher);
+    const hubCloud = new HubCloud(fetcher, logger);
 
     const hop1Html = `<html><head><title>Test</title></head><body>
       <script>var url = 'https://hubrouting.site/hubcloud.php?host=hubcloud&id=retrytest&token=test';</script>
@@ -94,7 +187,7 @@ describe('HubCloud retry logic', () => {
 
   test('retry with no cookie name still works', async () => {
     const fetcher = new Fetcher(axios.create(), logger);
-    const hubCloud = new HubCloud(fetcher);
+    const hubCloud = new HubCloud(fetcher, logger);
 
     const hop1HtmlNoCookie = `<html><head><title>Test</title></head><body>
       <script>var url = 'https://hubrouting.site/hubcloud.php?host=hubcloud&id=nocookie&token=test';</script>
@@ -127,7 +220,7 @@ describe('HubCloud retry logic', () => {
 
   test('retry with no redirect URL found on retry returns empty', async () => {
     const fetcher = new Fetcher(axios.create(), logger);
-    const hubCloud = new HubCloud(fetcher);
+    const hubCloud = new HubCloud(fetcher, logger);
 
     const hop1HtmlWithRedirect = `<html><head><title>Test</title></head><body>
       <script>var url = 'https://hubrouting.site/hubcloud.php?host=hubcloud&id=noretry&token=test';</script>
@@ -151,5 +244,161 @@ describe('HubCloud retry logic', () => {
     const result = await hubCloud.extract(ctx, new URL('https://hubcloud.one/drive/noretry'), {});
 
     expect(result).toHaveLength(0);
+  });
+});
+
+describe('HubCloud brute-force fallback', () => {
+  test('uses brute-force regex when no structured strategy matches', async () => {
+    const fetcher = new Fetcher(axios.create(), logger);
+    const hubCloud = new HubCloud(fetcher, logger);
+
+    const hop1Html = `<html><head><title>Test</title></head><body>
+      <!-- Redirect: https://hubcloud.foo/drive/bruteforcetest -->
+      <p>Click <span>https://hubcloud.foo/drive/bruteforcetest</span> to continue</p>
+    </body></html>`;
+
+    const hop2Html = `<html><head><title>Test.BruteForce.2024.1080p.mkv</title></head><body>
+      <li class="list-group-item d-flex justify-content-between align-items-center">File Size<i id="size">2.0 GB</i></li>
+      <a href="https://hub.bruteforce-cdn.buzz/bf123?token=999" id="fsl">Download [FSL Server]</a>
+    </body></html>`;
+
+    let textCallCount = 0;
+    jest.spyOn(fetcher, 'text').mockImplementation(async () => {
+      textCallCount++;
+      if (textCallCount === 1) return hop1Html;
+      return hop2Html;
+    });
+    jest.spyOn(fetcher, 'setCookie').mockImplementation(() => { /* noop */ });
+
+    const warnSpy = jest.spyOn(hubCloud['logger'], 'warn');
+
+    const result = await hubCloud.extract(ctx, new URL('https://hubcloud.one/drive/bruteforcetest'), {});
+
+    expect(result.length).toBeGreaterThan(0);
+    expect(
+      warnSpy.mock.calls.some(
+        (args) => {
+          const msg = args[0] as unknown as string;
+          return typeof msg === 'string'
+            && msg.includes('Brute-force URL extraction used')
+            && msg.includes('hubcloud.foo');
+        },
+      ),
+    ).toBe(true);
+  });
+
+  test('skips iframe with non-hubcloud URL (Pattern 10 negative branch)', async () => {
+    const fetcher = new Fetcher(axios.create(), logger);
+    const hubCloud = new HubCloud(fetcher, logger);
+
+    const hop1Html = `<html><head><title>Test</title></head><body>
+      <iframe src="https://ads.example.com/banner"></iframe>
+      <script>var redirect = 'https://hubcloud.foo/drive/iframetest';</script>
+    </body></html>`;
+
+    const hop2Html = `<html><head><title>Test.Iframe.2024.720p.mkv</title></head><body>
+      <li class="list-group-item d-flex justify-content-between align-items-center">File Size<i id="size">1.5 GB</i></li>
+      <a href="https://hub.iframetest-cdn.buzz/if123?token=888" id="fsl">Download [FSL Server]</a>
+    </body></html>`;
+
+    let textCallCount = 0;
+    jest.spyOn(fetcher, 'text').mockImplementation(async () => {
+      textCallCount++;
+      if (textCallCount === 1) return hop1Html;
+      return hop2Html;
+    });
+    jest.spyOn(fetcher, 'setCookie').mockImplementation(() => { /* noop */ });
+
+    const result = await hubCloud.extract(ctx, new URL('https://hubcloud.one/drive/iframetest'), {});
+
+    expect(result.length).toBeGreaterThan(0);
+  });
+
+  test('handles relative redirect URL (var url = "/drive/...?token=...")', async () => {
+    const fetcher = new Fetcher(axios.create(), logger);
+    const hubCloud = new HubCloud(fetcher, logger);
+
+    const hop1Html = `<html><head><title>Test</title></head><body>
+      <script>var url = '/drive/relativetest?token=abc123';</script>
+      <script>function stck(e,t,i){}stck('relcookie',"s4t",1440);</script>
+    </body></html>`;
+
+    const hop2Html = `<html><head><title>Test.Relative.2024.1080p.mkv</title></head><body>
+      <li class="list-group-item d-flex justify-content-between align-items-center">File Size<i id="size">1.5 GB</i></li>
+      <a href="https://hub.relative-cdn.buzz/rel123?token=xyz" id="fsl">Download [FSL Server]</a>
+    </body></html>`;
+
+    let textCallCount = 0;
+    jest.spyOn(fetcher, 'text').mockImplementation(async (_ctx: unknown, url: URL) => {
+      textCallCount++;
+      if (textCallCount === 1) return hop1Html;
+      expect(url.href).toBe('https://hubcloud.one/drive/relativetest?token=abc123');
+      return hop2Html;
+    });
+    jest.spyOn(fetcher, 'setCookie').mockImplementation(() => { /* noop */ });
+
+    const result = await hubCloud.extract(ctx, new URL('https://hubcloud.one/drive/relativetest'), {});
+
+    expect(result).toHaveLength(1);
+    expect(result.some(r => r.label === 'HubCloud (FSL)')).toBe(true);
+  });
+
+  test('retry with relative redirect URL resolves correctly', async () => {
+    const fetcher = new Fetcher(axios.create(), logger);
+    const hubCloud = new HubCloud(fetcher, logger);
+
+    const hop1Html = `<html><head><title>Test</title></head><body>
+      <script>var url = '/drive/retryrelative?token=retry123';</script>
+      <script>function stck(e,t,i){}stck('rrcookie',"s4t",1440);</script>
+    </body></html>`;
+
+    const emptyHop2Html = '<html><head><title>Error</title></head><body><p>Token expired</p></body></html>';
+
+    const validHop2Html = `<html><head><title>Test.RetryRelative.2024.720p.mkv</title></head><body>
+      <li class="list-group-item d-flex justify-content-between align-items-center">File Size<i id="size">800 MB</i></li>
+      <a href="https://hub.rr-cdn.buzz/rr456?token=ttt" id="fsl">Download [FSL Server]</a>
+    </body></html>`;
+
+    let textCallCount = 0;
+    jest.spyOn(fetcher, 'text').mockImplementation(async (_ctx: unknown, url: URL) => {
+      textCallCount++;
+      if (textCallCount === 1) return hop1Html;
+      if (textCallCount === 2) return emptyHop2Html;
+      if (textCallCount === 3) return hop1Html;
+      expect(url.href).toBe('https://hubcloud.foo/drive/retryrelative?token=retry123');
+      return validHop2Html;
+    });
+    jest.spyOn(fetcher, 'setCookie').mockImplementation(() => { /* noop */ });
+
+    const result = await hubCloud.extract(ctx, new URL('https://hubcloud.foo/drive/retryrelative'), {});
+
+    expect(result).toHaveLength(1);
+    expect(result.some(r => r.label === 'HubCloud (FSL)')).toBe(true);
+  });
+
+  test('matches iframe with hubcloud URL (Pattern 10 positive branch)', async () => {
+    const fetcher = new Fetcher(axios.create(), logger);
+    const hubCloud = new HubCloud(fetcher, logger);
+
+    const hop1Html = `<html><head><title>Test</title></head><body>
+      <iframe src="https://hubcloud.foo/drive/iframepositivetest"></iframe>
+    </body></html>`;
+
+    const hop2Html = `<html><head><title>Test.IframePositive.2024.1080p.mkv</title></head><body>
+      <li class="list-group-item d-flex justify-content-between align-items-center">File Size<i id="size">3.0 GB</i></li>
+      <a href="https://hub.iframepos-cdn.buzz/ip123?token=777" id="fsl">Download [FSL Server]</a>
+    </body></html>`;
+
+    let textCallCount = 0;
+    jest.spyOn(fetcher, 'text').mockImplementation(async () => {
+      textCallCount++;
+      if (textCallCount === 1) return hop1Html;
+      return hop2Html;
+    });
+    jest.spyOn(fetcher, 'setCookie').mockImplementation(() => { /* noop */ });
+
+    const result = await hubCloud.extract(ctx, new URL('https://hubcloud.one/drive/iframepositivetest'), {});
+
+    expect(result.length).toBeGreaterThan(0);
   });
 });

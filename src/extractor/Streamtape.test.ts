@@ -5,7 +5,7 @@ import { ExtractorRegistry } from './ExtractorRegistry';
 import { Streamtape } from './Streamtape';
 
 const logger = winston.createLogger({ transports: [new winston.transports.Console({ level: 'nope' })] });
-const extractorRegistry = new ExtractorRegistry(logger, [new Streamtape(new FetcherMock(`${__dirname}/__fixtures__/Streamtape`))]);
+const extractorRegistry = new ExtractorRegistry(logger, [new Streamtape(new FetcherMock(`${__dirname}/__fixtures__/Streamtape`), logger)]);
 
 const ctx = createTestContext({ mediaFlowProxyUrl: 'https://mediaflow.test.org', mediaFlowProxyPassword: 'test' });
 

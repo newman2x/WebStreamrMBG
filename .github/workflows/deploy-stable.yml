@@ -14,6 +14,8 @@ jobs:
         with:
           node-version: '24'
           cache: 'npm'
+      - name: Generate beamup-host.json
+        run: echo '{"host":"87d6a6ef6b58-webstreamrmbg.baby-beamup.club"}' > beamup-host.json
       - name: Install and build
         run: |
           npm install
@@ -29,7 +31,7 @@ jobs:
           git config user.email "ci@github.com"
           git config user.name "GitHub Actions"
           git remote add beamup dokku@a.baby-beamup.club:87d6a6ef6b58/webstreamrmbg
-          git add dist/ --force
+          git add dist/ beamup-host.json --force
           git commit -m "ci: build for stable deploy ${{ github.ref_name }}" || true
           git push beamup HEAD:main --force
       - name: Verify deployment

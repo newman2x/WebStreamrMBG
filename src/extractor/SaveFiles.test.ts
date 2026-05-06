@@ -5,7 +5,7 @@ import { ExtractorRegistry } from './ExtractorRegistry';
 import { SaveFiles } from './SaveFiles';
 
 const logger = winston.createLogger({ transports: [new winston.transports.Console({ level: 'nope' })] });
-const extractorRegistry = new ExtractorRegistry(logger, [new SaveFiles(new FetcherMock(`${__dirname}/__fixtures__/SaveFiles`))]);
+const extractorRegistry = new ExtractorRegistry(logger, [new SaveFiles(new FetcherMock(`${__dirname}/__fixtures__/SaveFiles`), logger)]);
 
 const ctx = createTestContext();
 

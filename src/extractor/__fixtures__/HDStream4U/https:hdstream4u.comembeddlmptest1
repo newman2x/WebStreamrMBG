@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head><title>HDStream4U - Watch Video</title></head>
+<body>
+<div id="vplayer"></div>
+<script type="text/javascript">
+jwplayer('vplayer').setup({
+  sources: [{file:"https://cdn3.hdstream4u.com/stream/dlmptest1/playlist.m3u8?token=abc123",type:"hls"}],
+  width: "100%",
+  aspectratio: "16:9"
+});
+</script>
+</body>
+</html>

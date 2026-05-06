@@ -5,7 +5,7 @@ import { ExternalUrl } from './ExternalUrl';
 import { ExtractorRegistry } from './ExtractorRegistry';
 
 const logger = winston.createLogger({ transports: [new winston.transports.Console({ level: 'nope' })] });
-const extractorRegistry = new ExtractorRegistry(logger, [new ExternalUrl(new FetcherMock(`${__dirname}/__fixtures__/ExternalUrl`))]);
+const extractorRegistry = new ExtractorRegistry(logger, [new ExternalUrl(new FetcherMock(`${__dirname}/__fixtures__/ExternalUrl`), logger)]);
 
 const ctx = createTestContext({ includeExternalUrls: 'on' });
 

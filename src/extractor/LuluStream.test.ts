@@ -5,7 +5,7 @@ import { ExtractorRegistry } from './ExtractorRegistry';
 import { LuluStream } from './LuluStream';
 
 const logger = winston.createLogger({ transports: [new winston.transports.Console({ level: 'nope' })] });
-const extractorRegistry = new ExtractorRegistry(logger, [new LuluStream(new FetcherMock(`${__dirname}/__fixtures__/LuluStream`))]);
+const extractorRegistry = new ExtractorRegistry(logger, [new LuluStream(new FetcherMock(`${__dirname}/__fixtures__/LuluStream`), logger)]);
 
 const ctx = createTestContext({ mediaFlowProxyUrl: 'https://mediaflow.test.org', mediaFlowProxyPassword: 'test' });
 

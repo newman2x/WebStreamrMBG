@@ -6,7 +6,7 @@ import { ExtractorRegistry } from './ExtractorRegistry';
 import { apiKeyCache, decryptApiKey, Vidzee } from './Vidzee';
 
 const logger = winston.createLogger({ transports: [new winston.transports.Console({ level: 'nope' })] });
-const extractorRegistry = new ExtractorRegistry(logger, [new Vidzee(new FetcherMock(`${__dirname}/__fixtures__/Vidzee`))]);
+const extractorRegistry = new ExtractorRegistry(logger, [new Vidzee(new FetcherMock(`${__dirname}/__fixtures__/Vidzee`), logger)]);
 
 const ctx = createTestContext();
 
@@ -42,37 +42,37 @@ describe('Vidzee', () => {
   });
 
   test('supports player.vidzee.wtf', () => {
-    const extractor = new Vidzee(new FetcherMock(`${__dirname}/__fixtures__/Vidzee`));
+    const extractor = new Vidzee(new FetcherMock(`${__dirname}/__fixtures__/Vidzee`), logger);
     expect(extractor.supports(ctx, new URL('https://player.vidzee.wtf/v2/embed/movie/27205?sr=4'))).toBe(true);
   });
 
   test('supports subdomain of vidzee.wtf', () => {
-    const extractor = new Vidzee(new FetcherMock(`${__dirname}/__fixtures__/Vidzee`));
+    const extractor = new Vidzee(new FetcherMock(`${__dirname}/__fixtures__/Vidzee`), logger);
     expect(extractor.supports(ctx, new URL('https://sub.vidzee.wtf/embed/movie/27205'))).toBe(true);
   });
 
   test('does not support other hosts', () => {
-    const extractor = new Vidzee(new FetcherMock(`${__dirname}/__fixtures__/Vidzee`));
+    const extractor = new Vidzee(new FetcherMock(`${__dirname}/__fixtures__/Vidzee`), logger);
     expect(extractor.supports(ctx, new URL('https://example.com/movie/27205'))).toBe(false);
   });
 
   test('id is vidzee', () => {
-    const extractor = new Vidzee(new FetcherMock(`${__dirname}/__fixtures__/Vidzee`));
+    const extractor = new Vidzee(new FetcherMock(`${__dirname}/__fixtures__/Vidzee`), logger);
     expect(extractor.id).toBe('vidzee');
   });
 
   test('label is VidZee', () => {
-    const extractor = new Vidzee(new FetcherMock(`${__dirname}/__fixtures__/Vidzee`));
+    const extractor = new Vidzee(new FetcherMock(`${__dirname}/__fixtures__/Vidzee`), logger);
     expect(extractor.label).toBe('VidZee');
   });
 
   test('ttl is 10800000', () => {
-    const extractor = new Vidzee(new FetcherMock(`${__dirname}/__fixtures__/Vidzee`));
+    const extractor = new Vidzee(new FetcherMock(`${__dirname}/__fixtures__/Vidzee`), logger);
     expect(extractor.ttl).toBe(10800000);
   });
 
   test('returns empty for URL without tmdb ID', async () => {
-    const extractor = new Vidzee(new FetcherMock(`${__dirname}/__fixtures__/Vidzee`));
+    const extractor = new Vidzee(new FetcherMock(`${__dirname}/__fixtures__/Vidzee`), logger);
     const result = await callExtractInternal(extractor, new URL('https://player.vidzee.wtf/v2/embed/?sr=4'));
     expect(result).toEqual([]);
   });
@@ -108,7 +108,7 @@ describe('Vidzee', () => {
       getFinalRedirectUrl: jest.fn(),
     } as unknown as Fetcher;
 
-    const extractor = new Vidzee(mockFetcher);
+    const extractor = new Vidzee(mockFetcher, logger);
     const result = await callExtractInternal(extractor, new URL('https://player.vidzee.wtf/v2/embed/movie/27205?sr=4')) as { format: string; meta?: { height?: number } }[];
     expect(result).toHaveLength(1);
     expect(result[0]?.meta?.height).toBe(1080);
@@ -129,7 +129,7 @@ describe('Vidzee', () => {
       getFinalRedirectUrl: jest.fn(),
     } as unknown as Fetcher;
 
-    const extractor = new Vidzee(mockFetcher);
+    const extractor = new Vidzee(mockFetcher, logger);
     const result = await callExtractInternal(extractor, new URL('https://player.vidzee.wtf/v2/embed/movie/27205?sr=4'));
     expect(result).toEqual([]);
   });
@@ -144,7 +144,7 @@ describe('Vidzee', () => {
       getFinalRedirectUrl: jest.fn(),
     } as unknown as Fetcher;
 
-    const extractor = new Vidzee(mockFetcher);
+    const extractor = new Vidzee(mockFetcher, logger);
     const result = await callExtractInternal(extractor, new URL('https://player.vidzee.wtf/v2/embed/movie/27205?sr=4'));
     expect(result).toEqual([]);
   });
@@ -167,7 +167,7 @@ describe('Vidzee', () => {
       getFinalRedirectUrl: jest.fn(),
     } as unknown as Fetcher;
 
-    const extractor = new Vidzee(mockFetcher);
+    const extractor = new Vidzee(mockFetcher, logger);
     const result = await callExtractInternal(extractor, new URL('https://player.vidzee.wtf/v2/embed/movie/27205?sr=4'));
     expect(result).toEqual([]);
   });
@@ -190,7 +190,7 @@ describe('Vidzee', () => {
       getFinalRedirectUrl: jest.fn(),
     } as unknown as Fetcher;
 
-    const extractor = new Vidzee(mockFetcher);
+    const extractor = new Vidzee(mockFetcher, logger);
     const result = await callExtractInternal(extractor, new URL('https://player.vidzee.wtf/v2/embed/movie/27205?sr=4'));
     expect(result).toEqual([]);
   });
@@ -213,7 +213,7 @@ describe('Vidzee', () => {
       getFinalRedirectUrl: jest.fn(),
     } as unknown as Fetcher;
 
-    const extractor = new Vidzee(mockFetcher);
+    const extractor = new Vidzee(mockFetcher, logger);
     const result = await callExtractInternal(extractor, new URL('https://player.vidzee.wtf/v2/embed/movie/27205?sr=4'));
     expect(result).toEqual([]);
   });
@@ -239,7 +239,7 @@ describe('Vidzee', () => {
       getFinalRedirectUrl: jest.fn(),
     } as unknown as Fetcher;
 
-    const extractor = new Vidzee(mockFetcher);
+    const extractor = new Vidzee(mockFetcher, logger);
     const result = await callExtractInternal(extractor, new URL('https://player.vidzee.wtf/v2/embed/movie/27205?sr=4')) as { format: string }[];
     expect(result).toHaveLength(1);
     expect(result[0]?.format).toBe('mp4');
@@ -266,14 +266,14 @@ describe('Vidzee', () => {
       getFinalRedirectUrl: jest.fn(),
     } as unknown as Fetcher;
 
-    const extractor = new Vidzee(mockFetcher);
+    const extractor = new Vidzee(mockFetcher, logger);
     const result = await callExtractInternal(extractor, new URL('https://player.vidzee.wtf/v2/embed/movie/27205?sr=4')) as { format: string }[];
     expect(result).toHaveLength(1);
     expect(result[0]?.format).toBe('mp4');
   });
 
   test('uses default server ID when sr param is missing', async () => {
-    const extractor = new Vidzee(new FetcherMock(`${__dirname}/__fixtures__/Vidzee`));
+    const extractor = new Vidzee(new FetcherMock(`${__dirname}/__fixtures__/Vidzee`), logger);
     const result = await extractor.extract(ctx, new URL('https://player.vidzee.wtf/v2/embed/movie/27205'), {});
     expect(result.length).toBeGreaterThanOrEqual(0);
   });
@@ -303,7 +303,7 @@ describe('Vidzee', () => {
       getFinalRedirectUrl: jest.fn(),
     } as unknown as Fetcher;
 
-    const extractor = new Vidzee(mockFetcher);
+    const extractor = new Vidzee(mockFetcher, logger);
     const result = await callExtractInternal(extractor, new URL('https://player.vidzee.wtf/v2/embed/movie/27205?sr=4')) as { format: string }[];
     expect(result).toHaveLength(1);
     expect(result[0]?.format).toBe('hls');
@@ -334,7 +334,7 @@ describe('Vidzee', () => {
       getFinalRedirectUrl: jest.fn(),
     } as unknown as Fetcher;
 
-    const extractor = new Vidzee(mockFetcher);
+    const extractor = new Vidzee(mockFetcher, logger);
     const result = await callExtractInternal(extractor, new URL('https://player.vidzee.wtf/v2/embed/movie/27205?sr=4')) as { format: string }[];
     expect(result).toHaveLength(1);
     expect(result[0]?.format).toBe('hls');
@@ -363,7 +363,7 @@ describe('Vidzee', () => {
       getFinalRedirectUrl: jest.fn(),
     } as unknown as Fetcher;
 
-    const extractor = new Vidzee(mockFetcher);
+    const extractor = new Vidzee(mockFetcher, logger);
     // TV URL with season but no episode - should default episode to '1'
     const result = await callExtractInternal(extractor, new URL('https://player.vidzee.wtf/v2/embed/tv/1396/1?sr=4')) as { format: string }[];
     expect(result).toHaveLength(1);
@@ -381,7 +381,7 @@ describe('Vidzee', () => {
       getFinalRedirectUrl: jest.fn(),
     } as unknown as Fetcher;
 
-    const extractor = new Vidzee(mockFetcher);
+    const extractor = new Vidzee(mockFetcher, logger);
     const result = await callExtractInternal(extractor, new URL('https://player.vidzee.wtf/v2/embed/movie/27205?sr=4'));
     expect(result).toEqual([]);
   });

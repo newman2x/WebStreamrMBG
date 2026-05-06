@@ -1,4 +1,5 @@
 import * as cheerio from 'cheerio';
+import winston from 'winston';
 import { BlockedError, TooManyRequestsError } from '../error';
 import { Context, Format, InternalUrlResult, Meta, NonEmptyArray } from '../types';
 import { Fetcher, guessHeightFromPlaylist } from '../utils';
@@ -13,8 +14,8 @@ export class VidSrc extends Extractor {
 
   private readonly domains: NonEmptyArray<string>;
 
-  public constructor(fetcher: Fetcher, domains: NonEmptyArray<string>) {
-    super(fetcher);
+  public constructor(fetcher: Fetcher, logger: winston.Logger, domains: NonEmptyArray<string>) {
+    super(fetcher, logger);
 
     this.domains = domains;
   }

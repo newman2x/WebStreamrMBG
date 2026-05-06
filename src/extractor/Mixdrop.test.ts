@@ -5,7 +5,7 @@ import { ExtractorRegistry } from './ExtractorRegistry';
 import { Mixdrop } from './Mixdrop';
 
 const logger = winston.createLogger({ transports: [new winston.transports.Console({ level: 'nope' })] });
-const extractorRegistry = new ExtractorRegistry(logger, [new Mixdrop(new FetcherMock(`${__dirname}/__fixtures__/Mixdrop`))]);
+const extractorRegistry = new ExtractorRegistry(logger, [new Mixdrop(new FetcherMock(`${__dirname}/__fixtures__/Mixdrop`), logger)]);
 
 const ctx = createTestContext({ mediaFlowProxyUrl: 'https://mediaflow-proxy.test', mediaFlowProxyPassword: 'asdfg' });
 

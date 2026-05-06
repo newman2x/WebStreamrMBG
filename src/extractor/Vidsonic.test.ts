@@ -5,7 +5,7 @@ import { ExtractorRegistry } from './ExtractorRegistry';
 import { Vidsonic } from './Vidsonic';
 
 const logger = winston.createLogger({ transports: [new winston.transports.Console({ level: 'nope' })] });
-const extractorRegistry = new ExtractorRegistry(logger, [new Vidsonic(new FetcherMock(`${__dirname}/__fixtures__/Vidsonic`))]);
+const extractorRegistry = new ExtractorRegistry(logger, [new Vidsonic(new FetcherMock(`${__dirname}/__fixtures__/Vidsonic`), logger)]);
 
 const ctx = createTestContext();
 

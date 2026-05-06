@@ -54,6 +54,10 @@ export class StreamResolver {
     const handleSource = async (source: Source, countUrlResultsByCountryCode: boolean) => {
       try {
         const sourceResults = await source.handle(ctx, type, id);
+        this.logger.info(`Source ${source.id} returned ${sourceResults.length} results`, ctx);
+        for (const sr of sourceResults) {
+          this.logger.info(`Source ${source.id} URL: ${sr.url}`, ctx);
+        }
         const sourceUrlResults = await Promise.all(
           sourceResults.map(({ url, meta }) => this.extractorRegistry.handle(ctx, url, { sourceLabel: source.label, sourceId: source.id, priority: source.priority, ...meta }, true)),
         );

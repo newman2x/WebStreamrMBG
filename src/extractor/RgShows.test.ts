@@ -5,7 +5,7 @@ import { ExtractorRegistry } from './ExtractorRegistry';
 import { RgShows } from './RgShows';
 
 const logger = winston.createLogger({ transports: [new winston.transports.Console({ level: 'nope' })] });
-const extractorRegistry = new ExtractorRegistry(logger, [new RgShows(new FetcherMock(`${__dirname}/__fixtures__/RgShows`))]);
+const extractorRegistry = new ExtractorRegistry(logger, [new RgShows(new FetcherMock(`${__dirname}/__fixtures__/RgShows`), logger)]);
 
 const ctx = createTestContext();
 

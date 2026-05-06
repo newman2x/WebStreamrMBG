@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head><title>HDStream4U - Watch Video</title></head>
+<body>
+<div id="vplayer"></div>
+<script type="text/javascript">
+jwplayer('vplayer').setup({
+  sources: [{file:"https://cdn.hdstream4u.com/hls/f1km2fch7mgd/master.m3u8",type:"hls"}],
+  image: "https://hdstream4u.com/thumb.jpg",
+  width: "100%",
+  aspectratio: "16:9"
+});
+</script>
+</body>
+</html>

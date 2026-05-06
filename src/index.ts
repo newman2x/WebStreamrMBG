@@ -1,4 +1,5 @@
 import { randomUUID } from 'node:crypto';
+import { appendFileSync } from 'node:fs';
 import axios from 'axios';
 import { buildMemoryStorage, setupCache } from 'axios-cache-interceptor';
 import axiosRetry from 'axios-retry';
@@ -31,17 +32,37 @@ const logger = winston.createLogger({
 });
 
 process.on('uncaughtException', (error: Error) => {
-  logger.error(`Uncaught exception caught: ${error}, cause: ${error.cause}, stack: ${error.stack}`);
+  const msg = `Uncaught exception caught: ${error}, cause: ${error.cause}, stack: ${error.stack}`;
+  console.error(msg);
+  logger.error(msg);
+  appendFileSync('/tmp/wsmbg_crash.log', `${new Date().toISOString()} ${msg}\n`);
   process.exit(1);
 });
 
 process.on('unhandledRejection', (error: Error) => {
-  logger.error(`Unhandled rejection: ${error}, cause: ${error.cause}, stack: ${error.stack}`);
+  const msg = `Unhandled rejection: ${error}, cause: ${error.cause}, stack: ${error.stack}`;
+  console.error(msg);
+  logger.error(msg);
+  appendFileSync('/tmp/wsmbg_crash.log', `${new Date().toISOString()} ${msg}\n`);
+});
+
+process.on('SIGTERM', () => {
+  const msg = 'SIGTERM received';
+  console.error(msg);
+  appendFileSync('/tmp/wsmbg_crash.log', `${new Date().toISOString()} ${msg}\n`);
+  process.exit(0);
+});
+
+process.on('SIGINT', () => {
+  const msg = 'SIGINT received';
+  console.error(msg);
+  appendFileSync('/tmp/wsmbg_crash.log', `${new Date().toISOString()} ${msg}\n`);
+  process.exit(0);
 });
 
 const cachedAxios = setupCache(axios, {
   interpretHeader: true,
-  storage: buildMemoryStorage(false, 3 * 60 * 60 * 1000, 4096, 12 * 60 * 60 * 1000),
+  storage: buildMemoryStorage(true, 3 * 60 * 60 * 1000, 4096, 12 * 60 * 60 * 1000),
   ttl: 15 * 60 * 1000, // 15m
 });
 axiosRetry(cachedAxios, { retries: 3, retryDelay: () => 333 });
@@ -49,7 +70,7 @@ axiosRetry(cachedAxios, { retries: 3, retryDelay: () => 333 });
 const fetcher = new Fetcher(cachedAxios, logger);
 
 const sources = createSources(fetcher);
-const extractors = createExtractors(fetcher);
+const extractors = createExtractors(fetcher, logger);
 
 const addon = express();
 addon.set('trust proxy', true);
@@ -62,7 +83,6 @@ if (envIsProd()) {
 }
 
 addon.use((req: Request, res: Response, next: NextFunction) => {
-  process.env['HOST'] = req.host;
   process.env['PROTOCOL'] = req.protocol;
 
   res.setHeader('X-Request-ID', randomUUID());
@@ -71,7 +91,7 @@ addon.use((req: Request, res: Response, next: NextFunction) => {
   res.setHeader('Access-Control-Allow-Headers', '*');
 
   if (envIsProd()) {
-    res.setHeader('Cache-Control', 'public, max-age=10, immutable');
+    res.setHeader('Cache-Control', 'public, max-age=10');
   }
 
   next();

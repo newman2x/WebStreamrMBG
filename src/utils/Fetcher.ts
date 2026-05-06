@@ -78,6 +78,14 @@ export class Fetcher {
   private readonly flareSolverrCache = new Cacheable({ primary: new Keyv({ store: new CacheableMemory({ lruSize: 1024 }) }) });
   private readonly flareSolverrMutexes = new Map<string, Mutex>();
 
+  private flareSolverrFailures = 0;
+  private flareSolverrOpenUntil = 0;
+  private readonly FLARE_FAILURE_THRESHOLD = 5;
+  private readonly FLARE_OPEN_DURATION = 30_000; // 30 seconds
+
+  private readonly cfProtectedDomains = new Map<string, number>();
+  private readonly CF_DOMAIN_CACHE_TTL = 60 * 60 * 1000; // 1 hour
+
   public constructor(axios: AxiosInstance, logger: winston.Logger) {
     this.axios = axios;
     this.logger = logger;
@@ -88,6 +96,9 @@ export class Fetcher {
       httpStatus: Object.fromEntries(this.httpStatus),
       hostUserAgentMap: Object.fromEntries(this.hostUserAgentMap),
       cookieJar: this.cookieJar.toJSON(),
+      flareSolverrCircuitOpen: Date.now() < this.flareSolverrOpenUntil,
+      flareSolverrFailures: this.flareSolverrFailures,
+      cfProtectedDomains: Object.fromEntries(this.cfProtectedDomains),
     };
   };
 
@@ -139,6 +150,16 @@ export class Fetcher {
   }
 
   protected async fetchWithTimeout(ctx: Context, url: URL, requestConfig?: CustomRequestConfig, tryCount = 0): Promise<AxiosResponse> {
+    const flareSolverrEndpoint = envGet('FLARESOLVERR_ENDPOINT');
+    const cfDetectedAt = this.cfProtectedDomains.get(url.hostname);
+    if (cfDetectedAt && !flareSolverrEndpoint) {
+      if (Date.now() - cfDetectedAt < this.CF_DOMAIN_CACHE_TTL) {
+        this.logger.info(`Fast-fail CF-protected domain: ${url.hostname}`, ctx);
+        throw new BlockedError(url, BlockedReason.cloudflare_challenge, {});
+      }
+      this.cfProtectedDomains.delete(url.hostname); // expired — re-check
+    }
+
     const proxyUrl = this.getProxyForUrl(ctx, url);
 
     let message = `Fetch ${requestConfig?.method ?? 'GET'} ${url}`;
@@ -221,6 +242,17 @@ export class Fetcher {
 
     await this.trackHttpStatus(ctx, url, response.status);
     this.logger.info(`Got ${response.status} (${response.statusText}) for ${url}`, ctx);
+    const setCookieHeaders = response.headers['set-cookie'];
+    if (setCookieHeaders) {
+      const cookies = Array.isArray(setCookieHeaders) ? setCookieHeaders : [setCookieHeaders];
+      for (const cookieStr of cookies) {
+        try {
+          this.cookieJar.setCookieSync(cookieStr, url.href);
+        } catch {
+          this.logger.info(`Failed to parse Set-Cookie: ${cookieStr.substring(0, 50)}`, ctx);
+        }
+      }
+    }
 
     await this.decreaseTimeoutsCount(url);
 
@@ -246,9 +278,15 @@ export class Fetcher {
     }
 
     if (response.headers['cf-mitigated'] === 'challenge' || triggeredCloudflareTurnstile) {
-      const flareSolverrEndpoint = envGet('FLARESOLVERR_ENDPOINT');
+      this.cfProtectedDomains.set(url.hostname, Date.now());
+
       if (!flareSolverrEndpoint) {
         throw new BlockedError(url, BlockedReason.cloudflare_challenge, response.headers);
+      }
+
+      if (Date.now() < this.flareSolverrOpenUntil) {
+        this.logger.info(`FlareSolverr circuit breaker open — skipping for ${url.hostname}`, ctx);
+        throw new BlockedError(url, BlockedReason.flaresolverr_failed, response.headers);
       }
 
       const cachedSolution = await this.flareSolverrCache.get<FlareSolverrSolution>(url.href);
@@ -266,27 +304,38 @@ export class Fetcher {
         this.flareSolverrMutexes.set(session, mutex);
       }
 
-      const challengeResult = await mutex.runExclusive(async () => {
-        this.logger.info(`Query FlareSolverr for ${url.href}`, ctx);
+      let challengeResult: FlareSolverrResult;
+      try {
+        challengeResult = await mutex.runExclusive(async () => {
+          this.logger.info(`Query FlareSolverr for ${url.href}`, ctx);
 
-        const data = {
-          cmd: 'request.get',
-          url: url.href,
-          session,
-          session_ttl_minutes: 60,
-          maxTimeout: 15000,
-          disableMedia: true,
-          ...(proxyUrl && { proxy: { url: proxyUrl.href } }),
-        };
+          const data = {
+            cmd: 'request.get',
+            url: url.href,
+            session,
+            session_ttl_minutes: 60,
+            maxTimeout: 15000,
+            disableMedia: true,
+            ...(proxyUrl && { proxy: { url: proxyUrl.href } }),
+          };
 
-        const requestConfig: CustomRequestConfig = { method: 'POST', data, headers: { 'Content-Type': 'application/json' }, timeout: 15000, queueTimeout: 60000 };
-        return JSON.parse((await this.queuedFetch(ctx, new URL('/v1', flareSolverrEndpoint), requestConfig)).data) as FlareSolverrResult;
-      });
+          const requestConfig: CustomRequestConfig = { method: 'POST', data, headers: { 'Content-Type': 'application/json' }, timeout: 15000, queueTimeout: 60000 };
+          return JSON.parse((await this.queuedFetch(ctx, new URL('/v1', flareSolverrEndpoint), requestConfig)).data) as FlareSolverrResult;
+        });
+      } catch (error) {
+        this.recordFlareSolverrResult(false);
+        this.logger.warn(`FlareSolverr request failed for ${url.href}: ${error}`, ctx);
+        throw new BlockedError(url, BlockedReason.flaresolverr_failed, {});
+      }
 
       if (challengeResult.status !== 'ok') {
+        this.recordFlareSolverrResult(false);
         this.logger.warn(`FlareSolverr issue: ${JSON.stringify(challengeResult)}`, ctx);
         throw new BlockedError(url, BlockedReason.flaresolverr_failed, {});
       }
+
+      this.recordFlareSolverrResult(true);
+      this.cfProtectedDomains.delete(url.hostname);
 
       await Promise.all(challengeResult.solution.cookies.map(async (cookie) => {
         if (!cookie.name.startsWith('cf_') && !cookie.name.startsWith('__cf') && !cookie.name.startsWith('__ddg')) {
@@ -450,5 +499,17 @@ export class Fetcher {
       httpStatusCounts[status] = (httpStatusCounts[status] ?? 0) + 1;
       this.httpStatus.set(url.host, httpStatusCounts);
     });
+  }
+
+  private recordFlareSolverrResult(success: boolean): void {
+    if (success) {
+      this.flareSolverrFailures = 0;
+    } else {
+      this.flareSolverrFailures++;
+      if (this.flareSolverrFailures >= this.FLARE_FAILURE_THRESHOLD) {
+        this.flareSolverrOpenUntil = Date.now() + this.FLARE_OPEN_DURATION;
+        this.flareSolverrFailures = 0;
+      }
+    }
   }
 }
