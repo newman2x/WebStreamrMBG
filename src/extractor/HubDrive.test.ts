@@ -44,9 +44,32 @@ describe('HubDrive', () => {
     const result = await extractorRegistry.handle(ctx, new URL('https://hubcdn.fans/file/nolink789'));
     expect(result).toEqual([]);
   });
+
   test('handle hubcdn.fans with a id="vd" link (new format)', async () => {
     const result = await extractorRegistry.handle(ctx, new URL('https://hubcdn.fans/file/vdlink789'));
     expect(result).toHaveLength(1);
     expect(result.some(r => r.url.href.includes('googleusercontent.com'))).toBe(true);
+  });
+
+  test('handle hubcdn.fans with var reurl pointing to hubcdn.fans/dl/ redirect', async () => {
+    const result = await extractorRegistry.handle(ctx, new URL('https://hubcdn.fans/file/redirecttest'));
+    expect(result).toHaveLength(1);
+    expect(result.some(r => r.url.href.includes('googleusercontent.com'))).toBe(true);
+    expect(result.some(r => r.url.href.includes('hubcdn.fans'))).toBe(false);
+  });
+  test('handle hubcdn.fans with var reurl containing invalid link param', async () => {
+    const result = await extractorRegistry.handle(ctx, new URL('https://hubcdn.fans/file/invalidlink'));
+    expect(result).toEqual([]);
+  });
+
+  test('handle hubcdn.fans with var reurl containing invalid URL', async () => {
+    const result = await extractorRegistry.handle(ctx, new URL('https://hubcdn.fans/file/invalidreurl'));
+    expect(result).toEqual([]);
+  });
+
+  test('handle hubcdn.fans with var reurl containing empty link param', async () => {
+    const result = await extractorRegistry.handle(ctx, new URL('https://hubcdn.fans/file/emptylink'));
+    expect(result).toHaveLength(1);
+    expect(result.some(r => r.url.href.includes('hubcdn.fans'))).toBe(true);
   });
 });

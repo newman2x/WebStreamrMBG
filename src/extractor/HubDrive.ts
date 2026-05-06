@@ -60,7 +60,15 @@ export class HubDrive extends Extractor {
     const reurlMatch = html.match(/var\s+reurl\s*=\s*["']([^"']+)["']/);
     if (reurlMatch?.[1]) {
       try {
-        const directUrl = new URL(reurlMatch[1]);
+        const reurlValue = reurlMatch[1];
+        if (reurlValue.includes('hubcdn.fans/dl/?link=')) {
+          const dlUrl = new URL(reurlValue);
+          const linkParam = dlUrl.searchParams.get('link');
+          if (linkParam) {
+            return [{ url: new URL(linkParam), format: Format.unknown, meta }];
+          }
+        }
+        const directUrl = new URL(reurlValue);
         return [{ url: directUrl, format: Format.unknown, meta }];
       // eslint-disable-next-line no-empty
       } catch {
