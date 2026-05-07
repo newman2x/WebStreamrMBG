@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.73.1](https://github.com/newman2x/WebStreamrMBG/compare/v0.73.0...v0.73.1) (2026-05-07)
+
+
+### Bug Fixes
+
+* resolve 6 confirmed bugs from Phase 0 triage ([5e0625e](https://github.com/newman2x/WebStreamrMBG/commit/5e0625ea5833f5a9db1e3d750100b511467b0c31))
+
 ## [0.73.0](https://github.com/newman2x/WebStreamrMBG/compare/v0.72.3...v0.73.0) (2026-05-06)
 
 
