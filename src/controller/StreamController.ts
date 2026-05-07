@@ -40,7 +40,13 @@ export class StreamController {
       return;
     }
 
-    const ctx = contextFromRequestAndResponse(req, res);
+    let ctx;
+    try {
+      ctx = contextFromRequestAndResponse(req, res);
+    } catch (error) {
+      res.status(400).json({ error: (error as Error).message });
+      return;
+    }
 
     this.logger.info(`Search stream for type "${type}" and id "${rawId}" for ip ${ctx.ip}`, ctx);
 

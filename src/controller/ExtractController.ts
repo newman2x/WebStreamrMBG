@@ -29,10 +29,35 @@ export class ExtractController {
       return;
     }
 
-    const ctx = contextFromRequestAndResponse(req, res);
+    let ctx;
+    try {
+      ctx = contextFromRequestAndResponse(req, res);
+    } catch (error) {
+      res.status(400).json({ error: (error as Error).message });
+      return;
+    }
 
-    const index = parseInt(req.query['index'] as string);
-    const url = new URL(req.query['url'] as string);
+    const rawUrl = req.query['url'] as string | undefined;
+    const rawIndex = req.query['index'] as string | undefined;
+
+    if (!rawUrl || !rawIndex) {
+      res.status(400).json({ error: 'Missing url or index parameter' });
+      return;
+    }
+
+    let url: URL;
+    try {
+      url = new URL(rawUrl);
+    } catch {
+      res.status(400).json({ error: 'Invalid url parameter' });
+      return;
+    }
+
+    const index = parseInt(rawIndex);
+    if (isNaN(index)) {
+      res.status(400).json({ error: 'Invalid index parameter' });
+      return;
+    }
 
     this.logger.info(`Lazy extract index ${index} of URL ${url} for ip ${ctx.ip}`, ctx);
 

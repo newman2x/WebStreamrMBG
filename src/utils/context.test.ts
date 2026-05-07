@@ -175,4 +175,20 @@ describe('contextFromRequest', () => {
     process.env['HOST'] = 'example.test';
     delete process.env['BEAMUP_HOST'];
   });
+
+  test('throws on malformed config JSON', () => {
+    const req = {
+      protocol: 'https',
+      host: 'localhost',
+      headers: {
+        'X-Request-ID': 'fake-id',
+      },
+      params: { config: '{de:"on"}' },
+    };
+    const res = {
+      getHeader: (name: string) => ({ 'X-Request-ID': 'fake-id' })[name],
+    };
+
+    expect(() => contextFromRequestAndResponse(req as unknown as Request, res as unknown as Response)).toThrow('Invalid config: malformed JSON');
+  });
 });

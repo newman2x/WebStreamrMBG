@@ -21,7 +21,15 @@ export class ManifestController {
   }
 
   private getManifest(req: Request, res: Response) {
-    const config: Config = JSON.parse(req.params['config'] as string || JSON.stringify(getDefaultConfig()));
+    let config: Config = getDefaultConfig();
+    if (req.params['config']) {
+      try {
+        config = JSON.parse(req.params['config'] as string);
+      } catch {
+        res.status(400).json({ error: 'Invalid config: malformed JSON' });
+        return;
+      }
+    }
 
     const manifest = buildManifest(this.sources, this.extractors, config);
 

@@ -122,7 +122,7 @@ export class Fetcher {
     return (await this.queuedFetch(ctx, url, { ...requestConfig, method: 'HEAD' })).headers;
   };
 
-  public async getFinalRedirectUrl(ctx: Context, url: URL, requestConfig?: CustomRequestConfig, maxCount?: number, count?: number): Promise<URL> {
+  public async getFinalRedirectUrl(ctx: Context, url: URL, requestConfig?: CustomRequestConfig, maxCount = 10, count?: number): Promise<URL> {
     const newRequestConfig = { ...requestConfig, method: 'HEAD', maxRedirects: 0 };
 
     if (count && maxCount && count >= maxCount) {

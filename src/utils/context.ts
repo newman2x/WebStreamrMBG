@@ -31,6 +31,13 @@ export const contextFromRequestAndResponse = (req: Request, res: Response): Cont
     hostUrl: resolveHostUrl(req),
     id: res.getHeader('X-Request-ID') as string,
     ...(req.ip && { ip: req.ip }),
-    config: req.params['config'] ? JSON.parse(req.params['config'] as string) : getDefaultConfig(),
+    config: (() => {
+      if (!req.params['config']) return getDefaultConfig();
+      try {
+        return JSON.parse(req.params['config'] as string);
+      } catch {
+        throw new Error('Invalid config: malformed JSON');
+      }
+    })(),
   };
 };
