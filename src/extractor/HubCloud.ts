@@ -58,7 +58,7 @@ export class HubCloud extends Extractor {
 
   public readonly label = 'HubCloud';
 
-  public override readonly cacheVersion = 9;
+  public override readonly cacheVersion = 10;
 
   public override readonly ttl = HUBCLOUD_CACHE_TTL;
 
@@ -168,6 +168,34 @@ export class HubCloud extends Extractor {
           };
         }),
       ).then(results => results.filter(r => r !== null)),
+
+      // HubCloud Direct — workers.dev links (PDL Server / Download File)
+      ...$('a')
+        .filter((_i, el) => ($(el).attr('href') ?? '').includes('workers.dev'))
+        .map((_i, el) => {
+          const href = $(el).attr('href') as string;
+          return {
+            url: new URL(href),
+            format: Format.unknown,
+            ttl: HUBCLOUD_CACHE_TTL,
+            label: `${this.label} (Direct)`,
+            meta: { ...meta, bytes: fileSize, extractorId: `${this.id}_direct`, countryCodes, height, title },
+          };
+        }).toArray(),
+
+      // HubCloud Fast — hubcdn.fans links (10Gbps Server)
+      ...$('a')
+        .filter((_i, el) => ($(el).attr('href') ?? '').includes('hubcdn.fans'))
+        .map((_i, el) => {
+          const href = $(el).attr('href') as string;
+          return {
+            url: new URL(href),
+            format: Format.unknown,
+            ttl: HUBCLOUD_CACHE_TTL,
+            label: `${this.label} (Fast)`,
+            meta: { ...meta, bytes: fileSize, extractorId: `${this.id}_fast`, countryCodes, height, title },
+          };
+        }).toArray(),
     ]);
   };
 
@@ -199,6 +227,8 @@ export class HubCloud extends Extractor {
       'a[href*="hubcloud.php"]',
       'a[href*="gamerxyt.com"]',
       'a[href*="hubcloud.one"]',
+      'a[href*="workers.dev"]',
+      'a[href*="hubcdn.fans"]',
       '.download-btn',
       'a[href*="download"]',
       'a.btn.btn-primary',

@@ -402,3 +402,129 @@ describe('HubCloud brute-force fallback', () => {
     expect(result.length).toBeGreaterThan(0);
   });
 });
+
+describe('HubCloud new-format pages (workers.dev + hubcdn.fans)', () => {
+  test('extracts workers.dev link as HubCloud (Direct)', async () => {
+    const fetcher = new Fetcher(axios.create(), logger);
+    const hubCloud = new HubCloud(fetcher, logger);
+
+    const hop1Html = `<html><head><title>Test</title></head><body>
+      <script>var url = 'https://hubrouting.site/hubcloud.php?host=hubcloud&id=workerstest&token=test';</script>
+    </body></html>`;
+
+    const hop2Html = `<html><head><title>Test.WorkersDev.2024.1080p.mkv</title></head><body>
+      <li class="list-group-item d-flex justify-content-between align-items-center">File Size<i id="size">2.0 GB</i></li>
+      <a href="https://hidden-boat-e87c.hivegic619569.workers.dev/1397962425/abc123::def456/Test.WorkersDev.2024.1080p.mkv" download="Test.WorkersDev.2024.1080p.mkv"><i class="fas fa-file-download fa-lg"></i> Download [PDL Server]</a>
+    </body></html>`;
+
+    let textCallCount = 0;
+    jest.spyOn(fetcher, 'text').mockImplementation(async () => {
+      textCallCount++;
+      if (textCallCount === 1) return hop1Html;
+      return hop2Html;
+    });
+    jest.spyOn(fetcher, 'setCookie').mockImplementation(() => { /* noop */ });
+
+    const result = await hubCloud.extract(ctx, new URL('https://hubcloud.one/drive/workerstest'), {});
+
+    expect(result).toHaveLength(1);
+    expect(result.some(r => r.label === 'HubCloud (Direct)')).toBe(true);
+    expect(result.some(r => r.url.href.includes('workers.dev'))).toBe(true);
+    expect(result.some(r => r.meta?.extractorId === 'hubcloud_direct')).toBe(true);
+    expect(result.some(r => r.meta?.bytes === 2147483648)).toBe(true); // 2.0 GB
+    expect(result.every(r => !('requestHeaders' in r))).toBe(true);
+  });
+
+  test('extracts hubcdn.fans link as HubCloud (Fast)', async () => {
+    const fetcher = new Fetcher(axios.create(), logger);
+    const hubCloud = new HubCloud(fetcher, logger);
+
+    const hop1Html = `<html><head><title>Test</title></head><body>
+      <script>var url = 'https://hubrouting.site/hubcloud.php?host=hubcloud&id=fasttest&token=test';</script>
+    </body></html>`;
+
+    const hop2Html = `<html><head><title>Test.Fast.2024.720p.mkv</title></head><body>
+      <li class="list-group-item d-flex justify-content-between align-items-center">File Size<i id="size">1.0 GB</i></li>
+      <a href="https://gpdl.hubcdn.fans/?id=abc123def456::789xyz" rel="noreferrer nofollow noopener" target="_blank" class="btn btn-danger btn-lg h6"><i class="fas fa-file-download fa-lg"></i> Download [Server : 10Gbps]</a>
+    </body></html>`;
+
+    let textCallCount = 0;
+    jest.spyOn(fetcher, 'text').mockImplementation(async () => {
+      textCallCount++;
+      if (textCallCount === 1) return hop1Html;
+      return hop2Html;
+    });
+    jest.spyOn(fetcher, 'setCookie').mockImplementation(() => { /* noop */ });
+
+    const result = await hubCloud.extract(ctx, new URL('https://hubcloud.one/drive/fasttest'), {});
+
+    expect(result).toHaveLength(1);
+    expect(result.some(r => r.label === 'HubCloud (Fast)')).toBe(true);
+    expect(result.some(r => r.url.href.includes('hubcdn.fans'))).toBe(true);
+    expect(result.some(r => r.meta?.extractorId === 'hubcloud_fast')).toBe(true);
+    expect(result.some(r => r.meta?.bytes === 1073741824)).toBe(true); // 1.0 GB
+    expect(result.every(r => !('requestHeaders' in r))).toBe(true);
+  });
+
+  test('extracts both workers.dev and hubcdn.fans from new-format-only page (no FSL/FSLv2/PixelServer)', async () => {
+    const fetcher = new Fetcher(axios.create(), logger);
+    const hubCloud = new HubCloud(fetcher, logger);
+
+    const hop1Html = `<html><head><title>Test</title></head><body>
+      <script>var url = 'https://hubrouting.site/hubcloud.php?host=hubcloud&id=newformatonly&token=test';</script>
+    </body></html>`;
+
+    // Page with ONLY workers.dev and hubcdn.fans links — no FSL/FSLv2/PixelServer
+    const hop2Html = `<html><head><title>Test.NewFormat.2024.2160p.mkv</title></head><body>
+      <li class="list-group-item d-flex justify-content-between align-items-center">File Size<i id="size">5.0 GB</i></li>
+      <a href="https://hidden-boat-e87c.hivegic619569.workers.dev/1397962425/abc::def/Test.NewFormat.2024.2160p.mkv" download="Test.NewFormat.2024.2160p.mkv"><i class="fas fa-file-download fa-lg"></i> Download [PDL Server]</a>
+      <a href="https://gpdl.hubcdn.fans/?id=xyz789::abc456" rel="noreferrer nofollow noopener" target="_blank" class="btn btn-danger btn-lg h6"><i class="fas fa-file-download fa-lg"></i> Download [Server : 10Gbps]</a>
+    </body></html>`;
+
+    let textCallCount = 0;
+    jest.spyOn(fetcher, 'text').mockImplementation(async () => {
+      textCallCount++;
+      if (textCallCount === 1) return hop1Html;
+      return hop2Html;
+    });
+    jest.spyOn(fetcher, 'setCookie').mockImplementation(() => { /* noop */ });
+
+    const result = await hubCloud.extract(ctx, new URL('https://hubcloud.one/drive/newformatonly'), {});
+
+    expect(result).toHaveLength(2);
+    expect(result.some(r => r.label === 'HubCloud (Direct)')).toBe(true);
+    expect(result.some(r => r.label === 'HubCloud (Fast)')).toBe(true);
+    // Neither should have requestHeaders
+    expect(result.every(r => !('requestHeaders' in r))).toBe(true);
+  });
+
+  test('new-format page with only workers.dev and hubcdn.fans passes hasValidDownloadContent check', async () => {
+    const fetcher = new Fetcher(axios.create(), logger);
+    const hubCloud = new HubCloud(fetcher, logger);
+
+    const hop1Html = `<html><head><title>Test</title></head><body>
+      <script>var url = 'https://hubrouting.site/hubcloud.php?host=hubcloud&id=validcheck&token=test';</script>
+    </body></html>`;
+
+    // Page with NO #size element and NO FSL/PixelServer text — only workers.dev/hubcdn.fans links
+    // This should still pass hasValidDownloadContent via the extended selectors
+    const hop2Html = `<html><head><title>Test.ValidCheck.2024.1080p.mkv</title></head><body>
+      <a href="https://some-worker.workers.dev/file123" download="file.mkv">Download File</a>
+      <a href="https://gpdl.hubcdn.fans/?id=abc::def">10Gbps Server</a>
+    </body></html>`;
+
+    let textCallCount = 0;
+    jest.spyOn(fetcher, 'text').mockImplementation(async () => {
+      textCallCount++;
+      if (textCallCount === 1) return hop1Html;
+      return hop2Html;
+    });
+    jest.spyOn(fetcher, 'setCookie').mockImplementation(() => { /* noop */ });
+
+    const result = await hubCloud.extract(ctx, new URL('https://hubcloud.one/drive/validcheck'), {});
+
+    // Should NOT trigger retry (only 2 calls), and should extract 2 links
+    expect(textCallCount).toBe(2);
+    expect(result).toHaveLength(2);
+  });
+});

@@ -446,6 +446,17 @@ exports[`resolve skips fallback sources if possible 1`] = `
 [
   {
     "behaviorHints": {
+      "bingeGroup": "webstreamr-mbg-4khdhub-hubcloud_fast-multi_en_hi",
+      "notWebReady": true,
+      "videoSize": 22430466703,
+    },
+    "name": "WebStreamrMBG 🌐 🇺🇸 🇮🇳 2160p",
+    "title": "Wake.Up.Dead.Man.A.Knives.Out.Mystery.2025.2160p.NF.WEB-DL.DUAL.DDP5.1.Atmos.DV.HDR.H.265-4kHDHub.Com.mkv
+💾 20.89 GB 🔗 HubCloud (Fast) from 4KHDHub",
+    "url": "https://pixel.hubcdn.fans/?id=847b1bdbbc93a9c7d0874f6e6c9b27ab10ce91107dba1274cc3dc0466b2cbebcaf3a1462ba47c4603aebefc2a5d706e201110bcdf6fbdd54f27846a48e9e264c049068908de1f0dd312c683197fe7af1fd1c4b06cc9ee6daacac6387fb7f24c7::551d69fe228b0ab2aa4b614e27209d8f",
+  },
+  {
+    "behaviorHints": {
       "bingeGroup": "webstreamr-mbg-4khdhub-hubcloud_fsl-multi_en_hi",
       "notWebReady": true,
       "videoSize": 22430466703,
@@ -454,6 +465,17 @@ exports[`resolve skips fallback sources if possible 1`] = `
     "title": "Wake.Up.Dead.Man.A.Knives.Out.Mystery.2025.2160p.NF.WEB-DL.DUAL.DDP5.1.Atmos.DV.HDR.H.265-4kHDHub.Com.mkv
 💾 20.89 GB 🔗 HubCloud (FSL) from 4KHDHub",
     "url": "https://fsl.master.surf/03ee346a29b2b13afa1935bfbd6d05e8?token=1768483596",
+  },
+  {
+    "behaviorHints": {
+      "bingeGroup": "webstreamr-mbg-4khdhub-hubcloud_fast-multi_en_hi",
+      "notWebReady": true,
+      "videoSize": 19295140577,
+    },
+    "name": "WebStreamrMBG 🌐 🇺🇸 🇮🇳 2160p",
+    "title": "Wake.Up.Dead.Man.A.Knives.Out.Mystery.2025.2160p.NF.WEB-DL.DUAL.DDP5.1.Atmos.H.265-4kHDHub.Com.mkv
+💾 17.97 GB 🔗 HubCloud (Fast) from 4KHDHub",
+    "url": "https://pixel.hubcdn.fans/?id=5ccc2933e8fae5e093c59b8e8e045c7e50d9b3784d6be8f8a79ddae17b0905a9a75cd0b0a7e0f9ad52e8536ff282a7bb1eec3fb8676412d809236d680a1d75760a157209a848be433e8eeec206ebc04221a1e2194fee473af5a9f279227dcbec::a4cb00f80c6c819e350102243cd62b17",
   },
   {
     "behaviorHints": {
@@ -484,6 +506,17 @@ exports[`resolve skips fallback sources if possible 1`] = `
   },
   {
     "behaviorHints": {
+      "bingeGroup": "webstreamr-mbg-4khdhub-hubcloud_fast-multi_en_hi",
+      "notWebReady": true,
+      "videoSize": 10018011217,
+    },
+    "name": "WebStreamrMBG 🌐 🇺🇸 🇮🇳 1080p",
+    "title": "Wake.Up.Dead.Man.A.Knives.Out.Mystery.2025.1080p.NF.WEB-DL.Hindi.DDP5.1.Atmos-English.DDP5.1.Atmos.H.265-4kHdHub.Com.mkv
+💾 9.33 GB 🔗 HubCloud (Fast) from 4KHDHub",
+    "url": "https://pixel.hubcdn.fans/?id=ac615ef26d6ec9f89337ab8c7b48049a8f02e26d3d5d1b78b2dce136f5000b7aa5ee9baade85646a795036a3e1d61b660d0f308703df7120147f299999900d896c9499855c2818a2ad46dd06f0d7965e3b73be919b9143324fd2fd610b871e1a::c3a6fbbe2dacff82473825bf9763d0c5",
+  },
+  {
+    "behaviorHints": {
       "bingeGroup": "webstreamr-mbg-4khdhub-hubcloud_fsl-multi_en_hi",
       "notWebReady": true,
       "videoSize": 10018011217,
@@ -508,6 +541,17 @@ exports[`resolve skips fallback sources if possible 1`] = `
     "title": "Wake.Up.Dead.Man.A.Knives.Out.Mystery.2025.1080p.NF.WEB-DL.Hindi.DDP5.1.Atmos-English.DDP5.1.Atmos.H.265-4kHdHub.Com.mkv
 💾 9.33 GB 🔗 HubCloud (PixelServer) from 4KHDHub",
     "url": "https://pixeldrain.dev/api/file/h7hpWDSW?download=",
+  },
+  {
+    "behaviorHints": {
+      "bingeGroup": "webstreamr-mbg-4khdhub-hubcloud_fast-multi_en_hi",
+      "notWebReady": true,
+      "videoSize": 9985798963,
+    },
+    "name": "WebStreamrMBG 🌐 🇺🇸 🇮🇳 1080p",
+    "title": "Wake.Up.Dead.Man.A.Knives.Out.Mystery.2025.1080p.NF.WEB-DL.Hindi.DDP5.1.Atmos-English.DDP5.1.Atmos.H.264-4kHdHub.Com.mkv
+💾 9.3 GB 🔗 HubCloud (Fast) from 4KHDHub",
+    "url": "https://pixel.hubcdn.fans/?id=e8b09c5e964b413a5856f76143bca4d3008332510305700debc63c02458fe0676ced9df6b376b5711f8cd13cb2376ce0cd306fb111ea3e3c724ee8c766fbbfdfe5a8478815e3f518a51eb64d221bcddc48afc48d89b99551f7470c0191cad5c7::bef788898ff0bb6354b8c286427304b6",
   },
   {
     "behaviorHints": {
@@ -538,6 +582,17 @@ exports[`resolve skips fallback sources if possible 1`] = `
   },
   {
     "behaviorHints": {
+      "bingeGroup": "webstreamr-mbg-4khdhub-hubcloud_fast-multi_en_hi",
+      "notWebReady": true,
+      "videoSize": 5712306503,
+    },
+    "name": "WebStreamrMBG 🌐 🇺🇸 🇮🇳 1080p",
+    "title": "Wake.Up.Dead.Man.A.Knives.Out.Mystery.2025.1080p.NF.WEB-DL.Hindi.DDP5.1.Atmos-English.DDP5.1.Atmos.HDR-DV.H.265-4kHdHub.Com.mkv
+💾 5.32 GB 🔗 HubCloud (Fast) from 4KHDHub",
+    "url": "https://pixel.hubcdn.fans/?id=27d1f3b30d526b344889b788ffae3d51fbeeefb0240dba72b20332616764471b9f3378b97c50e29a40303e11a83ec93fabbd9a414440a6f5b0cadcf5f92ccb4aa9e7a58cee6ad0f281c276b2152cb304a22da70db2ffcabb4e0bd9016dc78e5f::76825098ba3a0258a23b95deb85a0617",
+  },
+  {
+    "behaviorHints": {
       "bingeGroup": "webstreamr-mbg-4khdhub-hubcloud_fsl-multi_en_hi",
       "notWebReady": true,
       "videoSize": 5712306503,
@@ -562,6 +617,17 @@ exports[`resolve skips fallback sources if possible 1`] = `
     "title": "Wake.Up.Dead.Man.A.Knives.Out.Mystery.2025.1080p.NF.WEB-DL.Hindi.DDP5.1.Atmos-English.DDP5.1.Atmos.HDR-DV.H.265-4kHdHub.Com.mkv
 💾 5.32 GB 🔗 HubCloud (PixelServer) from 4KHDHub",
     "url": "https://pixeldrain.dev/api/file/gPsPz3B7?download=",
+  },
+  {
+    "behaviorHints": {
+      "bingeGroup": "webstreamr-mbg-4khdhub-hubcloud_fast-multi_en_hi",
+      "notWebReady": true,
+      "videoSize": 1374389534,
+    },
+    "name": "WebStreamrMBG 🌐 🇺🇸 🇮🇳 1080p",
+    "title": "Wake.Up.Dead.Man.A.Knives.Out.Mystery.2025.1080p.NF.WEB-DL.Hindi.AAC5.1-English.AAC5.1.AV1-4kHdHub.Com.mkv
+💾 1.28 GB 🔗 HubCloud (Fast) from 4KHDHub",
+    "url": "https://pixel.hubcdn.fans/?id=9c53ab82e6ccaa3ef17d926133dbd48ac8df473eae1ae78c5b0da8bdea9a8dd6361ba8802e9c76ad032b410ebb6235209e09d78f1343fb69247280b3166eedb826a399435ad0aa9bf1f65a092a353d0a37fdc171ec9f7afcfd6aa4ee1d068642::b96ed1eb7fbbdf3c62eefefa71f7a5f3",
   },
   {
     "behaviorHints": {

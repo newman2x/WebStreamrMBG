@@ -18,6 +18,38 @@ exports[`HubCloud handle crayon shin-chan 1993 1`] = `
     "ttl": 300000,
     "url": "https://hub.oreao-cdn.buzz/e35ec4a9a4efb5a154d0d10f9481dafc?token=1774428754",
   },
+  {
+    "format": "unknown",
+    "label": "HubCloud (Direct)",
+    "meta": {
+      "bytes": 28550795100,
+      "countryCodes": [
+        "hi",
+        "ja",
+      ],
+      "extractorId": "hubcloud_direct",
+      "height": 1080,
+      "title": "Crayon Shinchan Action Kamen vs Demon (1993) 1080p BluRay REMUX AVC [Hindi DD 2.0 + Japanese FLAC 2.0] (PitiPati-Ionicboy) (4kHDHub.com).mkv",
+    },
+    "ttl": 300000,
+    "url": "https://hidden-boat-e87c.hivegic619569.workers.dev/1397962425/53eaea70751039409adff7a1b54377f9aa8e590cd610a6452c849a7cbd2e40af66e667588bada714c63a9cf5360712f266b304e379bfde1d12c46aa2ccedf6eb::6170837909b2ffc3fc7f892bc959bd7e/Crayon%20Shinchan%20Action%20Kamen%20vs%20Demon%20(1993)%201080p%20BluRay%20REMUX%20AVC%20[Hindi%20DD%202.0%20+%20Japanese%20FLAC%202.0]%20(PitiPati-Ionicboy)%20(4kHDHub.com).mkv",
+  },
+  {
+    "format": "unknown",
+    "label": "HubCloud (Fast)",
+    "meta": {
+      "bytes": 28550795100,
+      "countryCodes": [
+        "hi",
+        "ja",
+      ],
+      "extractorId": "hubcloud_fast",
+      "height": 1080,
+      "title": "Crayon Shinchan Action Kamen vs Demon (1993) 1080p BluRay REMUX AVC [Hindi DD 2.0 + Japanese FLAC 2.0] (PitiPati-Ionicboy) (4kHDHub.com).mkv",
+    },
+    "ttl": 300000,
+    "url": "https://pixel.hubcdn.fans/?id=5c7253dc7782ea14f891ed9f4c4d7f7ee43284d5e72e6ff401de6f1906046db7713b6d892a040a4b3dd31c9f47eee611a17924f224fc27dd70a921d4e9025c6b7d8b937e11b44e737bd4d5cfd203e361f77a8496dd75025ad8ce3e200905ef3f::853f8b4709e1acb8413ec14270adf205",
+  },
 ]
 `;
 
@@ -58,6 +90,22 @@ exports[`HubCloud handle dark 2017 s03e08 1`] = `
     "ttl": 300000,
     "url": "https://pixeldrain.dev/api/file/2kFQBQio?download=",
   },
+  {
+    "format": "unknown",
+    "label": "HubCloud (Fast)",
+    "meta": {
+      "bytes": 3382286745,
+      "countryCodes": [
+        "de",
+        "en",
+      ],
+      "extractorId": "hubcloud_fast",
+      "height": 1080,
+      "title": "Dark.S03E08.The.Paradise.1080p.NF.WEB-DL.English.DDP5.1-German.DDP5.1.H.264-4kHdHub.Com.mkv",
+    },
+    "ttl": 300000,
+    "url": "https://pixel.hubcdn.fans/?id=d4697e0d4f27ea5067265503a820f05245ffd2d64a88ce6ecce4e18b6cace173bebc13920763a92baeaefe65f8c8a26efd836a0c1b3e92b4ce717874a5ff26a0764642b8090a5f7ef227bdb0bd6744ea8aa7edc43957e94b6ac9d2034c5a1d29::bada52a274d97488e2e76c1718bc16f5",
+  },
 ]
 `;
 
@@ -75,6 +123,19 @@ exports[`HubCloud handle dexter original sin 2024 s01e01 1`] = `
     },
     "ttl": 300000,
     "url": "https://pub-b5ecaffddf2344a0ae2222f5e8913e1b.r2.dev/Dexter.Original.Sin.S01E01.2160p.SKST.WEB-DL.H.265.DDP5.1-Tyrell.mkv?token=1774428754",
+  },
+  {
+    "format": "unknown",
+    "label": "HubCloud (Fast)",
+    "meta": {
+      "bytes": 5733781340,
+      "countryCodes": [],
+      "extractorId": "hubcloud_fast",
+      "height": 2160,
+      "title": "Dexter.Original.Sin.S01E01.2160p.SKST.WEB-DL.H.265.DDP5.1-Tyrell.mkv",
+    },
+    "ttl": 300000,
+    "url": "https://pixel.hubcdn.fans/?id=fb8c076011baaf9fd0cd6d349d86da6d8bf9c1a241cdcfb8ec27e07979b905608e125fadd030f801fa79752521d434885fe414c584c60919d282af9562b752b7fbaaad7784bd8251ce8eb1f5dacaf711bee65758b9f7fb78c4935b0b08afde16::837d46bfad85ed4f96ad7d9246ba302e",
   },
 ]
 `;
@@ -112,6 +173,22 @@ exports[`HubCloud handle goat 2026 1`] = `
     },
     "ttl": 300000,
     "url": "https://cdn.fsl-buckets.life/Goat%202026%202160p%2010bit%20HDR10+%20DV%20iTunes%20WEB-DL%20HEVC%20x265%20[Hindi%20AMZN%20DDP%205.1%20640kbps%20+%20English%20DDP%20Atmos%205.1]%20ESub-BYNDR-4kHdHub.mkv?token=af180cafc2418c7c47249d0167ba9704",
+  },
+  {
+    "format": "unknown",
+    "label": "HubCloud (Fast)",
+    "meta": {
+      "bytes": 19091129630,
+      "countryCodes": [
+        "en",
+        "hi",
+      ],
+      "extractorId": "hubcloud_fast",
+      "height": 2160,
+      "title": "Goat (2026) 2160p 10bit HDR10+ DV iTunes WEB-DL HEVC x265 [Hindi AMZN DDP 5.1 640kbps + English DDP Atmos 5.1] ESub-(BYNDR-4kHdHub).mkv",
+    },
+    "ttl": 300000,
+    "url": "https://pixel.hubcdn.fans/?id=9ca5a77d1f6a5e30157f1ba9335f5f37c246c28a9362693731d08440ebf515ae0bad03a3f054cc1cfc5fd342ead92bee375037aa0be4a07cce23c85320203685335142526fc508a5afc2ef06e1369c99fee1345a55224cddce65e250a0c33632::b31f4889dde70a376ef549e8fa698de9",
   },
 ]
 `;
