@@ -36,6 +36,8 @@ export abstract class Source {
 
   public readonly priority: number = 0;
 
+  protected readonly domainKey: string = '';
+
   protected abstract handleInternal(ctx: Context, type: ContentType, id: Id): Promise<(SourceResult[])>;
 
   private static baseUrlCache = new Map<string, { url: string; ts: number }>();
@@ -46,6 +48,28 @@ export abstract class Source {
 
   private static domainsJsonCache: Record<string, { name: string; url: string }> | null = null;
   private static domainsJsonTs = 0;
+
+  private static firstFailureAt = new Map<string, number>();
+  private static readonly FAILURE_EVICTION_WINDOW = 5 * 60 * 1000; // 5 min
+
+  public static recordFailure(domainKey: string): void {
+    if (!domainKey) return;
+    const now = Date.now();
+    const first = Source.firstFailureAt.get(domainKey);
+    if (!first) {
+      Source.firstFailureAt.set(domainKey, now);
+      return;
+    }
+    if (now - first >= Source.FAILURE_EVICTION_WINDOW) {
+      Source.baseUrlCache.delete(domainKey);
+      Source.firstFailureAt.delete(domainKey);
+    }
+  }
+
+  public static recordSuccess(domainKey: string): void {
+    if (!domainKey) return;
+    Source.firstFailureAt.delete(domainKey);
+  }
 
   public static stats() {
     return {
@@ -65,10 +89,12 @@ export abstract class Source {
     if (!sourceResults) {
       try {
         sourceResults = await this.handleInternal(ctx, type, id);
+        Source.recordSuccess(this.domainKey);
       } catch (error) {
         if (error instanceof NotFoundError) {
           sourceResults = [];
         } else {
+          Source.recordFailure(this.domainKey);
           throw error;
         }
       }

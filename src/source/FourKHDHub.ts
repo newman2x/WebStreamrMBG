@@ -31,7 +31,7 @@ export class FourKHDHub extends Source {
 
   public readonly baseUrl = 'https://4khdhub.link';
 
-  private readonly DOMAIN_KEY = '4kHDHub';
+  protected override readonly domainKey = '4kHDHub';
 
   private readonly FALLBACK_CANDIDATES = [
     'https://4khdhub.link',
@@ -174,6 +174,6 @@ export class FourKHDHub extends Source {
   };
 
   private readonly getBaseUrl = async (ctx: Context): Promise<URL> => {
-    return this.probeBaseUrl(ctx, this.fetcher, this.DOMAIN_KEY, this.FALLBACK_CANDIDATES);
+    return this.probeBaseUrl(ctx, this.fetcher, this.domainKey, this.FALLBACK_CANDIDATES);
   };
 }

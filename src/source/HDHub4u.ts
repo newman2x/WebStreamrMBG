@@ -47,7 +47,7 @@ export class HDHub4u extends Source {
 
   public readonly baseUrl = 'https://new1.hdhub4u.limo';
 
-  private readonly DOMAIN_KEY = 'hdhub';
+  protected override readonly domainKey = 'hdhub';
 
   private readonly FALLBACK_CANDIDATES = [
     'https://new1.hdhub4u.limo',
@@ -265,6 +265,6 @@ export class HDHub4u extends Source {
       }
     }
 
-    return this.probeBaseUrl(ctx, this.fetcher, this.DOMAIN_KEY, this.FALLBACK_CANDIDATES);
+    return this.probeBaseUrl(ctx, this.fetcher, this.domainKey, this.FALLBACK_CANDIDATES);
   };
 }

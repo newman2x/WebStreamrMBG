@@ -4,7 +4,7 @@ import winston from 'winston';
 import { BlockedError, HttpError, NotFoundError, QueueIsFullError, TimeoutError, TooManyRequestsError, TooManyTimeoutsError } from '../error';
 import { createTestContext } from '../test';
 import { BlockedReason, CountryCode } from '../types';
-import { Fetcher } from '../utils';
+import { Fetcher, ImdbId } from '../utils';
 import { Source, SourceResult } from './Source';
 
 const ctx = createTestContext();
@@ -46,6 +46,7 @@ describe('Source', () => {
     SourceClass.deadDomains = new Map();
     SourceClass.domainsJsonCache = null;
     SourceClass.domainsJsonTs = 0;
+    SourceClass.firstFailureAt = new Map();
   });
 
   test('stats returns something', async () => {
@@ -311,6 +312,146 @@ describe('Source', () => {
       const source = new TestSource();
       const result = await source.testProbeBaseUrl(ctx, fetcher, 'testsource', ['https://alive.example']);
       expect(result.origin).toBe('https://alive.example');
+    });
+  });
+
+  describe('cache eviction', () => {
+    class TestSourceWithDomainKey extends Source {
+      public readonly id = 'test';
+      public readonly label = 'Test';
+      public readonly contentTypes: ContentType[] = ['movie'];
+      public readonly countryCodes: CountryCode[] = [CountryCode.multi];
+      public readonly baseUrl = 'https://test.example';
+      protected override readonly domainKey = 'testkey';
+
+      public constructor(private readonly results: SourceResult[]) {
+        super();
+      }
+
+      protected async handleInternal(): Promise<SourceResult[]> {
+        return this.results;
+      }
+    }
+
+    class TestSourceThatThrows extends Source {
+      public readonly id = 'test';
+      public readonly label = 'Test';
+      public readonly contentTypes: ContentType[] = ['movie'];
+      public readonly countryCodes: CountryCode[] = [CountryCode.multi];
+      public readonly baseUrl = 'https://test.example';
+      protected override readonly domainKey = 'testkey';
+
+      public constructor(private readonly error: Error) {
+        super();
+      }
+
+      protected async handleInternal(): Promise<SourceResult[]> {
+        throw this.error;
+      }
+    }
+
+    test('recordFailure: first failure sets timestamp but does not evict', () => {
+      Source.recordFailure('testkey');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      expect((Source as any).firstFailureAt.has('testkey')).toBe(true);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      expect((Source as any).baseUrlCache.has('testkey')).toBe(false);
+    });
+
+    test('recordFailure: evicts cache when failures span 5+ minutes', () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const SourceClass = Source as any;
+      SourceClass.baseUrlCache.set('testkey', { url: 'https://dead.example/', ts: Date.now() });
+      SourceClass.firstFailureAt.set('testkey', Date.now() - 5 * 60 * 1000);
+
+      Source.recordFailure('testkey');
+
+      expect(SourceClass.baseUrlCache.has('testkey')).toBe(false);
+      expect(SourceClass.firstFailureAt.has('testkey')).toBe(false);
+    });
+
+    test('recordFailure: does not evict when failures are within 5 min window', () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const SourceClass = Source as any;
+      SourceClass.baseUrlCache.set('testkey', { url: 'https://alive.example/', ts: Date.now() });
+      SourceClass.firstFailureAt.set('testkey', Date.now() - 4 * 60 * 1000);
+
+      Source.recordFailure('testkey');
+
+      expect(SourceClass.baseUrlCache.has('testkey')).toBe(true);
+    });
+
+    test('recordFailure: no-op for empty domainKey', () => {
+      Source.recordFailure('');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      expect((Source as any).firstFailureAt.size).toBe(0);
+    });
+
+    test('recordSuccess: clears failure timer', () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const SourceClass = Source as any;
+      SourceClass.firstFailureAt.set('testkey', Date.now());
+
+      Source.recordSuccess('testkey');
+
+      expect(SourceClass.firstFailureAt.has('testkey')).toBe(false);
+    });
+
+    test('recordSuccess: no-op for empty domainKey', () => {
+      Source.recordSuccess('');
+      // no throw
+    });
+
+    test('handle: records success on empty results', async () => {
+      const source = new TestSourceWithDomainKey([]);
+      const result = await source.handle(ctx, 'movie', new ImdbId('tt123', undefined, undefined));
+      expect(result).toEqual([]);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      expect((Source as any).firstFailureAt.has('testkey')).toBe(false);
+    });
+
+    test('handle: records success on non-empty results', async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const SourceClass = Source as any;
+      SourceClass.firstFailureAt.set('testkey', Date.now());
+
+      const source = new TestSourceWithDomainKey([{ url: new URL('https://example.com/file.mkv'), meta: {} }]);
+      const result = await source.handle(ctx, 'movie', new ImdbId('tt456', undefined, undefined));
+      expect(result.length).toBe(1);
+      expect(SourceClass.firstFailureAt.has('testkey')).toBe(false);
+    });
+
+    test('handle: records failure on thrown non-NotFoundError', async () => {
+      const source = new TestSourceThatThrows(new Error('network error'));
+      await expect(source.handle(ctx, 'movie', new ImdbId('tt789', undefined, undefined))).rejects.toThrow('network error');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      expect((Source as any).firstFailureAt.has('testkey')).toBe(true);
+    });
+
+    test('handle: NotFoundError does not trigger recording', async () => {
+      const source = new TestSourceThatThrows(new NotFoundError());
+      const result = await source.handle(ctx, 'movie', new ImdbId('tt111', undefined, undefined));
+      expect(result).toEqual([]);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      expect((Source as any).firstFailureAt.has('testkey')).toBe(false);
+    });
+
+    test('handle: does not record when result comes from cache', async () => {
+      const source1 = new TestSourceWithDomainKey([{ url: new URL('https://example.com/file.mkv'), meta: {} }]);
+      await source1.handle(ctx, 'movie', new ImdbId('tt222', undefined, undefined));
+
+      const source2 = new TestSourceThatThrows(new Error('network error'));
+      const result = await source2.handle(ctx, 'movie', new ImdbId('tt222', undefined, undefined));
+      expect(result.length).toBe(1);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      expect((Source as any).firstFailureAt.has('testkey')).toBe(false);
+    });
+
+    test('handle: no domainKey = no recording', async () => {
+      const source = new TestSource();
+      await source.handle(ctx, 'movie', new ImdbId('tt000', undefined, undefined));
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      expect((Source as any).firstFailureAt.size).toBe(0);
     });
   });
 
