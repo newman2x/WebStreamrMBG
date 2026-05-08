@@ -23,6 +23,7 @@ export class FourKHDHub extends Source {
   private readonly DOMAIN_KEY = '4khdhub';
 
   private readonly FALLBACK_CANDIDATES = [
+    'https://4khdhub.link',
     'https://4khdhub.click',
     'https://4khdhub.ink',
     'https://4khdhub.one',

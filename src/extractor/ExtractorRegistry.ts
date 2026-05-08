@@ -46,6 +46,20 @@ export class ExtractorRegistry {
     const normalizedUrl = extractor.normalize(url);
     const cacheKey = this.determineCacheKey(ctx, extractor, normalizedUrl);
 
+    if (allowLazy && meta?.sourceId === '4khdhub' && ['hubcloud', 'hubdrive'].includes(extractor.id)) {
+      const extractUrl = new URL('/extract/', ctx.hostUrl);
+      extractUrl.searchParams.set('index', '0');
+      extractUrl.searchParams.set('url', normalizedUrl.href);
+
+      return [{
+        url: extractUrl,
+        format: Format.unknown,
+        label: extractor.label,
+        ttl: extractor.ttl,
+        meta: { extractorId: extractor.id, ...meta },
+      }];
+    }
+
     const storedDataRaw = await this.urlResultCache.getRaw<UrlResult[]>(cacheKey);
     const expires = storedDataRaw?.expires;
     if (storedDataRaw && expires) {
