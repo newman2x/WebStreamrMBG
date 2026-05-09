@@ -1,5 +1,6 @@
 import winston from 'winston';
 import { createTestContext } from '../test';
+import { CountryCode, Meta } from '../types';
 import { FetcherMock } from '../utils';
 import { ExtractorRegistry } from './ExtractorRegistry';
 import { HubCloud } from './HubCloud';
@@ -316,5 +317,96 @@ describe('HubExtractor edge cases', () => {
     const url = new URL('https://hubdrive.test/file/9990000010');
     const result = await extractor.normalizeAsync(ctx, url);
     expect(result.href).toBe(url.href);
+  });
+});
+
+describe('HubExtractor metadata enrichment', () => {
+  test('cache-hit path merges HubDrive page meta with source meta', async () => {
+    const fetcher = new FetcherMock(hubExtractorFixtureBase);
+    const hubCloud = new HubCloud(new FetcherMock(`${hubExtractorFixtureBase}/HubCloud`), logger);
+    const extractor = new HubExtractor(fetcher, logger, hubCloud);
+
+    const url = new URL('https://hubdrive.space/file/7283903021');
+    await extractor.normalizeAsync(ctx, url); // populate cache with HubDrive page meta
+
+    const spy = jest.spyOn(hubCloud, 'extractInternal');
+    const result = await extractor.extract(ctx, url, { countryCodes: [CountryCode.multi] });
+
+    expect(result.length).toBeGreaterThan(0);
+    // Source meta (multi) and HubDrive page meta ([hi, en]) should be merged additively
+    const passedMeta = (spy.mock.calls[0] as [unknown, unknown, Meta])[2];
+    expect(passedMeta.countryCodes).toContain(CountryCode.multi);
+  });
+
+  test('fallback path merges HubDrive page meta with source meta', async () => {
+    const fetcher = new FetcherMock(hubExtractorFixtureBase);
+    const hubCloud = new HubCloud(new FetcherMock(`${hubExtractorFixtureBase}/HubCloud`), logger);
+    const extractor = new HubExtractor(fetcher, logger, hubCloud);
+
+    const spy = jest.spyOn(hubCloud, 'extractInternal');
+    const result = await extractor.extract(ctx, new URL('https://hubdrive.space/file/7283903021'), { countryCodes: [CountryCode.multi] });
+
+    expect(result.length).toBeGreaterThan(0);
+    // Source meta (multi) and HubDrive page meta ([hi, en]) should be merged additively
+    const passedMeta = (spy.mock.calls[0] as [unknown, unknown, Meta])[2];
+    expect(passedMeta.countryCodes).toContain(CountryCode.multi);
+  });
+
+  test('HubDrive page meta enriches title, height, and bytes when source omits them', async () => {
+    const fetcher = new FetcherMock(hubExtractorFixtureBase);
+    const hubCloud = new HubCloud(new FetcherMock(`${hubExtractorFixtureBase}/HubCloud`), logger);
+    const extractor = new HubExtractor(fetcher, logger, hubCloud);
+
+    const spy = jest.spyOn(hubCloud, 'extractInternal');
+    await extractor.extract(ctx, new URL('https://hubdrive.space/file/7283903021'), {});
+
+    const passedMeta = (spy.mock.calls[0] as [unknown, unknown, Meta])[2];
+    // HubDrive page title contains "2160p" and "60.21 GB"
+    expect(passedMeta.height).toBe(2160);
+    expect(passedMeta.bytes).toBeDefined();
+    expect(passedMeta.title).toContain('Avatar');
+  });
+
+  test('source meta wins over HubDrive page meta for title, height, bytes', async () => {
+    const fetcher = new FetcherMock(hubExtractorFixtureBase);
+    const hubCloud = new HubCloud(new FetcherMock(`${hubExtractorFixtureBase}/HubCloud`), logger);
+    const extractor = new HubExtractor(fetcher, logger, hubCloud);
+
+    const spy = jest.spyOn(hubCloud, 'extractInternal');
+    await extractor.extract(ctx, new URL('https://hubdrive.space/file/7283903021'), { title: 'source-title', height: 1080, bytes: 1000 });
+
+    const passedMeta = (spy.mock.calls[0] as [unknown, unknown, Meta])[2];
+    expect(passedMeta.title).toBe('source-title');
+    expect(passedMeta.height).toBe(1080);
+    expect(passedMeta.bytes).toBe(1000);
+  });
+
+  test('cache-hit path when HubDrive page has no language names', async () => {
+    const fetcher = new FetcherMock(hubExtractorFixtureBase);
+    const hubCloud = new HubCloud(new FetcherMock(`${hubExtractorFixtureBase}/HubCloud`), logger);
+    const extractor = new HubExtractor(fetcher, logger, hubCloud);
+
+    const url = new URL('https://hubdrive.space/file/nolang123');
+    await extractor.normalizeAsync(ctx, url); // populate cache (page has no language names)
+
+    const spy = jest.spyOn(hubCloud, 'extractInternal').mockResolvedValue([]);
+    await extractor.extract(ctx, url, { countryCodes: [CountryCode.en] });
+
+    const passedMeta = (spy.mock.calls[0] as [unknown, unknown, Meta])[2];
+    // HubDrive page has no countryCodes, so only source countryCodes should be present
+    expect(passedMeta.countryCodes).toEqual([CountryCode.en]);
+  });
+
+  test('fallback path when HubDrive page has no language names', async () => {
+    const fetcher = new FetcherMock(hubExtractorFixtureBase);
+    const hubCloud = new HubCloud(new FetcherMock(`${hubExtractorFixtureBase}/HubCloud`), logger);
+    const extractor = new HubExtractor(fetcher, logger, hubCloud);
+
+    const spy = jest.spyOn(hubCloud, 'extractInternal').mockResolvedValue([]);
+    await extractor.extract(ctx, new URL('https://hubdrive.space/file/nolang123'), { countryCodes: [CountryCode.en] });
+
+    const passedMeta = (spy.mock.calls[0] as [unknown, unknown, Meta])[2];
+    // HubDrive page has no countryCodes, so only source countryCodes should be present
+    expect(passedMeta.countryCodes).toEqual([CountryCode.en]);
   });
 });

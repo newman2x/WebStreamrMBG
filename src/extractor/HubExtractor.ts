@@ -1,7 +1,8 @@
+import bytes from 'bytes';
 import * as cheerio from 'cheerio';
 import winston from 'winston';
 import { Context, Format, InternalUrlResult, Meta } from '../types';
-import { Fetcher } from '../utils';
+import { Fetcher, findCountryCodes, findHeight } from '../utils';
 import { Extractor } from './Extractor';
 import { HubCloud } from './HubCloud';
 
@@ -19,6 +20,7 @@ const DEAD_HUBCLOUD_HOSTS = new Set([
 
 interface ResolutionCacheEntry {
   url: URL;
+  meta: Partial<Meta>;
   ts: number;
 }
 
@@ -67,8 +69,8 @@ export class HubExtractor extends Extractor {
     try {
       const resolved = await this.resolveHubDriveToHubCloud(_ctx, url);
       if (resolved) {
-        this.resolutionCache.set(url.href, { url: resolved, ts: Date.now() });
-        return this.stripQueryParams(resolved);
+        this.resolutionCache.set(url.href, { url: resolved.url, meta: resolved.meta, ts: Date.now() });
+        return this.stripQueryParams(resolved.url);
       }
     } catch {
       // fall through
@@ -95,7 +97,8 @@ export class HubExtractor extends Extractor {
       const cached = this.resolutionCache.get(url.href);
       if (cached && Date.now() - cached.ts < RESOLUTION_CACHE_TTL) {
         try {
-          return await this.hubCloud.extractInternal(ctx, cached.url, meta);
+          const enrichedMeta: Meta = { ...cached.meta, ...meta, countryCodes: [...new Set([...cached.meta.countryCodes ?? [], ...meta.countryCodes ?? []])] };
+          return await this.hubCloud.extractInternal(ctx, cached.url, enrichedMeta);
         } catch {
           return [];
         }
@@ -109,8 +112,8 @@ export class HubExtractor extends Extractor {
     return await this.hubCloud.extractInternal(ctx, url, meta);
   }
 
-  // Resolve HubDrive page to HubCloud URL
-  private async resolveHubDriveToHubCloud(ctx: Context, url: URL): Promise<URL | null> {
+  // Resolve HubDrive page to HubCloud URL + page metadata
+  private async resolveHubDriveToHubCloud(ctx: Context, url: URL): Promise<{ url: URL; meta: Partial<Meta> } | null> {
     let html: string;
     try {
       html = await this.fetcher.text(ctx, url, { headers: { Referer: url.href } });
@@ -119,7 +122,25 @@ export class HubExtractor extends Extractor {
     }
 
     const $ = cheerio.load(html);
-    return this.findHubCloudUrl($);
+    const hubCloudUrl = this.findHubCloudUrl($);
+    if (!hubCloudUrl) return null;
+
+    return { url: hubCloudUrl, meta: this.extractHubDriveMeta($) };
+  }
+
+  // Extract metadata from HubDrive page (title, countryCodes, height, bytes)
+  private extractHubDriveMeta($: cheerio.CheerioAPI): Partial<Meta> {
+    const pageTitle = $('title').text().replace(/^HubDrive\s*\|\s*/, '').trim();
+    const fileSizeText = $('td').filter((_i, el) => $(el).text().trim() === 'File Size').next().text().trim();
+    const countryCodes = findCountryCodes(pageTitle);
+    const height = findHeight(pageTitle);
+
+    return {
+      ...(pageTitle && { title: pageTitle }),
+      ...(countryCodes.length > 0 && { countryCodes }),
+      ...(height !== undefined && { height }),
+      ...(fileSizeText && { bytes: bytes.parse(fileSizeText) as number | undefined }),
+    };
   }
 
   // Find HubCloud link on HubDrive page
@@ -159,8 +180,11 @@ export class HubExtractor extends Extractor {
       return [];
     }
 
+    const hubDriveMeta = this.extractHubDriveMeta($);
+    const enrichedMeta: Meta = { ...hubDriveMeta, ...meta, countryCodes: [...new Set([...hubDriveMeta.countryCodes ?? [], ...meta.countryCodes ?? []])] };
+
     try {
-      return await this.hubCloud.extractInternal(ctx, hubCloudUrl, meta);
+      return await this.hubCloud.extractInternal(ctx, hubCloudUrl, enrichedMeta);
     } catch {
       return [];
     }
