@@ -18,22 +18,6 @@ exports[`HubCloud handle crayon shin-chan 1993 1`] = `
     "ttl": 300000,
     "url": "https://hub.oreao-cdn.buzz/e35ec4a9a4efb5a154d0d10f9481dafc?token=1774428754",
   },
-  {
-    "format": "unknown",
-    "label": "HubCloud (PDL)",
-    "meta": {
-      "bytes": 28550795100,
-      "countryCodes": [
-        "hi",
-        "ja",
-      ],
-      "extractorId": "hubcloud_pdl",
-      "height": 1080,
-      "title": "Crayon Shinchan Action Kamen vs Demon (1993) 1080p BluRay REMUX AVC [Hindi DD 2.0 + Japanese FLAC 2.0] (PitiPati-Ionicboy) (4kHDHub.com).mkv",
-    },
-    "ttl": 300000,
-    "url": "https://hidden-boat-e87c.hivegic619569.workers.dev/1397962425/53eaea70751039409adff7a1b54377f9aa8e590cd610a6452c849a7cbd2e40af66e667588bada714c63a9cf5360712f266b304e379bfde1d12c46aa2ccedf6eb::6170837909b2ffc3fc7f892bc959bd7e/Crayon%20Shinchan%20Action%20Kamen%20vs%20Demon%20(1993)%201080p%20BluRay%20REMUX%20AVC%20[Hindi%20DD%202.0%20+%20Japanese%20FLAC%202.0]%20(PitiPati-Ionicboy)%20(4kHDHub.com).mkv",
-  },
 ]
 `;
 
@@ -57,7 +41,7 @@ exports[`HubCloud handle dark 2017 s03e08 1`] = `
   },
   {
     "format": "unknown",
-    "label": "HubCloud (PixelServer)",
+    "label": "HubCloud (PxlSrv)",
     "meta": {
       "bytes": 3382286745,
       "countryCodes": [
@@ -99,22 +83,6 @@ exports[`HubCloud handle goat 2026 1`] = `
 [
   {
     "format": "unknown",
-    "label": "HubCloud (FSL)",
-    "meta": {
-      "bytes": 19091129630,
-      "countryCodes": [
-        "en",
-        "hi",
-      ],
-      "extractorId": "hubcloud_fsl",
-      "height": 2160,
-      "title": "Goat (2026) 2160p 10bit HDR10+ DV iTunes WEB-DL HEVC x265 [Hindi AMZN DDP 5.1 640kbps + English DDP Atmos 5.1] ESub-(BYNDR-4kHdHub).mkv",
-    },
-    "ttl": 300000,
-    "url": "https://hub.shipcdn.buzz/06a50fe95983473b5eeb7fa0ed1b453b?token=1774428722",
-  },
-  {
-    "format": "unknown",
     "label": "HubCloud (FSLv2)",
     "meta": {
       "bytes": 19091129630,
@@ -128,6 +96,22 @@ exports[`HubCloud handle goat 2026 1`] = `
     },
     "ttl": 300000,
     "url": "https://cdn.fsl-buckets.life/Goat%202026%202160p%2010bit%20HDR10+%20DV%20iTunes%20WEB-DL%20HEVC%20x265%20[Hindi%20AMZN%20DDP%205.1%20640kbps%20+%20English%20DDP%20Atmos%205.1]%20ESub-BYNDR-4kHdHub.mkv?token=af180cafc2418c7c47249d0167ba9704",
+  },
+  {
+    "format": "unknown",
+    "label": "HubCloud (FSL)",
+    "meta": {
+      "bytes": 19091129630,
+      "countryCodes": [
+        "en",
+        "hi",
+      ],
+      "extractorId": "hubcloud_fsl",
+      "height": 2160,
+      "title": "Goat (2026) 2160p 10bit HDR10+ DV iTunes WEB-DL HEVC x265 [Hindi AMZN DDP 5.1 640kbps + English DDP Atmos 5.1] ESub-(BYNDR-4kHdHub).mkv",
+    },
+    "ttl": 300000,
+    "url": "https://hub.shipcdn.buzz/06a50fe95983473b5eeb7fa0ed1b453b?token=1774428722",
   },
 ]
 `;

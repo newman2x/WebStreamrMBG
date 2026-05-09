@@ -17,6 +17,20 @@ const DEAD_DOMAINS = new Set([
 /** Delay before retrying Hop 1 after a failed Hop 2 (ms). */
 const RETRY_DELAY_MS = 2500;
 
+/**
+ * Server categories matched by button text, ordered from highest to lowest quality.
+ * Higher priority = more reliable / supports HTTP Range (seekable).
+ * Non-seekable categories (10Gbps, PDL, DF) are deduped when a seekable alternative exists.
+ */
+const SERVER_CATEGORIES = [
+  { buttonIncludes: 'FSLv2', label: 'HubCloud (FSLv2)', extractorId: 'hubcloud_fslv2', priority: 4, seekable: true },
+  { buttonIncludes: 'FSL', label: 'HubCloud (FSL)', extractorId: 'hubcloud_fsl', priority: 5, seekable: true },
+  { buttonIncludes: '10Gbps', label: 'HubCloud (10Gbps)', extractorId: 'hubcloud_fast', priority: 2, seekable: false },
+  { buttonIncludes: 'PixelServer', label: 'HubCloud (PxlSrv)', extractorId: 'hubcloud_pixelserver', priority: 3, seekable: true },
+  { buttonIncludes: 'PDL', label: 'HubCloud (PDL)', extractorId: 'hubcloud_pdl', priority: 1, seekable: false },
+  { buttonIncludes: 'Download File', label: 'HubCloud (DF)', extractorId: 'hubcloud_direct', priority: 0, seekable: false },
+] as const;
+
 const REDIRECT_STRATEGIES: readonly ((html: string) => string | null)[] = [
   html => html.match(/var url\s*=\s*['"](.*?)['"]/)?.[1] ?? null,
 
@@ -58,7 +72,7 @@ export class HubCloud extends Extractor {
 
   public readonly label = 'HubCloud';
 
-  public override readonly cacheVersion = 11;
+  public override readonly cacheVersion = 12;
 
   public override readonly ttl = HUBCLOUD_CACHE_TTL;
 
@@ -117,112 +131,95 @@ export class HubCloud extends Extractor {
     const height = meta.height ?? findHeight(title);
     const fileSize = bytes.parse($('#size').text()) as number;
 
-    return Promise.all([
-      ...$('a')
-        .filter((_i, el) => {
-          const text = $(el).text();
-          return text.includes('FSL') && !text.includes('FSLv2');
-        })
-        .map((_i, el) => {
-          const fslHref = $(el).attr('href') as string;
-          return {
-            url: new URL(fslHref),
-            format: Format.unknown,
-            ttl: HUBCLOUD_CACHE_TTL,
-            label: `${this.label} (FSL)`,
-            meta: { ...meta, bytes: fileSize, extractorId: `${this.id}_fsl`, countryCodes, height, title },
-          };
-        }).toArray(),
-      ...$('a')
-        .filter((_i, el) => $(el).text().includes('FSLv2'))
-        .map((_i, el) => {
-          const fslHref = $(el).attr('href') as string;
-          return {
-            url: new URL(fslHref),
-            format: Format.unknown,
-            ttl: HUBCLOUD_CACHE_TTL,
-            label: `${this.label} (FSLv2)`,
-            meta: { ...meta, bytes: fileSize, extractorId: `${this.id}_fslv2`, countryCodes, height, title },
-          };
-        }).toArray(),
-      ...await Promise.all($('a')
-        .filter((_i, el) => $(el).text().includes('PixelServer'))
-        .map((_i, el) => {
-          const userUrl = new URL(($(el).attr('href') as string).replace('/api/file/', '/u/'));
-          const url = new URL(userUrl.href.replace('/u/', '/api/file/'));
-          url.searchParams.set('download', '');
-          return { url, userUrl };
-        }).toArray()
-        .map(async ({ url, userUrl }) => {
-          try {
-            await this.fetcher.head(ctx, url, { headers: { Referer: userUrl.href } });
-          } catch {
-            return null;
+    // Collect all download links and classify them by button text
+    const allLinks = $('a').toArray();
+    const classified: InternalUrlResult[] = [];
+    const matchedIndices = new Set<number>();
+
+    // Pass 1: Match links by button text in priority order
+    for (const category of SERVER_CATEGORIES) {
+      for (let i = 0; i < allLinks.length; i++) {
+        if (matchedIndices.has(i)) continue;
+
+        const el = allLinks[i];
+        /* istanbul ignore if -- cheerio .toArray() never produces null entries */
+        if (!el) continue;
+        const text = $(el).text();
+        const href = $(el).attr('href');
+
+        if (!href || href.toLowerCase().includes('.zip')) continue;
+
+        if (text.includes(category.buttonIncludes)) {
+          // FSL must NOT match FSLv2 buttons (FSLv2 is checked first so this is safe)
+          // istanbul ignore if -- each link matches at most one category, so FSL never sees FSLv2 text
+          if (category.buttonIncludes === 'FSL' && text.includes('FSLv2')) continue;
+
+          matchedIndices.add(i);
+
+          // PixelServer: special handling — convert /u/ → /api/file/?download= and HEAD check
+          if (category.buttonIncludes === 'PixelServer') {
+            try {
+              const userUrl = new URL(href.replace('/api/file/', '/u/'));
+              const apiUrl = new URL(userUrl.href.replace('/u/', '/api/file/'));
+              apiUrl.searchParams.set('download', '');
+              await this.fetcher.head(ctx, apiUrl, { headers: { Referer: userUrl.href } });
+              classified.push({
+                url: apiUrl,
+                format: Format.unknown,
+                ttl: HUBCLOUD_CACHE_TTL,
+                label: category.label,
+                meta: { ...meta, bytes: fileSize, extractorId: category.extractorId, countryCodes, height, title },
+                requestHeaders: { Referer: userUrl.href },
+              });
+            } catch {
+              // PixelServer link is dead — skip it
+            }
+          } else {
+            classified.push({
+              url: new URL(href),
+              format: Format.unknown,
+              ttl: HUBCLOUD_CACHE_TTL,
+              label: category.label,
+              meta: {
+                ...meta,
+                bytes: fileSize,
+                extractorId: category.extractorId,
+                countryCodes,
+                height,
+                title: category.seekable ? title : `${title} ⚠️ no seek`,
+              },
+            });
           }
-          return {
-            url,
-            format: Format.unknown,
-            label: `${this.label} (PixelServer)`,
-            meta: { ...meta, bytes: fileSize, extractorId: `${this.id}_pixelserver`, countryCodes, height, title },
-            requestHeaders: { Referer: userUrl.href },
-          };
-        }),
-      ).then(results => results.filter(r => r !== null)),
+        }
+      }
+    }
 
-      // HubCloud PDL — workers.dev links with "PDL" button text
-      ...$('a')
-        .filter((_i, el) => {
-          const href = ($(el).attr('href') ?? '');
-          const text = $(el).text();
-          return href.includes('workers.dev') && !href.includes('.zip') && text.includes('PDL');
-        })
-        .map((_i, el) => {
-          const href = $(el).attr('href') as string;
-          return {
-            url: new URL(href),
-            format: Format.unknown,
-            ttl: HUBCLOUD_CACHE_TTL,
-            label: `${this.label} (PDL)`,
-            meta: { ...meta, bytes: fileSize, extractorId: `${this.id}_pdl`, countryCodes, height, title },
-          };
-        }).toArray(),
+    // Priority-based dedup: if same file exists via both seekable and non-seekable,
+    // drop the non-seekable duplicate. Keep both FSL and FSLv2 (both seekable).
+    const isSeekable = (label: string | undefined): boolean => {
+      /* istanbul ignore if -- label is always set by extractInternal */
+      if (!label) return false;
+      const cat = SERVER_CATEGORIES.find(c => c.label === label);
+      /* istanbul ignore next -- labels always come from SERVER_CATEGORIES, so cat is never undefined */
+      return cat?.seekable ?? false;
+    };
 
-      // HubCloud DF — workers.dev links (plain file, not zip-wrapped, non-PDL)
-      ...$('a')
-        .filter((_i, el) => {
-          const href = ($(el).attr('href') ?? '');
-          const text = $(el).text();
-          return href.includes('workers.dev') && !href.includes('.zip') && !text.includes('PDL');
-        })
-        .map((_i, el) => {
-          const href = $(el).attr('href') as string;
-          return {
-            url: new URL(href),
-            format: Format.unknown,
-            ttl: HUBCLOUD_CACHE_TTL,
-            label: `${this.label} (DF)`,
-            meta: { ...meta, bytes: fileSize, extractorId: `${this.id}_direct`, countryCodes, height, title },
-          };
-        }).toArray(),
+    const seekableResults = classified.filter(r => isSeekable(r.label));
 
-      ...$('a')
-        .filter((_i, el) => {
-          const href = ($(el).attr('href') ?? '').toLowerCase();
-          return href.includes('hubcdn') && !href.includes('pixel.');
-        })
-        .map((_i, el) => {
-          const href = $(el).attr('href') as string;
-          return {
-            url: new URL(href),
-            format: Format.unknown,
-            ttl: HUBCLOUD_CACHE_TTL,
-            label: `${this.label} (10Gbps)`,
-            meta: { ...meta, bytes: fileSize, extractorId: `${this.id}_fast`, countryCodes, height, title },
-          };
-        }).toArray(),
+    if (seekableResults.length > 0) {
+      // Compare by bytes only — titles differ (non-seekable have "⚠️ no seek" suffix)
+      const hasSeekableForFile = (result: InternalUrlResult): boolean =>
+        seekableResults.some(s => s.meta?.bytes === result.meta?.bytes);
 
-    ]);
-  };
+      return classified.filter((r) => {
+        if (isSeekable(r.label)) return true;
+        // Drop non-seekable if a seekable alternative exists for the same file
+        return !hasSeekableForFile(r);
+      });
+    }
+
+    return classified;
+  }
 
   private extractRedirectUrl(html: string): string | null {
     for (const strategy of REDIRECT_STRATEGIES) {
