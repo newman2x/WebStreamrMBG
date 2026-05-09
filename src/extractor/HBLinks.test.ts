@@ -233,4 +233,30 @@ describe('HBLinks', () => {
     expect(extractSpy).toHaveBeenCalledWith(ctx, new URL('https://hubcloud.one/drive/cloud123'), expect.any(Object));
     expect(extractSpy).toHaveBeenCalledWith(ctx, new URL('https://hubdrive.space/file/drive123'), expect.any(Object));
   });
+
+  test('deduplicates hubdrive + hubcloud links that resolve to same canonical URL', async () => {
+    const fetcher = new FetcherMock(fixtureBase);
+    const hubExtractor = new HubExtractor(new FetcherMock(fixtureBase), logger);
+    const hblinks = new HBLinks(fetcher, logger, hubExtractor);
+
+    const htmlWithDriveAndCloud = `<!DOCTYPE html><html><head><title>Canonical Dedup Test 2024</title></head><body>
+      <a href="https://hubdrive.space/file/123">HubDrive</a>
+      <a href="https://hubcloud.one/drive/123?token=abc">HubCloud</a>
+    </body></html>`;
+
+    jest.spyOn(fetcher, 'text').mockResolvedValueOnce(htmlWithDriveAndCloud);
+    // Both resolve to same canonical URL — normalizeAsync for hubdrive resolves to hubcloud, hubcloud strips token
+    jest.spyOn(hubExtractor, 'normalizeAsync')
+      .mockResolvedValueOnce(new URL('https://hubcloud.one/drive/123')) // hubdrive → resolved hubcloud
+      .mockResolvedValueOnce(new URL('https://hubcloud.one/drive/123')); // hubcloud → stripped token = same
+    const extractSpy = jest.spyOn(hubExtractor, 'extract').mockResolvedValue([
+      { url: new URL('https://hub.test-cdn.buzz/deduped'), format: Format.unknown, label: 'HubCloud (FSL)', ttl: 120000 },
+    ]);
+
+    const result = await hblinks.extract(ctx, new URL('https://hblinks.dad/archives/canonicaldedup'), {});
+
+    // Only extracted once despite two links — canonical dedup
+    expect(extractSpy).toHaveBeenCalledTimes(1);
+    expect(result.length).toBe(1);
+  });
 });

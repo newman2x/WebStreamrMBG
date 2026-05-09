@@ -45,10 +45,27 @@ export class HBLinks extends Extractor {
     const height = meta.height ?? findHeight(pageTitle);
     const updatedMeta = { ...meta, countryCodes, height, title: pageTitle || meta.title };
 
-    const results: InternalUrlResult[] = [];
     const hubLinks = this.extractHubLinks($, url);
 
-    for (const hubUrl of hubLinks) {
+    // Deduplicate by canonical URL — hubdrive and hubcloud may resolve to the same file
+    const canonicalUrls: URL[] = await Promise.all(
+      hubLinks.map(hubUrl => this.hubExtractor.normalizeAsync(ctx, hubUrl)),
+    );
+    const seenCanonical = new Set<string>();
+    const uniqueLinks: URL[] = [];
+    for (let i = 0; i < hubLinks.length; i++) {
+      const canonical = canonicalUrls[i];
+      const hubUrl = hubLinks[i];
+      /* istanbul ignore if -- index is always valid */
+      if (!canonical || !hubUrl) continue;
+      if (!seenCanonical.has(canonical.href)) {
+        seenCanonical.add(canonical.href);
+        uniqueLinks.push(hubUrl);
+      }
+    }
+
+    const results: InternalUrlResult[] = [];
+    for (const hubUrl of uniqueLinks) {
       try {
         results.push(...await this.hubExtractor.extract(ctx, hubUrl, updatedMeta));
       } catch {
