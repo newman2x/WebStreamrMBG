@@ -2,7 +2,7 @@ import { ContentType } from 'stremio-addon-sdk';
 import winston from 'winston';
 import { BlockedError, HttpError, NotFoundError, QueueIsFullError, TimeoutError, TooManyRequestsError, TooManyTimeoutsError } from '../error';
 import { createExtractors, Extractor, ExtractorRegistry } from '../extractor';
-import { HubCloud } from '../extractor/HubCloud';
+import { HubExtractor } from '../extractor/HubExtractor';
 import { Source, SourceResult } from '../source';
 import { FourKHDHub } from '../source/FourKHDHub';
 import { MeineCloud } from '../source/MeineCloud';
@@ -72,7 +72,7 @@ describe('resolve', () => {
   });
 
   test('skips fallback sources if possible', async () => {
-    const streamResolver = new StreamResolver(logger, new ExtractorRegistry(logger, [new HubCloud(fetcher, logger)]));
+    const streamResolver = new StreamResolver(logger, new ExtractorRegistry(logger, [new HubExtractor(fetcher, logger)]));
 
     const streams = await streamResolver.resolve(createTestContext(), [fourKhdHub], 'movie', new TmdbId(812583, undefined, undefined));
     expect(streams.streams).toMatchSnapshot();
@@ -91,7 +91,7 @@ describe('resolve', () => {
       };
     }
 
-    const streamResolver = new StreamResolver(logger, new ExtractorRegistry(logger, [new HubCloud(fetcher, logger)]));
+    const streamResolver = new StreamResolver(logger, new ExtractorRegistry(logger, [new HubExtractor(fetcher, logger)]));
 
     const streams = await streamResolver.resolve(createTestContext(), [new FallbackSource()], 'movie', new TmdbId(812583, undefined, undefined));
     expect(streams.streams).toMatchSnapshot();

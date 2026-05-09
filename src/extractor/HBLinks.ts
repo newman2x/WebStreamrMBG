@@ -3,8 +3,9 @@ import winston from 'winston';
 import { Context, InternalUrlResult, Meta } from '../types';
 import { Fetcher, findCountryCodes, findHeight } from '../utils';
 import { Extractor } from './Extractor';
-import { HubCloud } from './HubCloud';
-import { HubDrive } from './HubDrive';
+import { HubExtractor } from './HubExtractor';
+
+const HUB_HOST_PATTERN = /hubcdn|hubcloud|hubdrive/;
 
 export class HBLinks extends Extractor {
   public readonly id = 'hblinks';
@@ -13,17 +14,14 @@ export class HBLinks extends Extractor {
 
   public override readonly ttl: number = 120000; // 2 min
 
-  public override readonly cacheVersion = 1;
+  public override readonly cacheVersion = 2;
 
-  private readonly hubDrive: HubDrive;
+  private readonly hubExtractor: HubExtractor;
 
-  private readonly hubCloud: HubCloud;
-
-  public constructor(fetcher: Fetcher, logger: winston.Logger, hubDrive: HubDrive, hubCloud: HubCloud) {
+  public constructor(fetcher: Fetcher, logger: winston.Logger, hubExtractor: HubExtractor) {
     super(fetcher, logger);
 
-    this.hubDrive = hubDrive;
-    this.hubCloud = hubCloud;
+    this.hubExtractor = hubExtractor;
   }
 
   public supports(_ctx: Context, url: URL): boolean {
@@ -48,42 +46,11 @@ export class HBLinks extends Extractor {
     const updatedMeta = { ...meta, countryCodes, height, title: pageTitle || meta.title };
 
     const results: InternalUrlResult[] = [];
+    const hubLinks = this.extractHubLinks($, url);
 
-    // HubCDN → direct Google video URLs, never duplicated by HubCloud
-    const hubCdnLinks = this.extractLinks($, url, /hubcdn/);
-    for (const cdnUrl of hubCdnLinks) {
+    for (const hubUrl of hubLinks) {
       try {
-        const cdnResults = await this.hubDrive.extract(ctx, cdnUrl, updatedMeta);
-        results.push(...cdnResults);
-      } catch {
-        // skip failed extraction
-      }
-    }
-
-    // Deduplicate HubCloud URLs: HubDrive always delegates to HubCloud, so same URL via either path is extracted once
-    const seenHubCloudUrls = new Set<string>();
-    const hubCloudUrls: URL[] = [];
-
-    for (const cloudUrl of this.extractLinks($, url, /hubcloud/)) {
-      seenHubCloudUrls.add(cloudUrl.href);
-      hubCloudUrls.push(cloudUrl);
-    }
-
-    for (const driveUrl of this.extractLinks($, url, /hubdrive/)) {
-      try {
-        const resolved = await this.hubDrive.resolveHubCloudUrl(ctx, driveUrl, updatedMeta);
-        if (resolved && !seenHubCloudUrls.has(resolved.href)) {
-          seenHubCloudUrls.add(resolved.href);
-          hubCloudUrls.push(resolved);
-        }
-      } catch {
-        // skip failed resolution
-      }
-    }
-
-    for (const cloudUrl of hubCloudUrls) {
-      try {
-        results.push(...await this.hubCloud.extract(ctx, cloudUrl, updatedMeta));
+        results.push(...await this.hubExtractor.extract(ctx, hubUrl, updatedMeta));
       } catch {
         // skip failed extraction
       }
@@ -92,14 +59,14 @@ export class HBLinks extends Extractor {
     return results;
   }
 
-  /** Extract links matching a host pattern, deduplicated by URL. */
-  private extractLinks($: cheerio.CheerioAPI, pageUrl: URL, hostPattern: RegExp): URL[] {
+  // Extract all hub links (hubcdn, hubcloud, hubdrive), deduplicated by URL
+  private extractHubLinks($: cheerio.CheerioAPI, pageUrl: URL): URL[] {
     const links: URL[] = [];
     const seen = new Set<string>();
 
     $('a[href]').each((_i, el) => {
       const href = $(el).attr('href');
-      if (href && hostPattern.test(href)) {
+      if (href && HUB_HOST_PATTERN.test(href)) {
         try {
           const parsedUrl = new URL(href, pageUrl);
           const key = parsedUrl.href;

@@ -80,7 +80,7 @@ export class HubCloud extends Extractor {
     return null !== url.host.match(/hubcloud/);
   }
 
-  protected async extractInternal(ctx: Context, url: URL, meta: Meta): Promise<InternalUrlResult[]> {
+  public async extractInternal(ctx: Context, url: URL, meta: Meta): Promise<InternalUrlResult[]> {
     if (DEAD_DOMAINS.has(url.host.toLowerCase())) {
       return [];
     }

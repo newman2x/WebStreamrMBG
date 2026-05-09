@@ -29,6 +29,11 @@ export abstract class Extractor {
     return url;
   };
 
+  // Async normalization for cache key only; original URL still passed to extractInternal()
+  public async normalizeAsync(_ctx: Context, url: URL): Promise<URL> {
+    return url;
+  }
+
   protected abstract extractInternal(ctx: Context, url: URL, meta: Meta): Promise<InternalUrlResult[]>;
 
   public async extract(ctx: Context, url: URL, meta: Meta): Promise<UrlResult[]> {

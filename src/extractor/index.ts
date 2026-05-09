@@ -10,8 +10,7 @@ import { FileMoon } from './FileMoon';
 import { Fsst } from './Fsst';
 import { HBLinks } from './HBLinks';
 import { HDStream4U } from './HDStream4U';
-import { HubCloud } from './HubCloud';
-import { HubDrive } from './HubDrive';
+import { HubExtractor } from './HubExtractor';
 import { KinoGer } from './KinoGer';
 import { LuluStream } from './LuluStream';
 import { Mixdrop } from './Mixdrop';
@@ -35,8 +34,7 @@ export * from './ExtractorRegistry';
 export const createExtractors = (fetcher: Fetcher, logger: winston.Logger): Extractor[] => {
   const disabledExtractors = envGet('DISABLED_EXTRACTORS')?.split(',') ?? [];
 
-  const hubCloud = new HubCloud(fetcher, logger);
-  const hubDrive = new HubDrive(fetcher, logger, hubCloud);
+  const hubExtractor = new HubExtractor(fetcher, logger);
 
   return [
     new DoodStream(fetcher, logger),
@@ -45,10 +43,9 @@ export const createExtractors = (fetcher: Fetcher, logger: winston.Logger): Extr
     new FileLions(fetcher, logger),
     new FileMoon(fetcher, logger),
     new Fsst(fetcher, logger),
-    new HBLinks(fetcher, logger, hubDrive, hubCloud),
+    new HBLinks(fetcher, logger, hubExtractor),
     new HDStream4U(fetcher, logger),
-    hubCloud,
-    hubDrive,
+    hubExtractor,
     new KinoGer(fetcher, logger),
     new LuluStream(fetcher, logger),
     new Mixdrop(fetcher, logger),

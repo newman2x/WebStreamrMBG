@@ -44,7 +44,8 @@ export class ExtractorRegistry {
     }
 
     const normalizedUrl = extractor.normalize(url);
-    const cacheKey = this.determineCacheKey(ctx, extractor, normalizedUrl);
+    const canonicalUrl = await extractor.normalizeAsync(ctx, normalizedUrl);
+    const cacheKey = this.determineCacheKey(ctx, extractor, canonicalUrl);
 
     const storedDataRaw = await this.urlResultCache.getRaw<UrlResult[]>(cacheKey);
     const expires = storedDataRaw?.expires;
@@ -62,7 +63,7 @@ export class ExtractorRegistry {
       }
     }
 
-    const lazyUrlResults = await this.lazyUrlResultCache.get<UrlResult[]>(normalizedUrl.href) ?? [];
+    const lazyUrlResults = await this.lazyUrlResultCache.get<UrlResult[]>(canonicalUrl.href) ?? [];
 
     /* istanbul ignore next */
     if (
@@ -87,7 +88,7 @@ export class ExtractorRegistry {
 
     if (!Object.keys(mergedMeta).length || urlResults.some(urlResult => urlResult.error)) {
       await this.urlResultCache.delete(cacheKey);
-      await this.lazyUrlResultCache.delete(normalizedUrl.href);
+      await this.lazyUrlResultCache.delete(canonicalUrl.href);
 
       return urlResults;
     }
@@ -99,7 +100,7 @@ export class ExtractorRegistry {
     await this.urlResultCache.set<UrlResult[]>(cacheKey, urlResults, ttl);
 
     if (extractor.id !== 'external') {
-      await this.lazyUrlResultCache.set<UrlResult[]>(normalizedUrl.href, urlResults, 86400000); // 24 hours
+      await this.lazyUrlResultCache.set<UrlResult[]>(canonicalUrl.href, urlResults, 86400000); // 24 hours
     }
 
     return urlResults;
