@@ -1,6 +1,6 @@
 import { ContentType } from 'stremio-addon-sdk';
 import { Context, CountryCode } from '../types';
-import { Fetcher, getTmdbId, getTmdbNameAndYear, Id } from '../utils';
+import { Fetcher, getTmdbId, getTmdbNameAndYear, Id, supportsMediaFlowProxy } from '../utils';
 import { Source, SourceResult } from './Source';
 
 export class VixSrc extends Source {
@@ -25,6 +25,8 @@ export class VixSrc extends Source {
   }
 
   public async handleInternal(ctx: Context, _type: string, id: Id): Promise<SourceResult[]> {
+    if (!supportsMediaFlowProxy(ctx)) return [];
+
     const tmdbId = await getTmdbId(ctx, this.fetcher, id);
     const [name, year] = await getTmdbNameAndYear(ctx, this.fetcher, tmdbId);
 

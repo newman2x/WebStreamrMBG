@@ -277,6 +277,8 @@ describe('HDHub4u internal methods', () => {
     const imdbId = new ImdbId('tt5950044', undefined, undefined);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    jest.spyOn(source as any, 'getBaseUrl').mockResolvedValue(new URL('https://new6.hdhub4u.fo/'));
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     jest.spyOn(source as any, 'fetchPageUrlsFromSearch').mockResolvedValue([
       new URL('https://new6.hdhub4u.fo/superman-2025'),
     ]);

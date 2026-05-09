@@ -2,7 +2,7 @@ import { createTestContext } from '../test';
 import { FetcherMock, ImdbId } from '../utils';
 import { VixSrc } from './VixSrc';
 
-const ctx = createTestContext();
+const ctx = createTestContext({ mediaFlowProxyUrl: 'http://localhost:8080' });
 
 describe('VixSrc', () => {
   let source: VixSrc;
@@ -19,5 +19,11 @@ describe('VixSrc', () => {
   test('handle imdb full metal jacket', async () => {
     const streams = await source.handle(ctx, 'series', new ImdbId('tt0093058', undefined, undefined));
     expect(streams).toMatchSnapshot();
+  });
+
+  test('returns empty when MediaFlowProxy is not configured', async () => {
+    const noMfpCtx = createTestContext();
+    const streams = await source.handle(noMfpCtx, 'series', new ImdbId('tt9999999', undefined, undefined));
+    expect(streams).toEqual([]);
   });
 });

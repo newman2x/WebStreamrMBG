@@ -4,13 +4,11 @@ import { BlockedError, HttpError, NotFoundError, QueueIsFullError, TimeoutError,
 import { createExtractors, Extractor, ExtractorRegistry } from '../extractor';
 import { HubCloud } from '../extractor/HubCloud';
 import { RgShows as RgShowsExtractor } from '../extractor/RgShows';
-import { VixSrc as VixSrcExtractor } from '../extractor/VixSrc';
 import { Source, SourceResult } from '../source';
 import { FourKHDHub } from '../source/FourKHDHub';
 import { MeineCloud } from '../source/MeineCloud';
 import { MostraGuarda } from '../source/MostraGuarda';
 import { RgShows } from '../source/RgShows';
-import { VixSrc } from '../source/VixSrc';
 import { createTestContext } from '../test';
 import { BlockedReason, CountryCode, Format, Meta, UrlResult } from '../types';
 import { FetcherMock } from './FetcherMock';
@@ -90,10 +88,47 @@ describe('resolve', () => {
   });
 
   test('uses priority for sorting', async () => {
-    const streamResolver = new StreamResolver(logger, new ExtractorRegistry(logger, [new RgShowsExtractor(fetcher, logger), new VixSrcExtractor(fetcher, logger)]));
+    class HighPrioritySource extends Source {
+      public readonly id = 'high-priority';
+      public readonly label = 'HighPriority';
+      public readonly contentTypes: ContentType[] = ['series'];
+      public readonly countryCodes: CountryCode[] = [CountryCode.multi];
+      public override readonly priority = 2;
+      public readonly baseUrl = 'https://high.example';
+      public readonly handleInternal = async (): Promise<SourceResult[]> => {
+        return [{ url: new URL('https://high.example/file'), meta: { countryCodes: [CountryCode.multi], height: 1080 } }];
+      };
+    }
 
-    const streams = await streamResolver.resolve(createTestContext(), [new RgShows(fetcher), new VixSrc(fetcher)], 'series', new TmdbId(2190, 26, 2));
-    expect(streams.streams).toMatchSnapshot();
+    class LowPrioritySource extends Source {
+      public readonly id = 'low-priority';
+      public readonly label = 'LowPriority';
+      public readonly contentTypes: ContentType[] = ['series'];
+      public readonly countryCodes: CountryCode[] = [CountryCode.multi];
+      public override readonly priority = 1;
+      public readonly baseUrl = 'https://low.example';
+      public readonly handleInternal = async (): Promise<SourceResult[]> => {
+        return [{ url: new URL('https://low.example/file'), meta: { countryCodes: [CountryCode.multi], height: 1080 } }];
+      };
+    }
+
+    class PassThroughExtractor extends Extractor {
+      public readonly id = 'passthrough';
+      public readonly label = 'PassThrough';
+      public readonly supports = (): boolean => true;
+      protected readonly extractInternal = async (_ctx: unknown, url: URL, meta: Meta): Promise<UrlResult[]> => {
+        return [{ url, format: Format.unknown, label: meta.sourceLabel ?? 'PassThrough', ttl: 300000, meta }];
+      };
+    }
+
+    const streamResolver = new StreamResolver(logger, new ExtractorRegistry(logger, [new PassThroughExtractor(fetcher, logger)]));
+    const result = await streamResolver.resolve(createTestContext(), [new LowPrioritySource(), new HighPrioritySource()], 'series', new TmdbId(2190, 26, 2));
+
+    // HighPriority (priority=2) should come before LowPriority (priority=1)
+    const titles = result.streams.map(s => s.title);
+    const highIdx = titles.findIndex(t => t?.includes('HighPriority'));
+    const lowIdx = titles.findIndex(t => t?.includes('LowPriority'));
+    expect(highIdx).toBeLessThan(lowIdx);
   });
 
   test('adds error info', async () => {
@@ -371,4 +406,46 @@ test('skips fallback source when enough results already found', async () => {
   const streams = await streamResolver.resolve(ctx, [new PrimarySource(), new FallbackSource()], 'movie', new ImdbId('tt99887766', undefined, undefined));
 
   expect(streams.streams.every(s => !s.name?.includes('Fallback'))).toBe(true);
+});
+
+test('sorts by label when priority is equal', async () => {
+  class SourceA extends Source {
+    public readonly id = 'source-a';
+    public readonly label = 'AlphaSource';
+    public readonly contentTypes: ContentType[] = ['movie'];
+    public readonly countryCodes: CountryCode[] = [CountryCode.de];
+    public readonly baseUrl = 'https://alpha.example';
+    public readonly handleInternal = async (): Promise<SourceResult[]> => {
+      return [{ url: new URL('https://alpha.example/file'), meta: { countryCodes: [CountryCode.de], height: 1080 } }];
+    };
+  }
+
+  class SourceB extends Source {
+    public readonly id = 'source-b';
+    public readonly label = 'BetaSource';
+    public readonly contentTypes: ContentType[] = ['movie'];
+    public readonly countryCodes: CountryCode[] = [CountryCode.de];
+    public readonly baseUrl = 'https://beta.example';
+    public readonly handleInternal = async (): Promise<SourceResult[]> => {
+      return [{ url: new URL('https://beta.example/file'), meta: { countryCodes: [CountryCode.de], height: 1080 } }];
+    };
+  }
+
+  class PassThroughExtractor extends Extractor {
+    public readonly id = 'passthrough';
+    public readonly label = 'PassThrough';
+    public readonly supports = (): boolean => true;
+    protected readonly extractInternal = async (_ctx: unknown, url: URL, meta: Meta): Promise<UrlResult[]> => {
+      return [{ url, format: Format.unknown, label: meta.sourceLabel ?? 'PassThrough', ttl: 300000, meta }];
+    };
+  }
+
+  const streamResolver = new StreamResolver(logger, new ExtractorRegistry(logger, [new PassThroughExtractor(fetcher, logger)]));
+  const result = await streamResolver.resolve(ctx, [new SourceB(), new SourceA()], 'movie', new ImdbId('tt55667788', undefined, undefined));
+
+  // Both have priority 0, same height — should be sorted by label alphabetically
+  const labels = result.streams.map(s => s.title);
+  const alphaIdx = labels.findIndex(t => t?.includes('AlphaSource'));
+  const betaIdx = labels.findIndex(t => t?.includes('BetaSource'));
+  expect(alphaIdx).toBeLessThan(betaIdx);
 });

@@ -125,6 +125,21 @@ describe('Source', () => {
       expect(cache.url).toContain('from-json.example');
     });
 
+    test('Tier 2: cleans deadDomains when domain is confirmed alive', async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const SourceClass = Source as any;
+      // expired deadDomains entry — domain gets retried and found alive
+      SourceClass.deadDomains.set('from-json.example', Date.now() - 999999999);
+
+      jest.spyOn(fetcher, 'json').mockResolvedValue({ testsource: { name: 'TestSource', url: 'https://from-json.example' } });
+      jest.spyOn(fetcher, 'head').mockResolvedValue({});
+
+      const source = new TestSource();
+      const result = await source.testProbeBaseUrl(ctx, fetcher, 'testsource', ['https://fallback.example']);
+      expect(result.origin).toBe('https://from-json.example');
+      expect(SourceClass.deadDomains.has('from-json.example')).toBe(false);
+    });
+
     test('Tier 2: supports flat string format (backward compat)', async () => {
       jest.spyOn(fetcher, 'json').mockResolvedValue({ testsource: 'https://flat-string.example' });
       jest.spyOn(fetcher, 'head').mockResolvedValue({});
@@ -165,6 +180,26 @@ describe('Source', () => {
         'https://alive.example',
       ]);
       expect(result.origin).toBe('https://alive.example');
+    });
+
+    test('Tier 3: cleans deadDomains when race winner was previously dead', async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const SourceClass = Source as any;
+      // alive.example is in deadDomains but with expired TTL so it gets retried
+      SourceClass.deadDomains.set('alive.example', Date.now() - 999999999);
+
+      jest.spyOn(fetcher, 'json').mockRejectedValue(new Error('network error'));
+      jest.spyOn(fetcher, 'head').mockImplementation(async (_ctx, url: URL) => {
+        if (url.hostname === 'alive.example') return {};
+        throw new TimeoutError(url);
+      });
+
+      const source = new TestSource();
+      const result = await source.testProbeBaseUrl(ctx, fetcher, 'testsource', [
+        'https://alive.example',
+      ]);
+      expect(result.origin).toBe('https://alive.example');
+      expect(SourceClass.deadDomains.has('alive.example')).toBe(false);
     });
 
     test('Tier 3: throws NotFoundError when all candidates are dead', async () => {

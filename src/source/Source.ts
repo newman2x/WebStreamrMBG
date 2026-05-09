@@ -139,6 +139,8 @@ export abstract class Source {
 
       if (!isKnownDead && await this.isDomainAlive(ctx, fetcher, domainFromJson)) {
         Source.baseUrlCache.set(domainKey, { url: domainFromJson, ts: Date.now() });
+        /* istanbul ignore next -- jsonHostname can only be empty when domainFromJson is invalid, but isDomainAlive would throw first */
+        if (jsonHostname) Source.deadDomains.delete(jsonHostname);
         return new URL(domainFromJson);
       }
 
@@ -211,6 +213,7 @@ export abstract class Source {
 
       const url = new URL(winner);
       Source.baseUrlCache.set(domainKey, { url: url.href, ts: Date.now() });
+      Source.deadDomains.delete(url.hostname);
       return url;
     } catch {
       for (const c of tryList) {
