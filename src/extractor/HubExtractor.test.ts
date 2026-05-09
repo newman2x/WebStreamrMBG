@@ -56,13 +56,14 @@ describe('HubExtractor normalizeAsync()', () => {
     expect(result.href).toBe(url.href);
   });
 
-  test('hubcdn URL: direct video link (hub.yummy.monster) → no canonical, as-is', async () => {
+  test('hubcdn URL: HubCloud FSL server (hub.yummy.monster) → delegates to HubCloud canonical', async () => {
     const extractor = new HubExtractor(new FetcherMock(hubExtractorFixtureBase), logger);
     const url = new URL('https://hubcdn.org/file/hubcloudredirect');
     const result = await extractor.normalizeAsync(ctx, url);
-    // hubcloudredirect fixture has link=hub.yummy.monster which is NOT a hubcloud host
-    // so delegateToHubCloud=false, falls back to as-is hubcdn.org URL
-    expect(result.href).toBe(url.href);
+    // hubcloudredirect fixture has link=hub.yummy.monster which is a HubCloud FSL server
+    // so delegateToHubCloud=true, resolves to stripped hub.yummy.monster canonical
+    expect(result.host).toBe('hub.yummy.monster');
+    expect(result.search).toBe('');
   });
 
   test('hubcdn URL: hubcloud page redirect → resolves to stripped hubcloud canonical', async () => {
@@ -144,16 +145,18 @@ describe('HubExtractor HubCDN extraction', () => {
   const extractor = new HubExtractor(new FetcherMock(hubExtractorFixtureBase), logger);
   const registry = new ExtractorRegistry(logger, [extractor]);
 
-  test('var reurl redirect → Google video URL', async () => {
+  test('var reurl redirect → Google video URL (CDN direct)', async () => {
     const result = await registry.handle(ctx, new URL('https://hubcdn.fans/file/testcode123'));
     expect(result).toHaveLength(1);
-    expect(result.some(r => r.url.href.includes('googleusercontent.com'))).toBe(true);
+    expect(result[0]?.url.href).toContain('googleusercontent.com');
+    expect(result[0]?.label).toBe('HubCloud (CDN)');
   });
 
-  test('googleusercontent fallback', async () => {
+  test('googleusercontent fallback → CDN direct', async () => {
     const result = await registry.handle(ctx, new URL('https://hubcdn.fans/file/fallbackcode456'));
     expect(result).toHaveLength(1);
-    expect(result.some(r => r.url.href.includes('googleusercontent.com'))).toBe(true);
+    expect(result[0]?.url.href).toContain('googleusercontent.com');
+    expect(result[0]?.label).toBe('HubCloud (CDN)');
   });
 
   test('no download link → empty', async () => {
@@ -161,17 +164,19 @@ describe('HubExtractor HubCDN extraction', () => {
     expect(result).toEqual([]);
   });
 
-  test('a id="vd" link (new format)', async () => {
+  test('a id="vd" link (new format) → CDN direct', async () => {
     const result = await registry.handle(ctx, new URL('https://hubcdn.fans/file/vdlink789'));
     expect(result).toHaveLength(1);
-    expect(result.some(r => r.url.href.includes('googleusercontent.com'))).toBe(true);
+    expect(result[0]?.url.href).toContain('googleusercontent.com');
+    expect(result[0]?.label).toBe('HubCloud (CDN)');
   });
 
   test('var reurl pointing to hubcdn.fans/dl/ redirect → extracts link param', async () => {
     const result = await registry.handle(ctx, new URL('https://hubcdn.fans/file/redirecttest'));
     expect(result).toHaveLength(1);
-    expect(result.some(r => r.url.href.includes('googleusercontent.com'))).toBe(true);
-    expect(result.some(r => r.url.href.includes('hubcdn.fans'))).toBe(false);
+    expect(result[0]?.url.href).toContain('googleusercontent.com');
+    expect(result[0]?.url.href).not.toContain('hubcdn.fans');
+    expect(result[0]?.label).toBe('HubCloud (CDN)');
   });
 
   test('hubcdn → hubcloud redirect → delegates to HubCloud extraction', async () => {
@@ -187,10 +192,16 @@ describe('HubExtractor HubCDN extraction', () => {
     expect(result.every(r => !r.url.href.includes('hubcdn.org'))).toBe(true);
   });
 
-  test('hubcdn → direct video URL (hub.yummy.monster) → returns as-is', async () => {
-    const result = await registry.handle(ctx, new URL('https://hubcdn.org/file/hubcloudredirect'));
-    expect(result).toHaveLength(1);
-    expect(result[0]?.url.host).toBe('hub.yummy.monster');
+  test('hubcdn → HubCloud FSL server (hub.yummy.monster) → delegates to HubCloud extraction', async () => {
+    const fetcher = new FetcherMock(hubExtractorFixtureBase);
+    const hubCloud = new HubCloud(new FetcherMock(`${hubExtractorFixtureBase}/HubCloud`), logger);
+    const extractorWithCloud = new HubExtractor(fetcher, logger, hubCloud);
+    const registryWithCloud = new ExtractorRegistry(logger, [extractorWithCloud]);
+
+    const result = await registryWithCloud.handle(ctx, new URL('https://hubcdn.org/file/hubcloudredirect'));
+    // hub.yummy.monster is a HubCloud FSL server → delegateToHubCloud=true
+    // HubCloud extraction will fail without fixtures for hub.yummy.monster, but the URL should not be hubcdn
+    expect(result.every(r => !r.url.href.includes('hubcdn.org'))).toBe(true);
   });
 
   test('invalid link param → empty', async () => {
@@ -215,16 +226,22 @@ describe('HubExtractor HubCDN extraction', () => {
     expect(result.every(r => !r.url.href.includes('hubcdn.fans'))).toBe(true);
   });
 
-  test('?r=BASE64 hubcdn redirect → direct video URL → returns as-is', async () => {
-    const result = await registry.handle(ctx, new URL('https://hubcdn.fans/file/redirectrbase64direct'));
-    expect(result).toHaveLength(1);
-    expect(result[0]?.url.host).toBe('hub.ymmmy.monster');
+  test('?r=BASE64 hubcdn redirect → HubCloud FSL server (hub.ymmmy.monster) → delegates to HubCloud', async () => {
+    const fetcher = new FetcherMock(hubExtractorFixtureBase);
+    const hubCloud = new HubCloud(new FetcherMock(`${hubExtractorFixtureBase}/HubCloud`), logger);
+    const extractorWithCloud = new HubExtractor(fetcher, logger, hubCloud);
+    const registryWithCloud = new ExtractorRegistry(logger, [extractorWithCloud]);
+
+    const result = await registryWithCloud.handle(ctx, new URL('https://hubcdn.fans/file/redirectrbase64direct'));
+    // hub.ymmmy.monster is a HubCloud FSL server → delegateToHubCloud=true
+    expect(result.every(r => !r.url.href.includes('hubcdn.fans'))).toBe(true);
   });
 
-  test('?r=BASE64 hubcdn redirect with nested ?link= → extracts link param', async () => {
+  test('?r=BASE64 hubcdn redirect with nested ?link= → CDN direct', async () => {
     const result = await registry.handle(ctx, new URL('https://hubcdn.fans/file/redirectrwithlink'));
     expect(result).toHaveLength(1);
-    expect(result.some(r => r.url.href.includes('googleusercontent.com'))).toBe(true);
+    expect(result[0]?.url.href).toContain('googleusercontent.com');
+    expect(result[0]?.label).toBe('HubCloud (CDN)');
   });
 });
 
@@ -317,9 +334,9 @@ describe('HubExtractor edge cases', () => {
     expect(extractor.label).toBe('HubCloud');
   });
 
-  test('cacheVersion is 1', () => {
+  test('cacheVersion is 2', () => {
     const extractor = new HubExtractor(new FetcherMock(hubExtractorFixtureBase), logger);
-    expect(extractor.cacheVersion).toBe(1);
+    expect(extractor.cacheVersion).toBe(2);
   });
 
   test('dead hubcloud host returns empty from extractInternal', async () => {

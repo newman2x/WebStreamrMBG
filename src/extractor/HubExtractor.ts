@@ -29,13 +29,16 @@ interface HubCdnResult {
   delegateToHubCloud: boolean;
 }
 
+/** True CDN (GDrive) vs HubCloud host that would duplicate. */
+const isCdnDirectUrl = (url: URL): boolean => /googleusercontent\.com/.test(url.host);
+
 // Unified extractor for hubdrive/hubcloud/hubcdn — dedup via normalizeAsync() at registry level
 export class HubExtractor extends Extractor {
   public readonly id = 'hub';
 
   public readonly label = 'HubCloud';
 
-  public override readonly cacheVersion = 1;
+  public override readonly cacheVersion = 2;
 
   public override readonly ttl = HUBCLOUD_CACHE_TTL;
 
@@ -111,7 +114,13 @@ export class HubExtractor extends Extractor {
           return await this.hubCloud.extractInternal(ctx, result.url, meta);
         } catch { return []; }
       }
-      return [{ url: result.url, format: Format.unknown, meta }];
+      // True CDN direct URL (googleusercontent.com)
+      return [{
+        url: result.url,
+        format: Format.unknown,
+        meta,
+        label: 'HubCloud (CDN)',
+      }];
     }
 
     // HubDrive → try resolution cache first, then fallback
@@ -225,7 +234,7 @@ export class HubExtractor extends Extractor {
           const linkParam = new URL(reurlValue).searchParams.get('link');
           if (linkParam) {
             const targetUrl = new URL(linkParam);
-            return { url: targetUrl, delegateToHubCloud: /hubcloud/.test(targetUrl.host) };
+            return { url: targetUrl, delegateToHubCloud: !isCdnDirectUrl(targetUrl) };
           }
         } catch { /* fallthrough */ }
       }
@@ -237,7 +246,7 @@ export class HubExtractor extends Extractor {
           const decoded = atob(rMatch[1]);
           const linkMatch = decoded.match(/[?&]link=(.+)$/);
           const finalUrl = linkMatch?.[1] ? new URL(decodeURIComponent(linkMatch[1])) : new URL(decoded);
-          return { url: finalUrl, delegateToHubCloud: /hubcloud/.test(finalUrl.host) };
+          return { url: finalUrl, delegateToHubCloud: !isCdnDirectUrl(finalUrl) };
         } catch { /* fallthrough */ }
       }
 
@@ -245,7 +254,7 @@ export class HubExtractor extends Extractor {
       if (!reurlValue.includes('/dl/?link=')) {
         try {
           const directUrl = new URL(reurlValue);
-          return { url: directUrl, delegateToHubCloud: /hubcloud/.test(directUrl.host) };
+          return { url: directUrl, delegateToHubCloud: !isCdnDirectUrl(directUrl) };
         } catch { /* fallthrough */ }
       }
     }
@@ -254,11 +263,12 @@ export class HubExtractor extends Extractor {
     const vdMatch = html.match(/<a\s+id=["']vd["']\s+href=["']([^"']+)["']/i);
     if (vdMatch?.[1]) {
       try {
-        return { url: new URL(vdMatch[1]), delegateToHubCloud: false };
+        const vdUrl = new URL(vdMatch[1]);
+        return { url: vdUrl, delegateToHubCloud: !isCdnDirectUrl(vdUrl) };
       } catch { /* next */ }
     }
 
-    // Pattern 3: any googleusercontent.com URL (fallback)
+    // Pattern 3: any googleusercontent.com URL (fallback) — always CDN direct
     const gdriveMatch = html.match(/(https?:\/\/[^\s"'<>]*googleusercontent\.com[^\s"'<>]*)/);
     if (gdriveMatch?.[1]) {
       try {
