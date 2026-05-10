@@ -25,6 +25,8 @@ interface HubCdnResult {
 /** True CDN (GDrive) vs HubCloud host that would duplicate. */
 const isCdnDirectUrl = (url: URL): boolean => /googleusercontent\.com/.test(url.hostname);
 
+const DEFAULT_EVICTION_THRESHOLD = 256;
+
 export class HubExtractor extends Extractor {
   public readonly id = 'hub';
 
@@ -36,13 +38,16 @@ export class HubExtractor extends Extractor {
 
   private readonly hubCloud: HubCloud;
 
+  private readonly evictionThreshold: number;
+
   private readonly resolutionCache = new Map<string, ResolutionCacheEntry>();
   private readonly hubCdnCache = new Map<string, HubCdnCacheEntry>();
 
-  public constructor(fetcher: Fetcher, logger: winston.Logger, hubCloud?: HubCloud) {
+  public constructor(fetcher: Fetcher, logger: winston.Logger, hubCloud?: HubCloud, evictionThreshold?: number) {
     super(fetcher, logger);
 
     this.hubCloud = hubCloud ?? new HubCloud(fetcher, logger);
+    this.evictionThreshold = evictionThreshold ?? DEFAULT_EVICTION_THRESHOLD;
   }
 
   public supports(_ctx: Context, url: URL): boolean {
@@ -79,6 +84,9 @@ export class HubExtractor extends Extractor {
       const resolved = await this.resolveHubDriveToHubCloud(ctx, url);
       if (resolved) {
         this.resolutionCache.set(url.href, { url: resolved.url, meta: resolved.meta, ts: Date.now() });
+        if (this.resolutionCache.size > this.evictionThreshold) {
+          this.evictExpired(this.resolutionCache);
+        }
         return this.stripQueryParams(resolved.url);
       }
     } catch {
@@ -214,6 +222,15 @@ export class HubExtractor extends Extractor {
     }
   }
 
+  private evictExpired<K, V extends { ts: number }>(cache: Map<K, V>): void {
+    const now = Date.now();
+    for (const [key, entry] of cache) {
+      if (now - entry.ts >= HUBCLOUD_CACHE_TTL) {
+        cache.delete(key);
+      }
+    }
+  }
+
   // Resolve HubCDN URL with in-memory cache to avoid double-fetch between normalizeAsync and extractInternal
   private async resolveHubCdnUrl(ctx: Context, url: URL): Promise<HubCdnResult | null> {
     const cached = this.hubCdnCache.get(url.href);
@@ -227,6 +244,9 @@ export class HubExtractor extends Extractor {
 
     if (result) {
       this.hubCdnCache.set(url.href, { result, ts: Date.now() });
+      if (this.hubCdnCache.size > this.evictionThreshold) {
+        this.evictExpired(this.hubCdnCache);
+      }
     }
 
     return result;

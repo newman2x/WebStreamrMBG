@@ -13,13 +13,19 @@ const RETRY_DELAY_MS = 2500;
  * Non-seekable categories (10Gbps, PDL, DF) are deduped when a seekable alternative exists.
  */
 const SERVER_CATEGORIES = [
-  { buttonIncludes: 'FSLv2', label: 'HubCloud (FSLv2)', extractorId: 'hubcloud_fslv2', priority: 4, seekable: true },
-  { buttonIncludes: 'FSL', label: 'HubCloud (FSL)', extractorId: 'hubcloud_fsl', priority: 5, seekable: true },
-  { buttonIncludes: '10Gbps', label: 'HubCloud (10Gbps)', extractorId: 'hubcloud_fast', priority: 2, seekable: false },
-  { buttonIncludes: 'PixelServer', label: 'HubCloud (PxlSrv)', extractorId: 'hubcloud_pixelserver', priority: 3, seekable: true },
-  { buttonIncludes: 'PDL', label: 'HubCloud (PDL)', extractorId: 'hubcloud_pdl', priority: 1, seekable: false },
-  { buttonIncludes: 'Download File', label: 'HubCloud (DF)', extractorId: 'hubcloud_direct', priority: 0, seekable: false },
+  { buttonIncludes: 'FSLv2', buttonExcludes: '', label: 'HubCloud (FSLv2)', extractorId: 'hubcloud_fslv2', priority: 4, seekable: true },
+  { buttonIncludes: 'FSL', buttonExcludes: 'FSLv2', label: 'HubCloud (FSL)', extractorId: 'hubcloud_fsl', priority: 5, seekable: true },
+  { buttonIncludes: '10Gbps', buttonExcludes: '', label: 'HubCloud (10Gbps)', extractorId: 'hubcloud_fast', priority: 2, seekable: false },
+  { buttonIncludes: 'PixelServer', buttonExcludes: '', label: 'HubCloud (PxlSrv)', extractorId: 'hubcloud_pixelserver', priority: 3, seekable: true },
+  { buttonIncludes: 'PDL', buttonExcludes: '', label: 'HubCloud (PDL)', extractorId: 'hubcloud_pdl', priority: 1, seekable: false },
+  { buttonIncludes: 'Download File', buttonExcludes: '', label: 'HubCloud (DF)', extractorId: 'hubcloud_direct', priority: 0, seekable: false },
 ] as const;
+
+type ServerLabel = (typeof SERVER_CATEGORIES)[number]['label'];
+
+const LABEL_TO_SEEKABLE = new Map<ServerLabel, boolean>(
+  SERVER_CATEGORIES.map(c => [c.label, c.seekable]),
+);
 
 const REDIRECT_STRATEGIES: readonly ((html: string) => string | null)[] = [
   html => html.match(/var url\s*=\s*['"](.*?)['"]/)?.[1] ?? null,
@@ -125,22 +131,15 @@ export class HubCloud extends Extractor {
 
     // Pass 1: Match links by button text in priority order
     for (const category of SERVER_CATEGORIES) {
-      for (let i = 0; i < allLinks.length; i++) {
+      for (const [i, el] of allLinks.entries()) {
         if (matchedIndices.has(i)) continue;
 
-        const el = allLinks[i];
-        /* istanbul ignore if -- cheerio .toArray() never produces null entries */
-        if (!el) continue;
         const text = $(el).text();
         const href = $(el).attr('href');
 
         if (!href || href.toLowerCase().includes('.zip')) continue;
 
-        if (text.includes(category.buttonIncludes)) {
-          // FSL must NOT match FSLv2 buttons (FSLv2 is checked first so this is safe)
-          // istanbul ignore if -- each link matches at most one category, so FSL never sees FSLv2 text
-          if (category.buttonIncludes === 'FSL' && text.includes('FSLv2')) continue;
-
+        if (text.includes(category.buttonIncludes) && (category.buttonExcludes === '' || !text.includes(category.buttonExcludes))) {
           matchedIndices.add(i);
 
           // PixelServer: special handling — convert /u/ → /api/file/?download= and HEAD check
@@ -183,15 +182,7 @@ export class HubCloud extends Extractor {
 
     // Priority-based dedup: if same file exists via both seekable and non-seekable,
     // drop the non-seekable duplicate. Keep both FSL and FSLv2 (both seekable).
-    const isSeekable = (label: string | undefined): boolean => {
-      /* istanbul ignore if -- label is always set by extractInternal */
-      if (!label) return false;
-      const cat = SERVER_CATEGORIES.find(c => c.label === label);
-      /* istanbul ignore next -- labels always come from SERVER_CATEGORIES, so cat is never undefined */
-      return cat?.seekable ?? false;
-    };
-
-    const seekableResults = classified.filter(r => isSeekable(r.label));
+    const seekableResults = classified.filter(r => LABEL_TO_SEEKABLE.get(r.label as ServerLabel) === true);
 
     if (seekableResults.length > 0) {
       // Compare by bytes only — titles differ (non-seekable have "⚠️ no seek" suffix)
@@ -199,7 +190,7 @@ export class HubCloud extends Extractor {
         seekableResults.some(s => s.meta?.bytes === result.meta?.bytes);
 
       return classified.filter((r) => {
-        if (isSeekable(r.label)) return true;
+        if (LABEL_TO_SEEKABLE.get(r.label as ServerLabel) === true) return true;
         // Drop non-seekable if a seekable alternative exists for the same file
         return !hasSeekableForFile(r);
       });

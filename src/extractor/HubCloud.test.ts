@@ -798,4 +798,35 @@ describe('HubCloud FSL/FSLv2 disambiguation', () => {
     expect(fslResult?.url.href).toContain('shipcdn');
     expect(fslv2Result?.url.href).toContain('fsl-buckets');
   });
+
+  test('FSL category skips button that only contains FSLv2 text', async () => {
+    const fetcher = new Fetcher(axios.create(), logger);
+    const hubCloud = new HubCloud(fetcher, logger);
+
+    const hop1Html = `<html><head><title>Test</title></head><body>
+      <script>var url = 'https://hubrouting.site/hubcloud.php?host=hubcloud&id=fslonlyv2&token=test';</script>
+    </body></html>`;
+
+    // Page with only an FSLv2 button (no separate FSL button)
+    // The FSL category must skip this button because buttonExcludes='FSLv2' matches
+    const hop2Html = `<html><head><title>Test.FSLOnlyV2.2024.1080p.mkv</title></head><body>
+      <li class="list-group-item d-flex justify-content-between align-items-center">File Size<i id="size">2.0 GB</i></li>
+      <a href="https://cdn.fsl-buckets.life/file.mkv?token=onlyv2" style="background-color: #2d50e2d1 !important;">Download [FSLv2 Server]</a>
+    </body></html>`;
+
+    let textCallCount = 0;
+    jest.spyOn(fetcher, 'text').mockImplementation(async () => {
+      textCallCount++;
+      if (textCallCount === 1) return hop1Html;
+      return hop2Html;
+    });
+    jest.spyOn(fetcher, 'setCookie').mockImplementation(() => { /* noop */ });
+
+    const result = await hubCloud.extract(ctx, new URL('https://hubcloud.one/drive/fslonlyv2'), {});
+
+    // Should get FSLv2 result only, NOT FSL (buttonExcludes prevents FSL from matching FSLv2 text)
+    expect(result).toHaveLength(1);
+    expect(result.some(r => r.label === 'HubCloud (FSLv2)')).toBe(true);
+    expect(result.every(r => r.label !== 'HubCloud (FSL)')).toBe(true);
+  });
 });

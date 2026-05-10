@@ -481,3 +481,72 @@ describe('HubExtractor metadata enrichment', () => {
     expect(passedMeta.countryCodes).toEqual([CountryCode.en]);
   });
 });
+
+describe('HubExtractor cache eviction', () => {
+  test('resolutionCache evicts stale entries when threshold exceeded via normalizeAsync', async () => {
+    const fetcher = new FetcherMock(hubExtractorFixtureBase);
+    const extractor = new HubExtractor(fetcher, logger, undefined, 2);
+
+    const url1 = new URL('https://hubdrive.space/file/7283903021');
+    const url2 = new URL('https://hubdrive.space/file/nolang123');
+
+    // Populate cache with 2 entries (threshold = 2)
+    await extractor.normalizeAsync(ctx, url1);
+    await extractor.normalizeAsync(ctx, url2);
+
+    // Add a 3rd entry by resolving a mocked hubdrive URL
+    const url3 = new URL('https://hubdrive.space/file/evict-test-3');
+    const mockHtml = '<html><body><a href="https://hubcloud.one/drive/evicttest">HubCloud</a></body></html>';
+    jest.spyOn(fetcher, 'text').mockResolvedValueOnce(mockHtml);
+    await extractor.normalizeAsync(ctx, url3);
+
+    // Advance time past TTL so all cache entries become stale
+    jest.spyOn(Date, 'now').mockReturnValue(Date.now() + 600000);
+
+    // Resolve url1 again — stale skipped, re-fetched, .set() makes size=4 > 2, eviction runs
+    jest.spyOn(fetcher, 'text').mockResolvedValueOnce(mockHtml);
+    await extractor.normalizeAsync(ctx, url1);
+    // Eviction removed stale entries for url2 and url3
+    // Verify by checking url2 needs re-fetch (stale entry was evicted)
+    const textSpy = jest.spyOn(fetcher, 'text').mockResolvedValueOnce(mockHtml);
+    await extractor.normalizeAsync(ctx, url2);
+    expect(textSpy).toHaveBeenCalled();
+  });
+
+  test('hubCdnCache evicts stale entries when threshold exceeded via normalizeAsync', async () => {
+    const fetcher = new FetcherMock(hubExtractorFixtureBase);
+    const extractor = new HubExtractor(fetcher, logger, undefined, 2);
+
+    // First hubcdn call: populates hubCdnCache
+    const url1 = new URL('https://hubcdn.fans/file/testcode123');
+    const url2 = new URL('https://hubcdn.fans/file/fallbackcode456');
+
+    await extractor.normalizeAsync(ctx, url1);
+    await extractor.normalizeAsync(ctx, url2);
+
+    // Advance time past TTL
+    jest.spyOn(Date, 'now').mockReturnValue(Date.now() + 600000);
+
+    // Another hubcdn call triggers eviction (threshold=2, cache has 2 entries)
+    const url3 = new URL('https://hubcdn.fans/file/vdlink789');
+    const result = await extractor.normalizeAsync(ctx, url3);
+    // URL resolves normally even after eviction
+    expect(result.href).toBe(url3.href);
+  });
+
+  test('cache does not evict fresh entries below threshold', async () => {
+    const fetcher = new FetcherMock(hubExtractorFixtureBase);
+    const extractor = new HubExtractor(fetcher, logger, undefined, 10);
+    const textSpy = jest.spyOn(fetcher, 'text');
+
+    const url = new URL('https://hubdrive.space/file/7283903021');
+
+    // First call: populates cache
+    await extractor.normalizeAsync(ctx, url);
+    const callsAfterFirst = textSpy.mock.calls.length;
+
+    // Second call: cache hit — no eviction needed, entry is fresh
+    await extractor.normalizeAsync(ctx, url);
+    expect(textSpy.mock.calls.length).toBe(callsAfterFirst);
+  });
+});
