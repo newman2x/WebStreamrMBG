@@ -27,7 +27,8 @@ exports[`resolve adds error info 1`] = `
         "bingeGroup": "webstreamr-mbg-undefined-undefined-de",
         "notWebReady": true,
       },
-      "name": "WebStreamrMBG 🇩🇪",
+      "name": "WebStreamrMBG
+🇩🇪",
       "title": "🔗 working1",
       "url": "https://example6.com/",
     },
@@ -36,7 +37,8 @@ exports[`resolve adds error info 1`] = `
         "bingeGroup": "webstreamr-mbg-undefined-undefined-de",
         "notWebReady": true,
       },
-      "name": "WebStreamrMBG 🇩🇪",
+      "name": "WebStreamrMBG
+🇩🇪",
       "title": "🔗 working2",
       "url": "https://example9.com/",
     },
@@ -46,7 +48,8 @@ exports[`resolve adds error info 1`] = `
         "notWebReady": true,
       },
       "externalUrl": "https://example1.com/",
-      "name": "WebStreamrMBG 🇩🇪",
+      "name": "WebStreamrMBG
+🇩🇪",
       "title": "🔗 hoster.com",
     },
   ],
@@ -63,7 +66,8 @@ exports[`resolve adds error info 2`] = `
         "notWebReady": true,
       },
       "externalUrl": "https://example14.com/",
-      "name": "WebStreamrMBG 🇩🇪",
+      "name": "WebStreamrMBG
+🇩🇪",
       "title": "🔗 hoster.com
 ❌ Request to example14.com failed with status 418 (I'm a tea pot). Request-id: test.",
     },
@@ -73,7 +77,8 @@ exports[`resolve adds error info 2`] = `
         "notWebReady": true,
       },
       "externalUrl": "https://example13.com/",
-      "name": "WebStreamrMBG 🇩🇪",
+      "name": "WebStreamrMBG
+🇩🇪",
       "title": "🔗 hoster.com
 ❌ Remote server example13.com has issues. We can't fix this, please try later again.",
     },
@@ -83,7 +88,8 @@ exports[`resolve adds error info 2`] = `
         "notWebReady": true,
       },
       "externalUrl": "https://example12.com/",
-      "name": "WebStreamrMBG 🇩🇪",
+      "name": "WebStreamrMBG
+🇩🇪",
       "title": "🔗 hoster.com
 ⏳ Request queue for example12.com is full. Please try again later or consider self-hosting.",
     },
@@ -93,7 +99,8 @@ exports[`resolve adds error info 2`] = `
         "notWebReady": true,
       },
       "externalUrl": "https://example11.com/",
-      "name": "WebStreamrMBG 🇩🇪",
+      "name": "WebStreamrMBG
+🇩🇪",
       "title": "🔗 hoster.com
 🐢 Request to example11.com timed out.",
     },
@@ -103,7 +110,8 @@ exports[`resolve adds error info 2`] = `
         "notWebReady": true,
       },
       "externalUrl": "https://example10.com/",
-      "name": "WebStreamrMBG 🇩🇪",
+      "name": "WebStreamrMBG
+🇩🇪",
       "title": "🔗 hoster.com
 ❌ Request failed. Request-id: test.",
     },
@@ -113,7 +121,8 @@ exports[`resolve adds error info 2`] = `
         "notWebReady": true,
       },
       "externalUrl": "https://example8.com/",
-      "name": "WebStreamrMBG 🇩🇪",
+      "name": "WebStreamrMBG
+🇩🇪",
       "title": "🔗 hoster.com
 🚦 Too many recent timeouts when requesting example8.com. Please try again later.",
     },
@@ -123,7 +132,8 @@ exports[`resolve adds error info 2`] = `
         "notWebReady": true,
       },
       "externalUrl": "https://example7.com/",
-      "name": "WebStreamrMBG 🇩🇪",
+      "name": "WebStreamrMBG
+🇩🇪",
       "title": "🔗 hoster.com
 🚦 Request to example7.com was rate-limited. Please try again later or consider self-hosting.",
     },
@@ -133,7 +143,8 @@ exports[`resolve adds error info 2`] = `
         "notWebReady": true,
       },
       "externalUrl": "https://example5.com/",
-      "name": "WebStreamrMBG 🇩🇪",
+      "name": "WebStreamrMBG
+🇩🇪",
       "title": "🔗 hoster.com
 ⚠️ Request to example5.com was blocked. Reason: unknown",
     },
@@ -143,7 +154,8 @@ exports[`resolve adds error info 2`] = `
         "notWebReady": true,
       },
       "externalUrl": "https://example4.com/",
-      "name": "WebStreamrMBG 🇩🇪",
+      "name": "WebStreamrMBG
+🇩🇪",
       "title": "🔗 hoster.com
 ⚠️ MediaFlow Proxy authentication failed. Please set the correct password.",
     },
@@ -153,7 +165,8 @@ exports[`resolve adds error info 2`] = `
         "notWebReady": true,
       },
       "externalUrl": "https://example3.com/",
-      "name": "WebStreamrMBG 🇩🇪",
+      "name": "WebStreamrMBG
+🇩🇪",
       "title": "🔗 hoster.com
 ⚠️ Request to example3.com was blocked. Reason: cloudflare_censor",
     },
@@ -163,7 +176,8 @@ exports[`resolve adds error info 2`] = `
         "notWebReady": true,
       },
       "externalUrl": "https://example2.com/",
-      "name": "WebStreamrMBG 🇩🇪",
+      "name": "WebStreamrMBG
+🇩🇪",
       "title": "🔗 hoster.com
 ⚠️ Request to example2.com was blocked. Reason: cloudflare_challenge",
     },
@@ -172,7 +186,8 @@ exports[`resolve adds error info 2`] = `
         "bingeGroup": "webstreamr-mbg-undefined-undefined-de",
         "notWebReady": true,
       },
-      "name": "WebStreamrMBG 🇩🇪",
+      "name": "WebStreamrMBG
+🇩🇪",
       "title": "🔗 working1",
       "url": "https://example6.com/",
     },
@@ -181,7 +196,8 @@ exports[`resolve adds error info 2`] = `
         "bingeGroup": "webstreamr-mbg-undefined-undefined-de",
         "notWebReady": true,
       },
-      "name": "WebStreamrMBG 🇩🇪",
+      "name": "WebStreamrMBG
+🇩🇪",
       "title": "🔗 working2",
       "url": "https://example9.com/",
     },
@@ -191,7 +207,8 @@ exports[`resolve adds error info 2`] = `
         "notWebReady": true,
       },
       "externalUrl": "https://example1.com/",
-      "name": "WebStreamrMBG 🇩🇪",
+      "name": "WebStreamrMBG
+🇩🇪",
       "title": "🔗 hoster.com",
     },
   ],
@@ -247,9 +264,12 @@ exports[`resolve returns sorted results 1`] = `
       },
       "videoSize": 1395864371,
     },
-    "name": "WebStreamrMBG 🇩🇪 1080p",
+    "name": "WebStreamrMBG
+🇩🇪
+1080p",
     "title": "des-teufels-bad-2024
-💾 1.3 GB 🔗 Dropload from MeineCloud",
+💾 1.3 GB
+🔗 Dropload from MeineCloud",
     "url": "https://srv34.dropload.io/hls2/01/00197/lyo2h1snpe5c_h/master.m3u8?t=MZSqs3F338ocbM2eTs8X23s585dWcYuilGrNNcidNas&s=1749846846&e=14400&f=987607&srv=srv27&i=0.0&sp=0&ii=50.99.15.93&p1=srv27&p2=srv27",
   },
   {
@@ -263,9 +283,12 @@ exports[`resolve returns sorted results 1`] = `
       },
       "videoSize": 1181116006,
     },
-    "name": "WebStreamrMBG 🇮🇹 720p",
+    "name": "WebStreamrMBG
+🇮🇹
+720p",
     "title": "the-devils-bath-2024-sd-sub-ita
-💾 1.1 GB 🔗 Dropload from MostraGuarda",
+💾 1.1 GB
+🔗 Dropload from MostraGuarda",
     "url": "https://srv34.dropload.io/hls2/01/00200/xsr90y2ltdyx_h/master.m3u8?t=rsJMeR8rtWZxFi_3DOdlt98U0rvAMincCe4-awDQzHE&s=1749846846&e=14400&f=1004116&srv=srv24&i=0.0&sp=0&ii=50.99.15.93&p1=srv24&p2=srv24",
   },
   {
@@ -279,9 +302,12 @@ exports[`resolve returns sorted results 1`] = `
       },
       "videoSize": 1181116006,
     },
-    "name": "WebStreamrMBG 🇮🇹 720p",
+    "name": "WebStreamrMBG
+🇮🇹
+720p",
     "title": "the-devils-bath-2024-sd-sub-ita
-💾 1.1 GB 🔗 SuperVideo from MostraGuarda",
+💾 1.1 GB
+🔗 SuperVideo from MostraGuarda",
     "url": "https://hfs311.serversicuro.cc/hls/,dnzpcjj427g4a3gyvbth53rxqgffbu4vol4o7gg7pskpzb6josghbkwhnisq,.urlset/master.m3u8",
   },
   {
@@ -295,9 +321,12 @@ exports[`resolve returns sorted results 1`] = `
       },
       "videoSize": 1073741824,
     },
-    "name": "WebStreamrMBG 🇩🇪 720p",
+    "name": "WebStreamrMBG
+🇩🇪
+720p",
     "title": "des-teufels-bad-2024
-💾 1 GB 🔗 SuperVideo from MeineCloud",
+💾 1 GB
+🔗 SuperVideo from MeineCloud",
     "url": "https://hfs309.serversicuro.cc/hls/,dnzpfi3d27g4a3gyvbmh5klwtl65qh654hyjtgupd6p577fze64mz3bsmdyq,.urlset/master.m3u8",
   },
 ]
@@ -316,9 +345,12 @@ exports[`resolve returns sorted results 2`] = `
       },
       "videoSize": 1395864371,
     },
-    "name": "WebStreamrMBG 🇩🇪 1080p",
+    "name": "WebStreamrMBG
+🇩🇪
+1080p",
     "title": "des-teufels-bad-2024
-💾 1.3 GB 🔗 Dropload from MeineCloud",
+💾 1.3 GB
+🔗 Dropload from MeineCloud",
     "url": "https://srv34.dropload.io/hls2/01/00197/lyo2h1snpe5c_h/master.m3u8?t=MZSqs3F338ocbM2eTs8X23s585dWcYuilGrNNcidNas&s=1749846846&e=14400&f=987607&srv=srv27&i=0.0&sp=0&ii=50.99.15.93&p1=srv27&p2=srv27",
   },
   {
@@ -332,9 +364,12 @@ exports[`resolve returns sorted results 2`] = `
       },
       "videoSize": 1181116006,
     },
-    "name": "WebStreamrMBG 🇮🇹 720p",
+    "name": "WebStreamrMBG
+🇮🇹
+720p",
     "title": "the-devils-bath-2024-sd-sub-ita
-💾 1.1 GB 🔗 Dropload from MostraGuarda",
+💾 1.1 GB
+🔗 Dropload from MostraGuarda",
     "url": "https://srv34.dropload.io/hls2/01/00200/xsr90y2ltdyx_h/master.m3u8?t=rsJMeR8rtWZxFi_3DOdlt98U0rvAMincCe4-awDQzHE&s=1749846846&e=14400&f=1004116&srv=srv24&i=0.0&sp=0&ii=50.99.15.93&p1=srv24&p2=srv24",
   },
   {
@@ -348,9 +383,12 @@ exports[`resolve returns sorted results 2`] = `
       },
       "videoSize": 1181116006,
     },
-    "name": "WebStreamrMBG 🇮🇹 720p",
+    "name": "WebStreamrMBG
+🇮🇹
+720p",
     "title": "the-devils-bath-2024-sd-sub-ita
-💾 1.1 GB 🔗 SuperVideo from MostraGuarda",
+💾 1.1 GB
+🔗 SuperVideo from MostraGuarda",
     "url": "https://hfs311.serversicuro.cc/hls/,dnzpcjj427g4a3gyvbth53rxqgffbu4vol4o7gg7pskpzb6josghbkwhnisq,.urlset/master.m3u8",
   },
   {
@@ -364,9 +402,12 @@ exports[`resolve returns sorted results 2`] = `
       },
       "videoSize": 1073741824,
     },
-    "name": "WebStreamrMBG 🇩🇪 720p",
+    "name": "WebStreamrMBG
+🇩🇪
+720p",
     "title": "des-teufels-bad-2024
-💾 1 GB 🔗 SuperVideo from MeineCloud",
+💾 1 GB
+🔗 SuperVideo from MeineCloud",
     "url": "https://hfs309.serversicuro.cc/hls/,dnzpfi3d27g4a3gyvbmh5klwtl65qh654hyjtgupd6p577fze64mz3bsmdyq,.urlset/master.m3u8",
   },
   {
@@ -375,7 +416,9 @@ exports[`resolve returns sorted results 2`] = `
       "notWebReady": true,
     },
     "externalUrl": "https://mixdrop.ag/e/3nzwveprim63or6",
-    "name": "WebStreamrMBG 🇩🇪 ⚠️ external",
+    "name": "WebStreamrMBG
+🇩🇪
+⚠️ external",
     "title": "🔗 mixdrop.ag from MeineCloud",
   },
   {
@@ -384,7 +427,9 @@ exports[`resolve returns sorted results 2`] = `
       "notWebReady": true,
     },
     "externalUrl": "https://mixdrop.ag/e/vk196d6xfzwwo1",
-    "name": "WebStreamrMBG 🇮🇹 ⚠️ external",
+    "name": "WebStreamrMBG
+🇮🇹
+⚠️ external",
     "title": "🔗 mixdrop.ag from MostraGuarda",
   },
   {
@@ -393,7 +438,9 @@ exports[`resolve returns sorted results 2`] = `
       "notWebReady": true,
     },
     "externalUrl": "https://dood.to/e/sk1m9eumzyjj",
-    "name": "WebStreamrMBG 🇩🇪 ⚠️ external",
+    "name": "WebStreamrMBG
+🇩🇪
+⚠️ external",
     "title": "🔗 dood.to from MeineCloud",
   },
   {
@@ -402,7 +449,9 @@ exports[`resolve returns sorted results 2`] = `
       "notWebReady": true,
     },
     "externalUrl": "https://dood.to/e/37o04m33q3g5",
-    "name": "WebStreamrMBG 🇮🇹 ⚠️ external",
+    "name": "WebStreamrMBG
+🇮🇹
+⚠️ external",
     "title": "🔗 dood.to from MostraGuarda",
   },
 ]

@@ -97,6 +97,35 @@ describe('resolve', () => {
     expect(streams.streams).toMatchSnapshot();
   });
 
+  test('handles stream with no countryCodes', async () => {
+    class NoCountrySource extends Source {
+      public readonly id = 'nocountry';
+      public readonly label = 'NoCountry';
+      public readonly contentTypes: ContentType[] = ['movie'];
+      public readonly countryCodes: CountryCode[] = [CountryCode.multi];
+      public readonly baseUrl = 'https://nocountry.example';
+      public readonly handleInternal = async (): Promise<SourceResult[]> => {
+        return [{ url: new URL('https://nocountry.example/file'), meta: { countryCodes: [CountryCode.multi] } }];
+      };
+    }
+
+    class NoCountryExtractor extends Extractor {
+      public readonly id = 'nocountryextractor';
+      public readonly label = 'NoCountryExtractor';
+      public readonly supports = (): boolean => true;
+      protected readonly extractInternal = async (_ctx: unknown, url: URL, meta: Meta): Promise<UrlResult[]> => {
+        return [{ url, format: Format.unknown, label: meta.sourceLabel ?? 'NoCountryExtractor', ttl: 300000, meta: {} }];
+      };
+    }
+
+    const streamResolver = new StreamResolver(logger, new ExtractorRegistry(logger, [new NoCountryExtractor(fetcher, logger)]));
+    const result = await streamResolver.resolve(createTestContext(), [new NoCountrySource()], 'movie', new ImdbId('tt9999999', undefined, undefined));
+
+    const stream = result.streams[0];
+    expect(stream).toBeDefined();
+    expect(stream?.name).toBe('WebStreamrMBG');
+  });
+
   test('uses priority for sorting', async () => {
     class HighPrioritySource extends Source {
       public readonly id = 'high-priority';
