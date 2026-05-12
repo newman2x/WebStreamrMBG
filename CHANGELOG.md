@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.73.3](https://github.com/newman2x/WebStreamrMBG/compare/v0.73.2...v0.73.3) (2026-05-12)
+
+
+### Bug Fixes
+
+* CineHDPlus domain, search, CF bypass ([89dae08](https://github.com/newman2x/WebStreamrMBG/commit/89dae089ed2ad2bee6ca69eef1a22070b42ac74e))
+
 ## [0.73.2](https://github.com/newman2x/WebStreamrMBG/compare/v0.73.1...v0.73.2) (2026-05-12)
 
 
