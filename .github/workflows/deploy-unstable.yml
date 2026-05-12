@@ -18,7 +18,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v6
         with:
-          node-version: '20'
+          node-version: '24'
           cache: 'npm'
       - name: Generate beamup-host.json
         run: echo '{"host":"87d6a6ef6b58-webstreamrmbg-dev.baby-beamup.club"}' > beamup-host.json
