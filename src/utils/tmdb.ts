@@ -1,7 +1,7 @@
 import { Mutex } from 'async-mutex';
 import { NotFoundError } from '../error';
 import { Context } from '../types';
-import { envGetRequired } from './env';
+import { envGet } from './env';
 import { CustomRequestConfig, Fetcher } from './Fetcher';
 import { ImdbId, TmdbId } from './id';
 
@@ -30,17 +30,62 @@ interface TvDetailsResponsePartial {
   original_name: string;
 }
 
+interface ImdbSuggestionItem {
+  id: string;
+  l: string;
+  y?: number;
+  q?: string;
+}
+
+const imdbDetailsMap = new Map<string, [string, number, string]>();
+const syntheticTmdbMap = new Map<number, string>();
+
+const getImdbDetailsFromSuggestionApi = async (ctx: Context, fetcher: Fetcher, imdbIdStr: string): Promise<[string, number, string]> => {
+  if (imdbDetailsMap.has(imdbIdStr)) {
+    return imdbDetailsMap.get(imdbIdStr)!;
+  }
+
+  const url = new URL(`https://v3.sg.media-imdb.com/suggestion/t/${imdbIdStr}.json`);
+  const data = await fetcher.json(ctx, url) as { d?: ImdbSuggestionItem[] };
+  const item = data.d?.find(i => i.id === imdbIdStr) ?? data.d?.[0];
+  if (!item || !item.l) {
+    throw new NotFoundError(`Could not get IMDb details for "${imdbIdStr}"`);
+  }
+
+  const details: [string, number, string] = [item.l, item.y ?? 2020, item.l];
+  imdbDetailsMap.set(imdbIdStr, details);
+  return details;
+};
+
+const hashImdbIdToNumber = (imdbIdStr: string): number => {
+  let hash = 0;
+  for (let i = 0; i < imdbIdStr.length; i++) {
+    hash = (hash << 5) - hash + imdbIdStr.charCodeAt(i);
+    hash |= 0;
+  }
+  return Math.abs(hash) + 9000000;
+};
+
 const mutexes = new Map<string, Mutex>();
 const tmdbFetch = async (ctx: Context, fetcher: Fetcher, path: string, searchParams?: Record<string, string | undefined>): Promise<unknown> => {
+  const token = envGet('TMDB_ACCESS_TOKEN') || envGet('TMDB_API_KEY');
+  if (!token) {
+    throw new NotFoundError('TMDB_ACCESS_TOKEN or TMDB_API_KEY is not configured');
+  }
+
   const config: CustomRequestConfig = {
     headers: {
-      'Authorization': 'Bearer ' + envGetRequired('TMDB_ACCESS_TOKEN'),
+      'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json',
     },
     queueLimit: 50,
   };
 
   const url = new URL(`https://api.themoviedb.org/3${path}`);
+
+  if (!token.startsWith('eyJ') && !token.includes(' ')) {
+    url.searchParams.set('api_key', token);
+  }
 
   Object.entries(searchParams ?? {}).forEach(([name, value]) => {
     if (value) {
@@ -81,22 +126,43 @@ export const getTmdbIdFromImdbId = async (ctx: Context, fetcher: Fetcher, imdbId
     return new TmdbId(imdbTmdbMap.get(imdbId.id) as number, imdbId.season, imdbId.episode);
   }
 
-  const response = await tmdbFetch(ctx, fetcher, `/find/${imdbId.id}?external_source=imdb_id`) as FindResponsePartial;
+  let tmdbErr: unknown;
+  try {
+    const response = await tmdbFetch(ctx, fetcher, `/find/${imdbId.id}?external_source=imdb_id`) as FindResponsePartial;
+    const id = (imdbId.season ? response.tv_results[0] : response.movie_results[0])?.id;
 
-  const id = (imdbId.season ? response.tv_results[0] : response.movie_results[0])?.id;
-
-  if (!id) {
-    throw new NotFoundError(`Could not get TMDB ID of IMDb ID "${imdbId.id}"`);
+    if (id) {
+      imdbTmdbMap.set(imdbId.id, id);
+      tmdbImdbMap.set(id, imdbId.id);
+      return new TmdbId(id, imdbId.season, imdbId.episode);
+    }
+  } catch (error) {
+    tmdbErr = error;
   }
 
-  imdbTmdbMap.set(imdbId.id, id);
-  return new TmdbId(id, imdbId.season, imdbId.episode);
+  try {
+    const [title, year] = await getImdbDetailsFromSuggestionApi(ctx, fetcher, imdbId.id);
+    const syntheticId = hashImdbIdToNumber(imdbId.id);
+    imdbTmdbMap.set(imdbId.id, syntheticId);
+    syntheticTmdbMap.set(syntheticId, imdbId.id);
+    imdbDetailsMap.set(imdbId.id, [title, year, title]);
+    return new TmdbId(syntheticId, imdbId.season, imdbId.episode);
+  } catch {
+    if (tmdbErr) {
+      throw tmdbErr;
+    }
+    throw new NotFoundError(`Could not get TMDB ID of IMDb ID "${imdbId.id}"`);
+  }
 };
 
 const tmdbImdbMap = new Map<number, string>();
 export const getImdbIdFromTmdbId = async (ctx: Context, fetcher: Fetcher, tmdbId: TmdbId): Promise<ImdbId> => {
   if (tmdbImdbMap.has(tmdbId.id)) {
     return new ImdbId(tmdbImdbMap.get(tmdbId.id) as string, tmdbId.season, tmdbId.episode);
+  }
+  if (syntheticTmdbMap.has(tmdbId.id)) {
+    const imdbIdStr = syntheticTmdbMap.get(tmdbId.id)!;
+    return new ImdbId(imdbIdStr, tmdbId.season, tmdbId.episode);
   }
 
   const type = tmdbId.season ? 'tv' : 'movie';
@@ -116,13 +182,23 @@ const getTmdbTvDetails = async (ctx: Context, fetcher: Fetcher, tmdbId: TmdbId, 
 };
 
 export const getTmdbNameAndYear = async (ctx: Context, fetcher: Fetcher, tmdbId: TmdbId, language?: string): Promise<[string, number, string]> => {
-  if (tmdbId.season) {
-    const tmdbDetails = await getTmdbTvDetails(ctx, fetcher, tmdbId, language);
-
-    return [tmdbDetails.name, (new Date(tmdbDetails.first_air_date)).getFullYear(), tmdbDetails.original_name];
+  const imdbIdStr = syntheticTmdbMap.get(tmdbId.id) ?? tmdbImdbMap.get(tmdbId.id);
+  if (imdbIdStr && imdbDetailsMap.has(imdbIdStr)) {
+    return imdbDetailsMap.get(imdbIdStr)!;
   }
 
-  const tmdbDetails = await getTmdbMovieDetails(ctx, fetcher, tmdbId, language);
+  try {
+    if (tmdbId.season) {
+      const tmdbDetails = await getTmdbTvDetails(ctx, fetcher, tmdbId, language);
+      return [tmdbDetails.name, (new Date(tmdbDetails.first_air_date)).getFullYear(), tmdbDetails.original_name];
+    }
 
-  return [tmdbDetails.title, (new Date(tmdbDetails.release_date)).getFullYear(), tmdbDetails.original_title];
+    const tmdbDetails = await getTmdbMovieDetails(ctx, fetcher, tmdbId, language);
+    return [tmdbDetails.title, (new Date(tmdbDetails.release_date)).getFullYear(), tmdbDetails.original_title];
+  } catch {
+    if (imdbIdStr) {
+      return await getImdbDetailsFromSuggestionApi(ctx, fetcher, imdbIdStr);
+    }
+    throw new NotFoundError(`Could not get TMDB or IMDb details for TMDB ID ${tmdbId.id}`);
+  }
 };

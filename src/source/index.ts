@@ -1,4 +1,6 @@
 import { envGet, Fetcher } from '../utils';
+import { AniWorld } from './AniWorld';
+import { BurningSeries } from './BurningSeries';
 import { CineHDPlus } from './CineHDPlus';
 import { Cuevana } from './Cuevana';
 import { Einschalten } from './Einschalten';
@@ -7,6 +9,7 @@ import { FilmpalastTO } from './FilmpalastTO';
 import { FourKHDHub } from './FourKHDHub';
 import { Frembed } from './Frembed';
 import { FrenchCloud } from './FrenchCloud';
+import { HDFilme } from './HDFilme';
 import { HDHub4u } from './HDHub4u';
 import { HomeCine } from './HomeCine';
 import { KinoGer } from './KinoGer';
@@ -16,6 +19,8 @@ import { MeineCloud } from './MeineCloud';
 import { MostraGuarda } from './MostraGuarda';
 import { MovieBox } from './MovieBox';
 import { Movix } from './Movix';
+import { Netzkino } from './Netzkino';
+import { SerienStream } from './SerienStream';
 import { Source } from './Source';
 import { VerHdLink } from './VerHdLink';
 import { VidSrc } from './VidSrc';
@@ -48,6 +53,11 @@ export const createSources = (fetcher: Fetcher): Source[] => {
     new MegaKino(fetcher),
     new MeineCloud(fetcher),
     new FilmpalastTO(fetcher),
+    new SerienStream(fetcher),
+    new AniWorld(fetcher),
+    new HDFilme(fetcher),
+    new BurningSeries(fetcher),
+    new Netzkino(fetcher),
     // FR
     new Frembed(fetcher),
     new FrenchCloud(fetcher),
@@ -57,3 +67,4 @@ export const createSources = (fetcher: Fetcher): Source[] => {
     new MostraGuarda(fetcher),
   ].filter(source => !disabledSources.includes(source.id));
 };
+

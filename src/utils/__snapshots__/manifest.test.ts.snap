@@ -21,7 +21,7 @@ exports[`buildManifest default manifest 1`] = `
     },
     {
       "key": "de",
-      "title": "German 🇩🇪 (Einschalten, Filmpalast, KinoGer, MegaKino, MeineCloud)",
+      "title": "German 🇩🇪 (AniWorld, BurningSeries, Einschalten, Filmpalast, HDFilme, KinoGer, MegaKino, MeineCloud, Netzkino, SerienStream)",
       "type": "checkbox",
     },
     {
@@ -151,7 +151,7 @@ exports[`buildManifest default manifest 1`] = `
 
 Supported languages: Albanian, German, Castilian Spanish, French, Gujarati, Hindi, Italian, Malayalam, Latin American Spanish, Punjabi, Tamil, Telugu
 
-Supported sources: 4KHDHub, CineHDPlus, Cuevana, Einschalten, Eurostreaming, Filmpalast, Frembed, FrenchCloud, HDHub4u, HomeCine, KinoGer, Kokoshka, MegaKino, MeineCloud, MostraGuarda, MovieBox, Movix, VerHdLink, VidSrc, VidZee, VixSrc
+Supported sources: 4KHDHub, AniWorld, BurningSeries, CineHDPlus, Cuevana, Einschalten, Eurostreaming, Filmpalast, Frembed, FrenchCloud, HDFilme, HDHub4u, HomeCine, KinoGer, Kokoshka, MegaKino, MeineCloud, MostraGuarda, MovieBox, Movix, Netzkino, SerienStream, VerHdLink, VidSrc, VidZee, VixSrc
 
 Supported extractors: ",
   "id": "webstreamr-mbg",
