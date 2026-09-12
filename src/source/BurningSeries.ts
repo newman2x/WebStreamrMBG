@@ -1,4 +1,4 @@
-import * as cheerio from 'cheerio';
+import { load } from 'cheerio';
 import { ContentType } from 'stremio-addon-sdk';
 import { Context, CountryCode } from '../types';
 import { Fetcher, getTmdbId, getTmdbNameAndYear, Id } from '../utils';
@@ -42,7 +42,7 @@ export class BurningSeries extends Source {
 
     try {
       const html = await this.fetcher.text(ctx, episodePageUrl);
-      const $ = cheerio.load(html);
+      const $ = load(html);
       const results: SourceResult[] = [];
 
       $('.hoster-tabs a, .hosters a, ul.hoster-list a').each((_i, el) => {

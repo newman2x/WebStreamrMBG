@@ -1,4 +1,4 @@
-import * as cheerio from 'cheerio';
+import { load } from 'cheerio';
 import { ContentType } from 'stremio-addon-sdk';
 import { Context, CountryCode } from '../types';
 import { Fetcher, getTmdbId, getTmdbNameAndYear, Id } from '../utils';
@@ -37,7 +37,7 @@ export class AniWorld extends Source {
 
     try {
       const html = await this.fetcher.text(ctx, episodePageUrl);
-      const $ = cheerio.load(html);
+      const $ = load(html);
       const results: SourceResult[] = [];
       const redirectPromises: Promise<SourceResult | null>[] = [];
 
@@ -119,7 +119,7 @@ export class AniWorld extends Source {
 
     try {
       const searchHtml = await this.fetcher.text(ctx, searchUrl);
-      const $ = cheerio.load(searchHtml);
+      const $ = load(searchHtml);
 
       $('a[href*="/anime/stream/"]').each((_i, el) => {
         const href = $(el).attr('href');

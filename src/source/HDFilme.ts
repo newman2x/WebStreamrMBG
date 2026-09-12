@@ -1,4 +1,4 @@
-import * as cheerio from 'cheerio';
+import { load } from 'cheerio';
 import { ContentType } from 'stremio-addon-sdk';
 import { Context, CountryCode } from '../types';
 import { Fetcher, getTmdbId, getTmdbNameAndYear, Id } from '../utils';
@@ -11,8 +11,9 @@ const STREAMING_HOSTS = [
   'meinecloud',
 ];
 
-const isStreamingHost = (hostname: string): boolean =>
-  STREAMING_HOSTS.some(host => hostname.includes(host));
+function isStreamingHost(hostname: string): boolean {
+  return STREAMING_HOSTS.some(host => hostname.includes(host));
+}
 
 export class HDFilme extends Source {
   public readonly id = 'hdfilme';
@@ -47,7 +48,7 @@ export class HDFilme extends Source {
 
     try {
       const html = await this.fetcher.text(ctx, streamPageUrl);
-      const $ = cheerio.load(html);
+      const $ = load(html);
       const results: SourceResult[] = [];
 
       $('[data-link]').each((_i, el) => {
@@ -61,42 +62,15 @@ export class HDFilme extends Source {
         }
 
         try {
-          const url = new URL(link);
-          results.push({
-            url,
-            meta: {
-              countryCodes: [CountryCode.de],
-              referer: streamPageUrl.href,
-              title: `${url.hostname} - ${title}`,
-              sourceLabel: this.label,
-            },
-          });
-        } catch {
-          // ignore
-        }
-      });
-
-      $('iframe[src], a[href]').each((_i, el) => {
-        const href = $(el).attr('src') ?? $(el).attr('href');
-        if (!href || href === '#' || href.startsWith('javascript')) return;
-
-        try {
-          const fullHref = href.startsWith('//') ? `https:${href}` : href;
-          const url = new URL(fullHref.startsWith('http') ? fullHref : `${this.baseUrl}${fullHref}`);
-
-          if (isStreamingHost(url.hostname)) {
+          const parsed = new URL(link);
+          if (isStreamingHost(parsed.hostname)) {
             results.push({
-              url,
-              meta: {
-                countryCodes: [CountryCode.de],
-                referer: streamPageUrl.href,
-                title: `${url.hostname} - ${title}`,
-                sourceLabel: this.label,
-              },
+              url: parsed,
+              meta: { countryCodes: [CountryCode.de], referer: streamPageUrl.href, title },
             });
           }
         } catch {
-          // ignore
+          // invalid url
         }
       });
 
@@ -108,19 +82,16 @@ export class HDFilme extends Source {
 
   private async fetchStreamPageUrl(
     ctx: Context,
-    name: string,
+    title: string,
     year: number,
     season?: number,
-    episode?: number,
+    episode?: number
   ): Promise<URL | undefined> {
-    const searchQuery = season
-      ? `${name} S${String(season).padStart(2, '0')}E${String(episode ?? 1).padStart(2, '0')}`
-      : name;
-
+    const searchQuery = season && episode ? `${title} s${season}e${episode}` : title;
     const searchUrl = new URL(`/index.php?do=search&subaction=search&story=${encodeURIComponent(searchQuery)}`, this.baseUrl);
     try {
       const html = await this.fetcher.text(ctx, searchUrl);
-      const $ = cheerio.load(html);
+      const $ = load(html);
 
       const candidates: { href: string; title: string }[] = [];
 
@@ -144,12 +115,12 @@ export class HDFilme extends Source {
         }
       }
 
-      const first = candidates[0];
-      if (!first) {
-        return undefined;
+      const [first] = candidates;
+      if (first?.href) {
+        const fullHref = first.href.startsWith('http') ? first.href : `${this.baseUrl}${first.href}`;
+        return new URL(fullHref);
       }
-      const fullHref = first.href.startsWith('http') ? first.href : `${this.baseUrl}${first.href}`;
-      return new URL(fullHref);
+      return undefined;
     } catch {
       return undefined;
     }

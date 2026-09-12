@@ -30,10 +30,12 @@ describe('SerienStream', () => {
   });
 
   test('handle series search and extraction with data-play-url', async () => {
+    const searchHtml = '<div><a href="/serie/stream/breaking-bad">Breaking Bad</a></div>';
+    const episodeHtml = '<div><button data-play-url="https://voe.sx/e/123" data-provider-name="VOE" data-language-label="DE"></button></div>';
     (fetcher.json as jest.Mock).mockResolvedValueOnce({ name: 'Breaking Bad', first_air_date: '2008-01-20' });
     (fetcher.text as jest.Mock)
-      .mockResolvedValueOnce('<html><a href="/serie/stream/breaking-bad">Breaking Bad</a></html>')
-      .mockResolvedValueOnce('<html><button data-play-url="https://voe.sx/e/123" data-provider-name="VOE" data-language-label="DE"></button></html>');
+      .mockResolvedValueOnce(searchHtml)
+      .mockResolvedValueOnce(episodeHtml);
 
     const streams = await source.handle(ctx, 'series', new TmdbId(1399, 1, 1));
     expect(streams).toHaveLength(1);
@@ -41,10 +43,12 @@ describe('SerienStream', () => {
   });
 
   test('handle series search and fallback redirect link when data-play-url missing', async () => {
+    const searchHtml = '<div><a href="/serie/stream/breaking-bad">Breaking Bad</a></div>';
+    const redirectHtml = '<div><a href="/redirect/456">Stream Link</a></div>';
     (fetcher.json as jest.Mock).mockResolvedValueOnce({ name: 'Breaking Bad', first_air_date: '2008-01-20' });
     (fetcher.text as jest.Mock)
-      .mockResolvedValueOnce('<html><a href="/serie/stream/breaking-bad">Breaking Bad</a></html>')
-      .mockResolvedValueOnce('<html><a href="/redirect/456">Stream Link</a></html>');
+      .mockResolvedValueOnce(searchHtml)
+      .mockResolvedValueOnce(redirectHtml);
 
     const streams = await source.handle(ctx, 'series', new TmdbId(1400, 1, 1));
     expect(streams).toHaveLength(1);
@@ -52,10 +56,11 @@ describe('SerienStream', () => {
   });
 
   test('handle series search fallback and redirect links', async () => {
+    const redirectHtml = '<div><a href="/redirect/456">Stream</a></div>';
     (fetcher.json as jest.Mock).mockResolvedValueOnce({ name: 'Test Series', first_air_date: '2020-01-01' });
     (fetcher.text as jest.Mock)
       .mockRejectedValueOnce(new Error('Search failed'))
-      .mockResolvedValueOnce('<html><a href="/redirect/456">Stream</a></html>');
+      .mockResolvedValueOnce(redirectHtml);
 
     const streams = await source.handle(ctx, 'series', new TmdbId(1001, 1, 1));
     expect(streams).toHaveLength(1);

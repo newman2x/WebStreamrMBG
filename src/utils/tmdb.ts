@@ -40,9 +40,10 @@ interface ImdbSuggestionItem {
 const imdbDetailsMap = new Map<string, [string, number, string]>();
 const syntheticTmdbMap = new Map<number, string>();
 
-const getImdbDetailsFromSuggestionApi = async (ctx: Context, fetcher: Fetcher, imdbIdStr: string): Promise<[string, number, string]> => {
-  if (imdbDetailsMap.has(imdbIdStr)) {
-    return imdbDetailsMap.get(imdbIdStr)!;
+async function getImdbDetailsFromSuggestionApi(ctx: Context, fetcher: Fetcher, imdbIdStr: string): Promise<[string, number, string]> {
+  const cached = imdbDetailsMap.get(imdbIdStr);
+  if (cached) {
+    return cached;
   }
 
   const url = new URL(`https://v3.sg.media-imdb.com/suggestion/t/${imdbIdStr}.json`);
@@ -55,16 +56,16 @@ const getImdbDetailsFromSuggestionApi = async (ctx: Context, fetcher: Fetcher, i
   const details: [string, number, string] = [item.l, item.y ?? 2020, item.l];
   imdbDetailsMap.set(imdbIdStr, details);
   return details;
-};
+}
 
-const hashImdbIdToNumber = (imdbIdStr: string): number => {
+function hashImdbIdToNumber(imdbIdStr: string): number {
   let hash = 0;
   for (let i = 0; i < imdbIdStr.length; i++) {
     hash = (hash << 5) - hash + imdbIdStr.charCodeAt(i);
     hash |= 0;
   }
   return Math.abs(hash) + 9000000;
-};
+}
 
 const mutexes = new Map<string, Mutex>();
 const tmdbFetch = async (ctx: Context, fetcher: Fetcher, path: string, searchParams?: Record<string, string | undefined>): Promise<unknown> => {
@@ -160,9 +161,9 @@ export const getImdbIdFromTmdbId = async (ctx: Context, fetcher: Fetcher, tmdbId
   if (tmdbImdbMap.has(tmdbId.id)) {
     return new ImdbId(tmdbImdbMap.get(tmdbId.id) as string, tmdbId.season, tmdbId.episode);
   }
-  if (syntheticTmdbMap.has(tmdbId.id)) {
-    const imdbIdStr = syntheticTmdbMap.get(tmdbId.id)!;
-    return new ImdbId(imdbIdStr, tmdbId.season, tmdbId.episode);
+  const syntheticImdbId = syntheticTmdbMap.get(tmdbId.id);
+  if (syntheticImdbId) {
+    return new ImdbId(syntheticImdbId, tmdbId.season, tmdbId.episode);
   }
 
   const type = tmdbId.season ? 'tv' : 'movie';
