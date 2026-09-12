@@ -110,15 +110,13 @@ export class HDFilme extends Source {
       if (!season && year) {
         const yearMatch = candidates.find(c => c.title.includes(String(year)));
         if (yearMatch) {
-          const fullHref = yearMatch.href.startsWith('http') ? yearMatch.href : `${this.baseUrl}${yearMatch.href}`;
-          return new URL(fullHref);
+          return new URL(yearMatch.href, this.baseUrl);
         }
       }
 
       const [first] = candidates;
       if (first?.href) {
-        const fullHref = first.href.startsWith('http') ? first.href : `${this.baseUrl}${first.href}`;
-        return new URL(fullHref);
+        return new URL(first.href, this.baseUrl);
       }
       return undefined;
     } catch {
