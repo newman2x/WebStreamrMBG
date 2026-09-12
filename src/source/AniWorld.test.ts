@@ -24,12 +24,12 @@ describe('AniWorld', () => {
   });
 
   test('handle anime series episode extraction', async () => {
-    const searchHtml = '<div><a href="/anime/stream/naruto">Naruto</a></div>';
-    const episodeHtml = '<div><button data-play-url="https://voe.sx/e/naruto1" data-provider-name="VOE" data-language-label="Ger-Sub"></button></div>';
+    const searchDoc = '<div><a href="/anime/stream/naruto">Naruto</a></div>';
+    const episodeDoc = '<div><button data-play-url="https://voe.sx/e/naruto1" data-provider-name="VOE" data-language-label="Ger-Sub"></button></div>';
     (fetcher.json as jest.Mock).mockResolvedValueOnce({ name: 'Naruto', first_air_date: '2002-10-03' });
     (fetcher.text as jest.Mock)
-      .mockResolvedValueOnce(searchHtml)
-      .mockResolvedValueOnce(episodeHtml);
+      .mockResolvedValueOnce(searchDoc)
+      .mockResolvedValueOnce(episodeDoc);
 
     const streams = await source.handle(ctx, 'series', new TmdbId(2001, 1, 1));
     expect(streams).toHaveLength(1);
@@ -37,12 +37,12 @@ describe('AniWorld', () => {
   });
 
   test('handle anime series with redirect link fallback when no play-url button', async () => {
-    const searchHtml = '<div><a href="/anime/stream/naruto">Naruto</a></div>';
-    const redirectHtml = '<div><a href="/redirect/naruto1">Redirect Link</a></div>';
+    const searchDoc = '<div><a href="/anime/stream/naruto">Naruto</a></div>';
+    const redirectDoc = '<div><a href="/redirect/naruto1">Redirect Link</a></div>';
     (fetcher.json as jest.Mock).mockResolvedValueOnce({ name: 'Naruto', first_air_date: '2002-10-03' });
     (fetcher.text as jest.Mock)
-      .mockResolvedValueOnce(searchHtml)
-      .mockResolvedValueOnce(redirectHtml);
+      .mockResolvedValueOnce(searchDoc)
+      .mockResolvedValueOnce(redirectDoc);
 
     const streams = await source.handle(ctx, 'series', new TmdbId(2004, 1, 1));
     expect(streams).toHaveLength(1);
@@ -50,11 +50,11 @@ describe('AniWorld', () => {
   });
 
   test('handle anime movie extraction with redirect link fallback', async () => {
-    const redirectHtml = '<div><a href="/redirect/789">Stream</a></div>';
+    const redirectDoc = '<div><a href="/redirect/789">Stream</a></div>';
     (fetcher.json as jest.Mock).mockResolvedValueOnce({ title: 'Your Name', release_date: '2016-08-26' });
     (fetcher.text as jest.Mock)
       .mockRejectedValueOnce(new Error('Search failed'))
-      .mockResolvedValueOnce(redirectHtml);
+      .mockResolvedValueOnce(redirectDoc);
 
     const streams = await source.handle(ctx, 'movie', new TmdbId(2002, undefined, undefined));
     expect(streams).toHaveLength(1);

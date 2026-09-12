@@ -184,8 +184,11 @@ const getTmdbTvDetails = async (ctx: Context, fetcher: Fetcher, tmdbId: TmdbId, 
 
 export const getTmdbNameAndYear = async (ctx: Context, fetcher: Fetcher, tmdbId: TmdbId, language?: string): Promise<[string, number, string]> => {
   const imdbIdStr = syntheticTmdbMap.get(tmdbId.id) ?? tmdbImdbMap.get(tmdbId.id);
-  if (imdbIdStr && imdbDetailsMap.has(imdbIdStr)) {
-    return imdbDetailsMap.get(imdbIdStr)!;
+  if (imdbIdStr) {
+    const cachedDetails = imdbDetailsMap.get(imdbIdStr);
+    if (cachedDetails) {
+      return cachedDetails;
+    }
   }
 
   try {

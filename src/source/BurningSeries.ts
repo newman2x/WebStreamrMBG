@@ -41,8 +41,8 @@ export class BurningSeries extends Source {
     const title = `${name} ${tmdbId.formatSeasonAndEpisode()}`;
 
     try {
-      const html = await this.fetcher.text(ctx, episodePageUrl);
-      const $ = load(html);
+      const pageBody = await this.fetcher.text(ctx, episodePageUrl);
+      const $ = load(pageBody);
       const results: SourceResult[] = [];
 
       $('.hoster-tabs a, .hosters a, ul.hoster-list a').each((_i, el) => {

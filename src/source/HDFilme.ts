@@ -47,8 +47,8 @@ export class HDFilme extends Source {
       : `${name} (${year})`;
 
     try {
-      const html = await this.fetcher.text(ctx, streamPageUrl);
-      const $ = load(html);
+      const pageBody = await this.fetcher.text(ctx, streamPageUrl);
+      const $ = load(pageBody);
       const results: SourceResult[] = [];
 
       $('[data-link]').each((_i, el) => {
@@ -90,8 +90,8 @@ export class HDFilme extends Source {
     const searchQuery = season && episode ? `${title} s${season}e${episode}` : title;
     const searchUrl = new URL(`/index.php?do=search&subaction=search&story=${encodeURIComponent(searchQuery)}`, this.baseUrl);
     try {
-      const html = await this.fetcher.text(ctx, searchUrl);
-      const $ = load(html);
+      const searchPageText = await this.fetcher.text(ctx, searchUrl);
+      const $ = load(searchPageText);
 
       const candidates: { href: string; title: string }[] = [];
 
@@ -114,8 +114,8 @@ export class HDFilme extends Source {
         }
       }
 
-      const [first] = candidates;
-      if (first?.href) {
+      const first = candidates[0];
+      if (first !== undefined) {
         return new URL(first.href, this.baseUrl);
       }
       return undefined;

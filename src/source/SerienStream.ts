@@ -36,8 +36,8 @@ export class SerienStream extends Source {
     const title = `${name} ${tmdbId.formatSeasonAndEpisode()}`;
 
     try {
-      const html = await this.fetcher.text(ctx, episodePageUrl);
-      const $ = load(html);
+      const pageBody = await this.fetcher.text(ctx, episodePageUrl);
+      const $ = load(pageBody);
       const results: SourceResult[] = [];
 
       const redirectPromises: Promise<SourceResult | null>[] = [];
@@ -118,8 +118,8 @@ export class SerienStream extends Source {
     let seriesSlug = '';
 
     try {
-      const searchHtml = await this.fetcher.text(ctx, searchUrl);
-      const $ = load(searchHtml);
+      const searchPageText = await this.fetcher.text(ctx, searchUrl);
+      const $ = load(searchPageText);
 
       $('a[href*="/serie/stream/"], a[href*="/serie/"]').each((_i, el) => {
         const href = $(el).attr('href');

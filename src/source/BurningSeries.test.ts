@@ -30,9 +30,9 @@ describe('BurningSeries', () => {
   });
 
   test('handle series episode with hosters', async () => {
-    const hostersHtml = '<div><ul class="hosters"><li><a href="/out/123">VOE</a></li></ul></div>';
+    const hosterData = '<div><ul class="hosters"><li><a href="/out/123">VOE</a></li></ul></div>';
     (fetcher.json as jest.Mock).mockResolvedValueOnce({ name: 'Dexter', first_air_date: '2006-10-01' });
-    (fetcher.text as jest.Mock).mockResolvedValueOnce(hostersHtml);
+    (fetcher.text as jest.Mock).mockResolvedValueOnce(hosterData);
 
     const streams = await source.handle(ctx, 'series', new TmdbId(5002, 1, 1));
     expect(streams).toHaveLength(1);
