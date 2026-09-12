@@ -15,6 +15,13 @@ export class BurningSeries extends Source {
 
   public override readonly baseUrl = 'https://bs.to';
 
+  private readonly fallbackDomains = [
+    'https://bs.to',
+    'https://burningseries.ac',
+    'https://bs.cine.to',
+    'https://serienstream.to',
+  ];
+
   private readonly fetcher: Fetcher;
 
   public constructor(fetcher: Fetcher) {
@@ -37,35 +44,50 @@ export class BurningSeries extends Source {
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/^-|-$/g, '');
 
-    const episodePageUrl = new URL(`/serie/${slug}/${season}/${episode}`, this.baseUrl);
     const title = `${name} ${tmdbId.formatSeasonAndEpisode()}`;
 
-    try {
-      const pageBody = await this.fetcher.text(ctx, episodePageUrl);
-      const $ = load(pageBody);
-      const results: SourceResult[] = [];
+    for (const domainCandidate of this.fallbackDomains) {
+      try {
+        const isSStream = domainCandidate.includes('serienstream');
+        const episodePagePath = isSStream
+          ? `/serie/stream/${slug}/staffel-${season}/episode-${episode}`
+          : `/serie/${slug}/${season}/${episode}`;
 
-      $('.hoster-tabs a, .hosters a, ul.hoster-list a').each((_i, el) => {
-        const href = $(el).attr('href');
-        const hosterName = $(el).text().trim() || 'Hoster';
+        const episodePageUrl = new URL(episodePagePath, domainCandidate);
+        const pageBody = await this.fetcher.text(ctx, episodePageUrl);
+        const $ = load(pageBody);
+        const results: SourceResult[] = [];
 
-        if (href && !href.startsWith('javascript')) {
-          const fullUrl = href.startsWith('http') ? new URL(href) : new URL(href, this.baseUrl);
-          results.push({
-            url: fullUrl,
-            meta: {
-              countryCodes: [CountryCode.de],
-              referer: episodePageUrl.href,
-              title: `${hosterName} - ${title}`,
-              sourceLabel: this.label,
-            },
-          });
+        const selector = isSStream
+          ? 'a[href*="/redirect/"], button[data-play-url]'
+          : '.hoster-tabs a, .hosters a, ul.hoster-list a, a[href*="/out/"]';
+
+        $(selector).each((_i, el) => {
+          const href = $(el).attr('data-play-url') ?? $(el).attr('href');
+          const hosterName = $(el).text().trim() || $(el).attr('title') || 'Hoster';
+
+          if (href && !href.startsWith('javascript')) {
+            const fullUrl = href.startsWith('http') ? new URL(href) : new URL(href, domainCandidate);
+            results.push({
+              url: fullUrl,
+              meta: {
+                countryCodes: [CountryCode.de],
+                referer: episodePageUrl.href,
+                title: `${hosterName} - ${title}`,
+                sourceLabel: this.label,
+              },
+            });
+          }
+        });
+
+        if (results.length > 0) {
+          return results;
         }
-      });
-
-      return results;
-    } catch {
-      return [];
+      } catch {
+        // try next fallback domain candidate
+      }
     }
+
+    return [];
   }
 }
