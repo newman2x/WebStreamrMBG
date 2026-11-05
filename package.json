@@ -54,7 +54,7 @@
     "express-rate-limit": "^8.2.1",
     "fast-levenshtein": "^3.0.0",
     "fuse.js": "^7.3.0",
-    "glob": "^13.0.0",
+    "glob": "^14.0.0",
     "got-scraping": "^4.2.1",
     "http-proxy-agent": "^7.0.2",
     "https-proxy-agent": "^7.0.6",
